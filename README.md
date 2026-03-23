@@ -36,8 +36,9 @@ Since this is an Astro-based static site, it can be hosted for **free**. Given y
    - **Cost**: Generous Free Tier.
    - **Why**: If you ever need a highly performant global CDN or advanced edge computing features, Cloudflare Pages seamlessly connects to your GitHub repository and deploys automatically on every push, just like GitHub Pages, but with slightly faster global enterprise-grade delivery.
 
-### Next Steps for the Portfolio
-To initialize the actual Astro application code in this directory, you can run:
-```bash
-npm create astro@latest
-```
+### 🚀 Operations & Deployment
+
+The Astro framework has been fully initialized and is actively deploying to GitHub Pages via an automated GitHub Action.
+
+To learn how to manage the blog, create new posts, and customize your brand's aesthetics, please reference the official operator guide:
+[**docs/snkumar-astro-site-post-deploy.md**](./docs/snkumar-astro-site-post-deploy.md)
