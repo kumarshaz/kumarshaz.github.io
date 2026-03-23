@@ -2,6 +2,7 @@
 title: "From Blacksmiths to Goldsmiths: Why I Chose Astro & GitHub Pages for My Architecture Blog"
 description: "An architectural deep-dive into the pragmatic selection of Astro and GitHub Pages for a blazing-fast, content-driven personal portfolio."
 pubDate: 2026-03-22
+heroImage: '../../assets/blog1.png'
 tags: ["Architecture", "Astro", "GitHub Pages", "DevEx", "SDLC"]
 ---
 

@@ -1,9 +1,11 @@
 ---
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
+import profilePic from '../assets/profile-picture.jpg';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -18,19 +20,24 @@ const recentPosts = posts.slice(0, 3);
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main id="main-content">
 			<!-- Hero Section -->
 			<section class="hero">
-				<div class="hero-content">
-					<p class="hero-eyebrow">Product Architect · IEEE Senior Member · Published Researcher</p>
-					<h1>From Blacksmiths<br /><span class="accent">to Goldsmiths.</span></h1>
-					<p class="hero-subtitle">
-						I help engineering teams transition from effort-based labor to high-precision, 
-						composable architecture — designed for enterprise scale and built with craftsman's care.
-					</p>
-					<div class="hero-cta">
-						<a href="/blog" class="btn-primary">Read the Blog</a>
-						<a href="/about" class="btn-secondary">About Me</a>
+				<div class="hero-layout">
+					<div class="hero-content">
+						<p class="hero-eyebrow">Product Architect · IEEE Senior Member · Published Researcher</p>
+						<h1>From Blacksmiths<br /><span class="accent">to Goldsmiths.</span></h1>
+						<p class="hero-subtitle">
+							I help engineering teams transition from effort-based labor to high-precision, 
+							composable architecture — designed for enterprise scale and built with craftsman's care.
+						</p>
+						<div class="hero-cta">
+							<a href="/blog" class="btn-primary">Read the Blog</a>
+							<a href="/about" class="btn-secondary">About Me</a>
+						</div>
+					</div>
+					<div class="hero-photo">
+						<Image src={profilePic} alt="Shashi Kumar" width={200} height={200} class="profile-img" />
 					</div>
 				</div>
 			</section>
@@ -106,6 +113,13 @@ const recentPosts = posts.slice(0, 3);
 						</svg>
 						View GitHub
 					</a>
+					<a href="https://dzone.com/users/5309856/snkumar.html" target="_blank" class="btn-dzone">
+						<svg viewBox="0 0 32 32" width="20" height="20" style="vertical-align: middle; margin-right: 0.4em;">
+							<rect width="32" height="32" rx="4" fill="currentColor" opacity="0.15"/>
+							<text x="16" y="22" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="16" fill="currentColor">DZ</text>
+						</svg>
+						DZone Publications
+					</a>
 				</div>
 			</section>
 		</main>
@@ -123,10 +137,58 @@ const recentPosts = posts.slice(0, 3);
 		padding-left: calc(50vw - 50%);
 		padding-right: calc(50vw - 50%);
 		color: #fff;
+		transition: background 0.3s ease, color 0.3s ease;
+	}
+	:global(.light) .hero {
+		background: linear-gradient(135deg, #eef1f8 0%, #dfe4f0 50%, #eef1f8 100%);
+		color: rgb(15, 18, 25);
+	}
+	:global(.light) .hero h1 {
+		color: rgb(15, 18, 25);
+	}
+	:global(.light) .hero h1 .accent {
+		color: var(--accent);
+	}
+	:global(.light) .hero-eyebrow {
+		color: var(--accent);
+	}
+	:global(.light) .hero-subtitle {
+		color: rgba(15, 18, 25, 0.65);
+	}
+	:global(.light) .btn-secondary {
+		border-color: rgba(15, 18, 25, 0.3);
+		color: rgba(15, 18, 25, 0.8) !important;
+	}
+	:global(.light) .btn-secondary:hover {
+		border-color: var(--accent);
+		color: var(--accent) !important;
+	}
+	:global(.light) .hero-photo .profile-img {
+		border-color: rgba(15, 18, 25, 0.1);
+		box-shadow: 0 0 40px rgba(35, 55, 255, 0.12);
+	}
+	.hero-layout {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 3em;
+		max-width: 860px;
+		margin: 0 auto;
 	}
 	.hero-content {
-		max-width: 720px;
-		margin: 0 auto;
+		flex: 1;
+		text-align: left;
+	}
+	.hero-photo {
+		flex-shrink: 0;
+	}
+	.hero-photo .profile-img {
+		width: 180px;
+		height: 180px;
+		border-radius: 50%;
+		border: 3px solid rgba(255, 255, 255, 0.15);
+		box-shadow: 0 0 40px rgba(35, 55, 255, 0.25);
+		object-fit: cover;
 	}
 	.hero-eyebrow {
 		font-size: 0.75em;
@@ -218,7 +280,7 @@ const recentPosts = posts.slice(0, 3);
 	}
 	.pillar-card {
 		display: block;
-		background: #fff;
+		background: var(--bg-primary);
 		border: 1px solid rgb(var(--gray-light));
 		border-radius: 12px;
 		padding: 1.5em;
@@ -261,7 +323,7 @@ const recentPosts = posts.slice(0, 3);
 		gap: 1em;
 	}
 	.post-card {
-		background: #fff;
+		background: var(--bg-primary);
 		border: 1px solid rgb(var(--gray-light));
 		border-radius: 10px;
 		padding: 1.5em;
@@ -351,11 +413,42 @@ const recentPosts = posts.slice(0, 3);
 	.btn-github:hover {
 		background: #000;
 	}
+	.btn-dzone {
+		display: inline-flex;
+		align-items: center;
+		background: #1e6b3a;
+		color: #fff !important;
+		padding: 0.7em 1.5em;
+		border-radius: 6px;
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.9em;
+		transition: background 0.2s ease;
+	}
+	.btn-dzone:hover {
+		background: #145228;
+	}
 
 	/* ===== Responsive ===== */
 	@media (max-width: 720px) {
+		.hero-layout {
+			flex-direction: column-reverse;
+			text-align: center;
+			gap: 1.5em;
+		}
+		.hero-content {
+			text-align: center;
+		}
+		.hero-subtitle {
+			margin-left: auto;
+			margin-right: auto;
+		}
 		.hero h1 {
 			font-size: 2.2em;
+		}
+		.hero-photo .profile-img {
+			width: 140px;
+			height: 140px;
 		}
 		.pillars-grid {
 			grid-template-columns: 1fr;
