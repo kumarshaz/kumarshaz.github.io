@@ -24,5 +24,4 @@ pnpm-debug.log*
 .idea/
 
 # temp files
-snkumar-astro-site.md
-wsl-bash-migration.md
+docs/archive/
