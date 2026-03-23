@@ -5,78 +5,99 @@ import Layout from '../layouts/BlogPost.astro';
 
 <Layout
 	title="About Shashi Kumar"
-	description="Product Architect & Technology Leader"
+	description="Product Architect & Technology Leader — 18+ years designing composable, enterprise-grade systems."
 	pubDate={new Date('March 22 2026')}
 	heroImage={AboutHeroImage}
 >
-	<h3>Introduction</h3>
+	<!-- Mission Statement -->
+	<h2>Mission</h2>
 	<p>
-		My title is Product Architect, also known as Solution Architect or Application Architect / Technology Leader. 
-		My mission is to transition engineering culture from "Master Blacksmiths" (manual, effort-based labor) 
-		to "Master Goldsmiths" (high-precision logic, handling business uncertainty).
-	</p>
-	<p>
-		My AI philosophy is that AI is the "Great Teacher" and the engine for structural "90%" tasks, 
-		with human value found in the final "10%" of refinement and business alignment. I wear multiple hats: 
-		reviewing existing service architecture and planning migration, designing architecture for new features 
-		in legacy products, creating architecture for greenfield products, and refining the target state reference architecture.
+		I'm a <strong>Product Architect</strong> (Solution Architect / Application Architect) with over 
+		<strong>18 years of experience</strong> designing and delivering enterprise software. My mission is 
+		to transition engineering teams from <em>"Master Blacksmiths"</em> — relying on manual, effort-based 
+		labor — to <em>"Master Goldsmiths"</em>, where high-precision logic handles business uncertainty 
+		while humans focus on what matters most.
 	</p>
 
-	<p>
-		My strengths are my vulnerability about not being an expert and my adaptability to learn what I don't know or can't do. 
-		My weaknesses are over discussion, able to learn less verbally and more visually, and not being disciplined.
-	</p>
-
-	<p>
-		My values are clarity, maintainability, and consistency in architecture. I emphasize test coverage, CI/CD readiness, 
-		and responsive design. I advocate for internal package reuse via NuGet and npm feeds. I use standard project templates 
-		and scripts for front-end and modernization efforts. I apply strict linting and formatting standards across projects.
-	</p>
-
-	<h3>Architectural Principles (The "Lego" Framework)</h3>
-	
-	<h4>Standardized Skeleton</h4>
-	<p>Foundations must be rigid and follow company-proven patterns (.NET, REST, SQL, established NuGet/npm feeds). Modular Joints: Use Spec-Driven Development (SDD) to define immutable interfaces.</p>
-
-	<h4>Lego Slices</h4>
-	<p>Features should be built as independent Lego pieces. As long as they fit the standardized "joints" (contracts), they can be developed in parallel without falling into the Waterfall trap.</p>
-
-	<h4>Repairable Anatomy</h4>
-	<p>Design for "plastic surgery." Components should be modular enough to be repaired or replaced without compromising the core skeleton.</p>
-
-	<h4>Tech Stack</h4>
-	<p>
-		At my workplace, the current tech stack includes .NET (C# 10), React with TypeScript and Vite, MSSQL, MongoDB, 
-		legacy WinForms/.NET Framework desktop apps in C#, legacy Angular apps, REST APIs, Terraform, Docker, Kubernetes 
-		(On-Prem with Rancher and ArgoCD), On-Prem VMs, Azure offerings, Azure DevOps Repos with GitHub backend, Azure DevOps for CI/CD, 
-		ServiceNow, Open Telemetry (Elastic and DataDog), Microsoft Azure, Python, Databricks (serverless on Azure), Azure Data Fabric, 
-		Informatica, BI, Kafka (Confluent Cloud), Elasticsearch, Oracle ERP, Transportation Management SaaS, and Boomi (On-Prem). 
-		For integration, I also use Fivetran HVR for CDC and Azure API Management.
-	</p>
-	<p>
-		My past experience includes Java Springboot, Apigee, MuleSoft, GCP, AWS, PeopleSoft, Red Hat Linux, and Oracle Exadata. 
-		I have followed the trajectory of Software Development Engineer to Technical Lead to Solutions Architect role 
-		with brief stints as Business Analyst, Delivery Lead and Integration Architect.
-	</p>
-
+	<!-- What I Do -->
+	<h2>What I Do</h2>
 	<ul>
-		<li>I prioritize diagrams, structured lists, and technical clarity over dense prose.</li>
-		<li>I prefer Hexagonal (Port and Adapter) architecture for complex domain APIs, often aided by CQRS and DDD, but values simplicity over complexity.</li>
-		<li>I appreciate the SOLID principles and also the counter-principles of CUPID. I have extensive experience with MACH and PBC architectures and is an expert in COTS applications.</li>
-		<li>I have a well-defined ideal architecture combining GraphQL for UI-facing APIs, gRPC with Protobuf for internal service communication, Kafka for asynchronous messaging, and REST for external integrations.</li>
-		<li>I prefer a hybrid microservices system using DDD, CQRS, and Ports & Adapters architecture, and values design-first/spec-first approaches with strong schema management and observability tooling.</li>
-		<li>I adapt this ideal architecture pragmatically within enterprise constraints.</li>
+		<li><strong>Review & migrate</strong> existing service architectures toward composable target states</li>
+		<li><strong>Design architecture</strong> for new features within legacy products</li>
+		<li><strong>Architect greenfield products</strong> from first principles</li>
+		<li><strong>Refine reference architectures</strong> that teams can build upon with confidence</li>
 	</ul>
 
-	<h3>Connect with Me</h3>
+	<!-- The "Lego" Framework -->
+	<h2>The "Lego" Framework</h2>
+	<p>
+		My architectural philosophy is built around composability and repairability:
+	</p>
 	<ul>
-		<li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/shashinkumar/" target="_blank">Shashi Kumar</a></li>
-		<li><strong>GitHub:</strong> <a href="https://github.com/kumarshaz">kumarshaz</a></li>
+		<li><strong>Standardized Skeleton</strong> — Foundations follow company-proven patterns (.NET, REST, SQL) with 
+		immutable interfaces defined through Spec-Driven Development (SDD).</li>
+		<li><strong>Lego Slices</strong> — Features are built as independent, parallel-safe modules. As long as they 
+		fit the standardized "joints" (contracts), teams develop in parallel without falling into the Waterfall trap.</li>
+		<li><strong>Repairable Anatomy</strong> — Components are modular enough to be replaced or repaired 
+		without compromising the core skeleton — designed for "plastic surgery."</li>
 	</ul>
 
+	<!-- Architecture Convictions -->
+	<h2>Architecture Convictions</h2>
+	<ul>
+		<li><strong>Hexagonal Architecture</strong> with Ports & Adapters for complex domain APIs, aided by CQRS and DDD — 
+		but always valuing simplicity over complexity.</li>
+		<li><strong>Hybrid Microservices</strong> using DDD, CQRS, and design-first/spec-first approaches with 
+		strong schema management and observability tooling.</li>
+		<li><strong>SOLID + CUPID principles</strong>, with deep experience in MACH and PBC (Packaged Business Capabilities) 
+		architectures and COTS applications.</li>
+		<li><strong>Ideal API topology</strong>: GraphQL for UI-facing APIs, gRPC with Protobuf for internal services, 
+		Kafka for async messaging, REST for external integrations.</li>
+		<li>I adapt this ideal architecture <strong>pragmatically within enterprise constraints</strong>.</li>
+	</ul>
+
+	<!-- AI Philosophy -->
+	<h2>AI Philosophy</h2>
 	<p>
-		My professional memberships are: <strong>IEEE Senior Member</strong>, <strong>Fellow - Hackathon Raptors</strong> 
-		(<a href="https://www.raptors.dev/" target="_blank">raptors.dev</a>), and <strong>SEFM - SAS Society</strong> 
-		(<a href="https://www.sassociety.com/membership-id-sas-sefm-560-2025/" target="_blank">View Membership</a>).
+		AI is the <strong>"Great Teacher"</strong> and the engine for the structural 90% of software engineering tasks. 
+		Human value is found in the final 10% — refinement, creative problem-solving, and business alignment. 
+		I actively practice AI-Augmented Software Engineering using agentic AI tools to accelerate 
+		architectural workflows.
 	</p>
+
+	<!-- Technical Breadth -->
+	<h2>Technical Breadth</h2>
+	<p>
+		My career has spanned from <strong>Software Development Engineer → Technical Lead → Solutions Architect</strong>, 
+		with stints as Business Analyst, Delivery Lead, and Integration Architect. Today I work across:
+	</p>
+	<ul>
+		<li><strong>Backend</strong>: .NET (C# 10), Java Spring Boot, Python, REST APIs</li>
+		<li><strong>Frontend</strong>: React + TypeScript + Vite, Angular (legacy)</li>
+		<li><strong>Data</strong>: MSSQL, MongoDB, Elasticsearch, Databricks, Kafka (Confluent Cloud), Oracle ERP</li>
+		<li><strong>Infrastructure</strong>: Docker, Kubernetes (Rancher + ArgoCD), Terraform, Azure, GCP, AWS</li>
+		<li><strong>Integration</strong>: Boomi, Fivetran HVR (CDC), Azure API Management, MuleSoft, Apigee</li>
+		<li><strong>Observability</strong>: OpenTelemetry, Elastic, DataDog</li>
+	</ul>
+
+	<!-- Professional Memberships -->
+	<h2>Professional Memberships & Publications</h2>
+	<ul>
+		<li><strong>IEEE Senior Member</strong></li>
+		<li><strong>Fellow — Hackathon Raptors</strong> (<a href="https://www.raptors.dev/" target="_blank">raptors.dev</a>)</li>
+		<li><strong>SEFM — SAS Society</strong> (<a href="https://www.sassociety.com/membership-id-sas-sefm-560-2025/" target="_blank">View Membership</a>)</li>
+		<li><strong>DZone Author</strong> (<a href="https://dzone.com/users/5309856/snkumar.html" target="_blank">View Publications</a>)</li>
+		<li><strong>Peer-Reviewed Researcher</strong> — Published in IJMRA, IJCTT on topics including Domain Autonomy in Microservices, 
+		Composable Enterprise, IoT Data Processing, and Autonomous Integration with Generative AI.</li>
+	</ul>
+
+	<!-- Connect -->
+	<h2>Let's Connect</h2>
+	<p>
+		I'm always excited to discuss architecture, enterprise patterns, and the future of AI-augmented engineering.
+	</p>
+	<ul>
+		<li><strong>LinkedIn</strong>: <a href="https://www.linkedin.com/in/shashinkumar/" target="_blank">linkedin.com/in/shashinkumar</a></li>
+		<li><strong>GitHub</strong>: <a href="https://github.com/kumarshaz" target="_blank">github.com/kumarshaz</a></li>
+	</ul>
 </Layout>
