@@ -31,12 +31,20 @@ const { title, description, image = FallbackImage } = Astro.props;
 />
 <meta name="generator" content={Astro.generator} />
 
+<!-- A11y: Language already on <html>, theme-color for mobile browsers -->
+<meta name="theme-color" content="#0f1219" />
+<meta name="color-scheme" content="light dark" />
+
 <!-- Font preloads -->
 <link rel="preload" href="/fonts/atkinson-regular.woff" as="font" type="font/woff" crossorigin />
 <link rel="preload" href="/fonts/atkinson-bold.woff" as="font" type="font/woff" crossorigin />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+
+<!-- SEO: Author & Robots -->
+<meta name="author" content="Shashi Kumar" />
+<meta name="robots" content="index, follow" />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
@@ -49,6 +57,8 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={new URL(image.src, Astro.url)} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content="en_US" />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image" />
@@ -56,3 +66,22 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<!-- JSON-LD Structured Data (Machine Readable) -->
+<script type="application/ld+json" set:html={JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"name": SITE_TITLE,
+	"url": Astro.site?.toString(),
+	"author": {
+		"@type": "Person",
+		"name": "Shashi Kumar",
+		"jobTitle": "Product Architect",
+		"url": "https://www.linkedin.com/in/shashinkumar/",
+		"sameAs": [
+			"https://www.linkedin.com/in/shashinkumar/",
+			"https://github.com/kumarshaz",
+			"https://dzone.com/users/5309856/snkumar.html"
+		]
+	}
+})} />

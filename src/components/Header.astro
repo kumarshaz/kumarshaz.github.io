@@ -3,8 +3,9 @@ import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 ---
 
-<header>
-	<nav>
+<a href="#main-content" class="skip-link">Skip to content</a>
+<header role="banner">
+	<nav aria-label="Primary navigation">
 		<div class="brand">
 			<h2><a href="/">{SITE_TITLE}</a></h2>
 			<span class="tagline">Architecture · Leadership · AI</span>
@@ -15,28 +16,82 @@ import HeaderLink from './HeaderLink.astro';
 			<HeaderLink href="/about">About</HeaderLink>
 		</div>
 		<div class="social-links">
-			<a href="https://www.linkedin.com/in/shashinkumar/" target="_blank" title="Connect on LinkedIn">
+			<a href="https://www.linkedin.com/in/shashinkumar/" target="_blank" rel="noopener noreferrer" title="Connect on LinkedIn">
 				<span class="sr-only">Connect with Shashi on LinkedIn</span>
-				<svg viewBox="0 0 24 24" aria-hidden="true" width="28" height="28"
+				<svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24" focusable="false"
 					><path
 						fill="currentColor"
 						d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
 					></path></svg
 				>
 			</a>
-			<a href="https://github.com/kumarshaz" target="_blank" title="View GitHub Profile">
+			<a href="https://github.com/kumarshaz" target="_blank" rel="noopener noreferrer" title="View GitHub Profile">
 				<span class="sr-only">Go to Shashi's GitHub</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="28" height="28"
+				<svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24" focusable="false"
 					><path
 						fill="currentColor"
 						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
 					></path></svg
 				>
 			</a>
+			<a href="https://dzone.com/users/5309856/snkumar.html" target="_blank" rel="noopener noreferrer" title="DZone Publications">
+				<span class="sr-only">View Shashi's DZone Publications</span>
+				<svg viewBox="0 0 32 32" aria-hidden="true" width="24" height="24" focusable="false">
+					<rect width="32" height="32" rx="4" fill="currentColor" opacity="0.15"/>
+					<text x="16" y="22" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="16" fill="currentColor">DZ</text>
+				</svg>
+			</a>
+			<span class="divider" aria-hidden="true"></span>
+			<button id="theme-toggle" class="theme-toggle" title="Toggle light/dark mode" aria-label="Toggle light/dark mode" type="button">
+				<svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+					<circle cx="12" cy="12" r="5"></circle>
+					<line x1="12" y1="1" x2="12" y2="3"></line>
+					<line x1="12" y1="21" x2="12" y2="23"></line>
+					<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+					<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+					<line x1="1" y1="12" x2="3" y2="12"></line>
+					<line x1="21" y1="12" x2="23" y2="12"></line>
+					<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+					<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+				</svg>
+				<svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+					<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+				</svg>
+			</button>
 		</div>
 	</nav>
 </header>
 <style>
+	/* Skip Navigation Link (A11y — visually hidden until Tab-focused) */
+	.skip-link {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+		background: var(--accent);
+		color: #fff;
+		text-decoration: none;
+		font-weight: 700;
+		z-index: 1000;
+	}
+	.skip-link:focus {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: auto;
+		height: auto;
+		padding: 0.75em 1.5em;
+		margin: 0;
+		overflow: visible;
+		clip: auto;
+		white-space: normal;
+		border-radius: 0 0 6px 0;
+	}
 	header {
 		margin: 0;
 		padding: 0 1.5em;
@@ -60,7 +115,6 @@ import HeaderLink from './HeaderLink.astro';
 		margin: 0;
 		font-size: 1.15em;
 	}
-
 	h2 a,
 	h2 a.active {
 		text-decoration: none;
@@ -88,10 +142,11 @@ import HeaderLink from './HeaderLink.astro';
 		color: #fff;
 		border-bottom-color: var(--accent);
 	}
-	.social-links,
-	.social-links a {
+	/* Social links + Toggle — all in one row */
+	.social-links {
 		display: flex;
 		align-items: center;
+		gap: 0.15em;
 	}
 	.social-links a {
 		padding: 0.5em;
@@ -102,12 +157,77 @@ import HeaderLink from './HeaderLink.astro';
 		color: var(--accent);
 		border-bottom: none;
 	}
+	/* Visual divider between social icons and toggle */
+	.divider {
+		width: 1px;
+		height: 18px;
+		background: rgba(255, 255, 255, 0.2);
+		margin: 0 0.3em;
+	}
+	/* Theme Toggle */
+	.theme-toggle {
+		background: none;
+		border: none;
+		padding: 0.5em;
+		cursor: pointer;
+		color: rgba(255, 255, 255, 0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: color 0.2s ease;
+		border-radius: 4px;
+	}
+	.theme-toggle:hover {
+		color: var(--accent);
+	}
+	.theme-toggle:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	/* Show sun in dark mode, moon in light mode */
+	:global(.light) .icon-sun { display: none; }
+	:global(.light) .icon-moon { display: block; }
+	:global(.dark) .icon-sun { display: block; }
+	:global(.dark) .icon-moon { display: none; }
+	/* Default: dark mode */
+	.icon-sun { display: block; }
+	.icon-moon { display: none; }
 	@media (max-width: 720px) {
-		.social-links {
+		.social-links a {
+			display: none;
+		}
+		.divider {
 			display: none;
 		}
 		.tagline {
 			display: none;
 		}
+		/* Keep the toggle visible on mobile */
+		.social-links {
+			display: flex;
+		}
+		.theme-toggle {
+			display: flex;
+		}
 	}
 </style>
+<script is:inline>
+	// Theme toggle — runs immediately to prevent flash of wrong theme
+	(function() {
+		const theme = localStorage.getItem('theme') || 'dark';
+		document.documentElement.classList.remove('light', 'dark');
+		document.documentElement.classList.add(theme);
+	})();
+	document.addEventListener('DOMContentLoaded', () => {
+		const btn = document.getElementById('theme-toggle');
+		if (btn) {
+			btn.addEventListener('click', () => {
+				const isDark = document.documentElement.classList.contains('dark');
+				const next = isDark ? 'light' : 'dark';
+				document.documentElement.classList.remove('light', 'dark');
+				document.documentElement.classList.add(next);
+				localStorage.setItem('theme', next);
+			});
+		}
+	});
+</script>
