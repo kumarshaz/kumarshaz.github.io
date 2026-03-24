@@ -60,6 +60,20 @@ const today = new Date();
 	.social-links a:hover {
 		color: var(--accent);
 	}
+	/* ===== Light Mode Footer ===== */
+	:global(.light) footer {
+		background: linear-gradient(135deg, #f0f2f8 0%, #e4e8f2 100%);
+		color: rgba(15, 18, 25, 0.5);
+	}
+	:global(.light) .credentials {
+		color: rgba(15, 18, 25, 0.35);
+	}
+	:global(.light) .social-links a {
+		color: rgba(15, 18, 25, 0.4);
+	}
+	:global(.light) .social-links a:hover {
+		color: var(--accent);
+	}
 	.dzone-logo {
 		opacity: 0.4;
 		transition: opacity 0.2s ease;
