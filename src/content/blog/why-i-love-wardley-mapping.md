@@ -1,3 +1,11 @@
+---
+title: "Why I Love Wardley Mapping"
+description: "An architectural deep-dive into the pragmatic selection of Wardley Mapping for strategy analysis."
+pubDate: 2026-03-22
+heroImage: '../../assets/PBC-MACH.jpg'
+tags: ["Architecture", "Wardley Mapping", "Strategy"]
+---
+
 # Importance of visual analysis in strategy
 
 Strategy Analysis is a process of analyzing the environment and the organization to identify opportunities and threats and evolution of the systems. SWOT is an example of strategy analysis.
