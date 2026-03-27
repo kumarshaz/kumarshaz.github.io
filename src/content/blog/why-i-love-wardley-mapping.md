@@ -1,7 +1,7 @@
 ---
 title: "Why I Love Wardley Mapping"
 description: "An architectural deep-dive into the pragmatic selection of Wardley Mapping for strategy analysis."
-pubDate: 2026-03-22
+pubDate: 2026-03-26
 heroImage: '../../assets/PBC-MACH.jpg'
 tags: ["Architecture", "Wardley Mapping", "Strategy"]
 ---
