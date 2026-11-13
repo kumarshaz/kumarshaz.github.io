@@ -1,124 +1,391 @@
 ---
 import { Image } from 'astro:assets';
+import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type BlogData = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+interface Props extends Partial<BlogData> {
+	title: string;
+	description: string;
+	pubDate: Date;
+	headings?: MarkdownHeading[];
+	slug?: string;
+}
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	category = 'Essay',
+	tags = [],
+	readingTime = '5 min read',
+	status = 'Published',
+	docId,
+	headings = [],
+	slug = 'doc',
+} = Astro.props;
+
+// Generate deterministic Architectural Spec ID if not explicitly set in frontmatter
+const year = pubDate ? pubDate.getFullYear() : 2026;
+const month = pubDate ? String(pubDate.getMonth() + 1).padStart(2, '0') : '01';
+const computedDocId = docId || `ARCH-${year}-${month}`;
+
+const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
+<!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} image={heroImage} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
+			.spec-article {
 				width: 100%;
 			}
-			.hero-image img {
+
+			/* Row 1: Architectural Spec Sheet Header */
+			.spec-header-grid {
+				border-bottom: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
+			}
+
+			.spec-header-main {
+				padding: 3rem 4rem;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+			}
+
+			.spec-kicker {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.6rem;
+				font-family: var(--font-mono);
+				font-size: 0.74rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--accent-primary);
+				margin-bottom: 0.9rem;
+			}
+
+			.spec-kicker-dot {
+				width: 6px;
+				height: 6px;
+				background-color: var(--accent-secondary);
+				display: inline-block;
+			}
+
+			.spec-title {
+				font-family: var(--font-display);
+				font-size: clamp(2.1rem, 3.8vw, 3.15rem);
+				line-height: 1.08;
+				letter-spacing: -0.025em;
+				color: var(--text-primary);
+				margin: 0 0 1.15rem 0;
+				max-width: 24ch;
+			}
+
+			.spec-abstract {
+				font-family: var(--font-sans);
+				font-size: 1.12rem;
+				line-height: 1.62;
+				color: var(--text-muted);
+				margin: 0;
+				max-width: 64ch;
+			}
+
+			.spec-hero-figure {
+				margin: 0 0 2.5rem 0;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
+				padding: 0.65rem;
+			}
+
+			.spec-hero-figure img {
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				width: 100%;
+				height: auto;
+				border: 1px solid var(--border-grid);
+				margin: 0;
+				padding: 0;
 			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+
+			.spec-hero-caption {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding-top: 0.5rem;
+				font-family: var(--font-mono);
+				font-size: 0.7rem;
+				color: var(--text-muted);
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
 			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
+
 			.last-updated-on {
-				font-style: italic;
+				margin-top: 0.35rem;
+				font-size: 0.74rem;
+				color: var(--text-muted);
+			}
+
+			.back-to-index {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				font-family: var(--font-mono);
+				font-size: 0.74rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: var(--text-muted);
+				text-decoration: none;
+				padding-top: 1.25rem;
+				border-top: 1px solid var(--border-grid);
+				margin-top: 1.75rem;
+			}
+
+			.back-to-index:hover {
+				color: var(--accent-primary);
+			}
+
+			@media (max-width: 900px) {
+				.spec-header-main {
+					padding: 2rem 1.25rem;
+				}
 			}
 		</style>
 	</head>
 
 	<body>
 		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
+		<main id="main-content">
+			<article class="spec-article" data-doc-id={computedDocId} data-category={category}>
+				<!-- Row 1: Spec Header Grid -->
+				<header class="architect-grid spec-header-grid">
+					<aside class="architect-rail" aria-label="Document Metadata">
+						<div class="rail-block">
+							<span class="rail-label">DOC ID:</span>
+							<span class="rail-value">{computedDocId}</span>
+						</div>
+						<div class="rail-block">
+							<span class="rail-label">PUBLISHED:</span>
+							<span class="rail-value">
+								<FormattedDate date={pubDate} />
+							</span>
 							{
 								updatedDate && (
 									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
+										UPDATED: <FormattedDate date={updatedDate} />
 									</div>
 								)
 							}
 						</div>
-						<h1>{title}</h1>
-						<hr />
+						<div class="rail-block">
+							<span class="rail-label">CLASSIFICATION:</span>
+							<span class="rail-badge">{category}</span>
+						</div>
+						<div class="rail-block">
+							<span class="rail-label">STATUS // EST. READ:</span>
+							<span class="rail-value">{status} · {readingTime}</span>
+						</div>
+					</aside>
+
+					<div class="spec-header-main">
+						<div class="spec-kicker">
+							<span class="spec-kicker-dot"></span>
+							<span>{category} // {computedDocId}</span>
+						</div>
+						<h1 class="spec-title">{title}</h1>
+						<p class="spec-abstract">{description}</p>
 					</div>
-					<slot />
+				</header>
+
+				<!-- Row 2: Asymmetric 2-Column Spec Body Grid -->
+				<div class="architect-grid">
+					<aside class="architect-rail" aria-label="Table of Contents and Taxonomy">
+						<div class="rail-sticky">
+							<div class="rail-block" id="rail-toc-block">
+								<span class="rail-label">ON THIS PAGE</span>
+								<ul class="rail-toc-list" id="rail-toc-list">
+									{
+										tocHeadings.map((heading) => (
+											<li class={`toc-depth-${heading.depth}`}>
+												<a href={`#${heading.slug}`}>{heading.text}</a>
+											</li>
+										))
+									}
+								</ul>
+							</div>
+
+							{
+								tags && tags.length > 0 && (
+									<div class="rail-block">
+										<span class="rail-label">TAGS</span>
+										<ul class="rail-tags">
+											{tags.map((tag) => (
+												<li>
+													<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+														#{tag}
+													</a>
+												</li>
+											))}
+										</ul>
+									</div>
+								)
+							}
+
+							<a href="/blog" class="back-to-index">← Knowledge Index</a>
+						</div>
+					</aside>
+
+					<div class="architect-main prose" id="article-prose">
+						{
+							heroImage && (
+								<figure class="spec-hero-figure">
+									<Image width={1020} height={510} src={heroImage} alt={title} />
+									<figcaption class="spec-hero-caption">
+										<span>FIG. 00 // PRIMARY ARCHITECTURAL ARTIFACT</span>
+										<span>REF: {computedDocId}</span>
+									</figcaption>
+								</figure>
+							)
+						}
+						<slot />
+					</div>
 				</div>
 			</article>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			// Populate ON THIS PAGE Table of Contents for pages without pre-extracted Markdown headings (e.g., /about)
+			document.addEventListener('DOMContentLoaded', () => {
+				const tocList = document.getElementById('rail-toc-list');
+				const prose = document.getElementById('article-prose');
+				if (tocList && prose && tocList.children.length === 0) {
+					const headings = prose.querySelectorAll('h1, h2, h3');
+					headings.forEach((h, idx) => {
+						if (!h.id) {
+							h.id =
+								h.textContent
+									.toLowerCase()
+									.replace(/[^a-z0-9]+/g, '-')
+									.replace(/(^-|-$)/g, '') || `section-${idx + 1}`;
+						}
+						const li = document.createElement('li');
+						li.className = `toc-depth-${h.tagName === 'H3' ? '3' : '2'}`;
+						const a = document.createElement('a');
+						a.href = `#${h.id}`;
+						a.textContent = h.textContent;
+						li.appendChild(a);
+						tocList.appendChild(li);
+					});
+				}
+			});
+		</script>
+
 		<script type="module">
 			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-			
-			// Detect if the user's site is currently in light mode to set the correct diagram theme
-			const isLightMode = document.documentElement.classList.contains('light');
-			mermaid.initialize({ 
-				startOnLoad: false, 
-				theme: isLightMode ? 'default' : 'dark'
-			});
 
-			// Find all mermaid code blocks generated by Astro's Shiki highlighter
-			const codeBlocks = document.querySelectorAll('pre[data-language="mermaid"], pre code.language-mermaid');
-			
+			const style = getComputedStyle(document.documentElement);
+			const getToken = (name) => style.getPropertyValue(name).trim();
+
+			const configureMermaid = () => {
+				const rootStyle = getComputedStyle(document.documentElement);
+				const readToken = (name) => rootStyle.getPropertyValue(name).trim();
+
+				mermaid.initialize({
+					startOnLoad: true,
+					theme: 'base',
+					themeVariables: {
+						fontFamily: readToken('--font-mono') || 'JetBrains Mono, monospace',
+						fontSize: '13px',
+						primaryColor: readToken('--mermaid-node-bg') || '#FFFFFF',
+						primaryTextColor: readToken('--text-primary') || '#0F172A',
+						primaryBorderColor: readToken('--mermaid-node-border') || '#3730A3',
+						lineColor: readToken('--mermaid-line') || '#1E293B',
+						secondaryColor: readToken('--mermaid-cluster-bg') || '#F4F3EF',
+						tertiaryColor: readToken('--bg-surface') || '#F4F3EF',
+					},
+				});
+			};
+
+			// Wrap Astro Shiki mermaid code blocks in the Blueprint Figure Wrapper (.mermaid-blueprint)
+			const codeBlocks = document.querySelectorAll(
+				'pre[data-language="mermaid"], pre code.language-mermaid',
+			);
+
 			if (codeBlocks.length > 0) {
 				codeBlocks.forEach((block, index) => {
-					// If we matched the <code> element, the target to replace is its parent <pre>
-					const targetElement = block.tagName.toLowerCase() === 'code' ? block.parentElement : block;
-					const text = block.textContent;
-					
-					// Create a new container specifically for mermaid's SVG
+					const targetElement =
+						block.tagName.toLowerCase() === 'code' ? block.parentElement : block;
+					const rawSource = (block.textContent || '').trim();
+
+					const figure = document.createElement('figure');
+					figure.className = 'mermaid-blueprint';
+					figure.setAttribute('data-blueprint-fig', String(index + 1));
+
+					const bar = document.createElement('div');
+					bar.className = 'mermaid-blueprint-bar';
+
+					const caption = document.createElement('span');
+					caption.textContent = `FIG. 0${index + 1} // TOKEN-SYNCED ARCHITECTURAL BLUEPRINT`;
+
+					const zoomBtn = document.createElement('button');
+					zoomBtn.type = 'button';
+					zoomBtn.className = 'mermaid-blueprint-zoom';
+					zoomBtn.textContent = 'EXPAND VIEW';
+					zoomBtn.addEventListener('click', () => {
+						const expanded = figure.classList.toggle('is-expanded');
+						zoomBtn.textContent = expanded ? 'STANDARD VIEW' : 'EXPAND VIEW';
+					});
+
+					bar.appendChild(caption);
+					bar.appendChild(zoomBtn);
+
 					const container = document.createElement('div');
 					container.className = 'mermaid';
+					container.setAttribute('data-mermaid-src', rawSource);
 					container.style.display = 'flex';
 					container.style.justifyContent = 'center';
-					container.style.margin = '2rem 0';
-					container.textContent = text;
-					
-					// Swap out the Astro-generated code block with the new container
-					targetElement.replaceWith(container);
+					container.textContent = rawSource;
+
+					figure.appendChild(bar);
+					figure.appendChild(container);
+					targetElement.replaceWith(figure);
 				});
 
-				// Instruct mermaid to convert all .mermaid containers into SVGs
-				try {
-					await mermaid.run({ querySelector: '.mermaid' });
-				} catch (err) {
-					console.error('Mermaid rendering failed:', err);
-				}
+				const renderDiagrams = async () => {
+					configureMermaid();
+					const nodes = document.querySelectorAll('.mermaid');
+					nodes.forEach((node) => {
+						const src = node.getAttribute('data-mermaid-src');
+						if (src) {
+							node.removeAttribute('data-processed');
+							node.textContent = src;
+						}
+					});
+					try {
+						await mermaid.run({ querySelector: '.mermaid' });
+					} catch (err) {
+						console.error('Mermaid rendering failed:', err);
+					}
+				};
+
+				await renderDiagrams();
+
+				// Re-synchronize Mermaid SVG tokens dynamically when the user toggles Light/Dark mode
+				window.addEventListener('theme-change', () => {
+					renderDiagrams();
+				});
+			} else {
+				configureMermaid();
 			}
 		</script>
 	</body>

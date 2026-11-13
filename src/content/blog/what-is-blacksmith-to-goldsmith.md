@@ -3,7 +3,11 @@ title: "The Blacksmith-to-Goldsmith transition: An Architectural Charter"
 description: "Transitioning from the Master Blacksmith era—where software was forged through manual, high-effort labor—toward the Master Goldsmith era of precision-based, intent-driven engineering."
 pubDate: 2026-03-24
 heroImage: '../../assets/blacksmith-to-goldsmith.png'
-tags: ["Architecture", "DevEx", "SDLC"]
+category: "Essay"
+tags: ["Architecture", "DevEx", "SDLC", "AI"]
+readingTime: "8 min read"
+status: "Evergreen"
+docId: "ARCH-2026-02"
 ---
 
 For decades, software engineering has been an industry of "Master Blacksmiths." We spent our days hitting the anvil of boilerplate code, manual context-stitching, and searching for technical answers. But the forge is changing. With the rise of Agentic AI and Intent-Based Engineering, we are transitioning into an era of **Master Goldsmiths**.

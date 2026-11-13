@@ -9,153 +9,316 @@ import { SITE_TITLE } from '../../../consts';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
-	// Collect all unique tags
-	const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))];
-	return tags.map((tag) => ({
+	const pillarTags = ['Architecture', 'SDLC', 'AI', 'Research'];
+	const postTags = posts.flatMap((post) => post.data.tags ?? []);
+	// Deduplicate case-insensitively while preserving display casing
+	const tagMap = new Map<string, string>();
+	for (const t of [...pillarTags, ...postTags]) {
+		const lower = t.toLowerCase();
+		if (!tagMap.has(lower)) {
+			tagMap.set(lower, t);
+		}
+	}
+
+	const allTags = [...tagMap.values()];
+
+	return allTags.map((tag) => ({
 		params: { tag: tag.toLowerCase() },
 		props: {
 			tag,
+			allTags,
 			posts: posts
-				.filter((post) => post.data.tags?.map((t: string) => t.toLowerCase()).includes(tag.toLowerCase()))
+				.filter((post) =>
+					post.data.tags?.map((t: string) => t.toLowerCase()).includes(tag.toLowerCase()),
+				)
 				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
 		},
 	}));
 }
 
-const { tag, posts } = Astro.props;
+const { tag, allTags = [], posts } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={`${tag} — ${SITE_TITLE}`} description={`Blog posts tagged with "${tag}"`} />
+		<BaseHead
+			title={`#${tag} — ${SITE_TITLE}`}
+			description={`Architectural essays, field notes, and research tagged with "${tag}"`}
+		/>
 		<style>
-			main {
-				width: 960px;
+			.tag-header-grid {
+				background-color: var(--bg-surface);
+				border-bottom: 1px solid var(--border-grid);
 			}
-			.tag-header {
-				text-align: center;
-				padding: 2em 0 1em;
+
+			.tag-header-main {
+				padding: 2.75rem 4rem;
 			}
-			.tag-header h1 {
-				font-size: 2.2em;
-				margin-bottom: 0.2em;
+
+			.tag-kicker {
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--accent-primary);
+				margin-bottom: 0.5rem;
+				display: block;
 			}
-			.tag-header p {
-				color: rgb(var(--gray));
-				font-size: 0.95em;
+
+			.tag-header-main h1 {
+				font-family: var(--font-display);
+				font-size: clamp(2rem, 3.4vw, 2.85rem);
+				margin: 0 0 0.5rem 0;
 			}
-			.tag-header .back-link {
-				display: inline-block;
-				margin-top: 0.5em;
-				font-size: 0.85em;
+
+			.tag-header-main p {
+				font-family: var(--font-sans);
+				color: var(--text-muted);
+				margin: 0;
+			}
+
+			.back-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.35rem;
+				font-family: var(--font-mono);
+				font-size: 0.74rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
 				text-decoration: none;
-				color: var(--accent);
+				color: var(--accent-primary);
+				margin-top: 1rem;
 			}
-			.tag-header .back-link:hover {
-				text-decoration: underline;
+
+			.back-link:hover {
+				color: var(--accent-secondary);
 			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
+
+			.tag-entries-main {
+				padding: 0;
+			}
+
+			.tag-entries-list {
+				list-style: none;
 				margin: 0;
 				padding: 0;
 			}
-			ul li {
-				width: calc(50% - 1rem);
+
+			.tag-entry-row {
+				border-bottom: 1px solid var(--border-grid);
+				padding: 2.25rem 3.5rem;
+				transition: background-color 0.15s ease;
 			}
-			ul li * {
+
+			.tag-entry-row:last-child {
+				border-bottom: none;
+			}
+
+			.tag-entry-row:hover {
+				background-color: var(--bg-surface);
+			}
+
+			.tag-entry-layout {
+				display: grid;
+				grid-template-columns: 1fr 220px;
+				gap: 2rem;
+				align-items: start;
+			}
+
+			.tag-entry-link {
 				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
+				color: inherit;
 				display: block;
 			}
+
+			.tag-entry-meta {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-bottom: 0.65rem;
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				color: var(--text-muted);
+			}
+
+			.tag-entry-doc {
+				font-weight: 700;
+				color: var(--text-primary);
+			}
+
+			.tag-entry-cat {
+				padding: 0.1rem 0.45rem;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
+				color: var(--accent-primary);
+				text-transform: uppercase;
+				font-size: 0.68rem;
+			}
+
 			.title {
+				font-family: var(--font-display);
+				font-size: 1.6rem;
+				margin: 0 0 0.5rem 0;
+				color: var(--text-primary);
+				line-height: 1.2;
+			}
+
+			.tag-entry-row:hover .title {
+				color: var(--accent-primary);
+			}
+
+			.tag-entry-desc {
+				font-family: var(--font-sans);
+				font-size: 0.94rem;
+				color: var(--text-muted);
 				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+				line-height: 1.6;
 			}
-			.date {
+
+			.tag-entry-figure {
 				margin: 0;
-				color: rgb(var(--gray));
+				padding: 0.4rem;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
 			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
+
+			.tag-entry-figure img {
+				display: block;
+				width: 100%;
+				height: 125px;
+				object-fit: cover;
+				border: 1px solid var(--border-grid);
+				border-radius: 0;
 			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
+
 			.empty-state {
-				text-align: center;
-				padding: 3em 1em;
-				color: rgb(var(--gray));
+				padding: 3rem 3.5rem;
+				font-family: var(--font-mono);
+				color: var(--text-muted);
 			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
+
+			@media (max-width: 900px) {
+				.tag-header-main {
+					padding: 2rem 1.25rem;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
+				.tag-entry-row {
+					padding: 1.75rem 1.25rem;
 				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
+				.tag-entry-layout {
+					grid-template-columns: 1fr;
 				}
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<div class="tag-header">
-				<h1>{tag}</h1>
-				<p>{posts.length} post{posts.length !== 1 ? 's' : ''} tagged with "{tag}"</p>
-				<a href="/blog" class="back-link">← All posts</a>
-			</div>
-			<section>
-				{posts.length > 0 ? (
-					<ul>
-						{posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))}
-					</ul>
-				) : (
-					<div class="empty-state">
-						<p>No posts with this tag yet. Check back soon!</p>
+		<main id="main-content">
+			<!-- Row 1: Tag Header -->
+			<section class="architect-grid tag-header-grid">
+				<aside class="architect-rail" aria-label="Tag Metadata">
+					<div class="rail-block">
+						<span class="rail-label">TAXONOMY FILTER:</span>
+						<span class="rail-badge">#{tag}</span>
 					</div>
-				)}
+					<div class="rail-block">
+						<span class="rail-label">MATCHING SPECS:</span>
+						<span class="rail-value">
+							{posts.length} post{posts.length !== 1 ? 's' : ''}
+						</span>
+					</div>
+				</aside>
+				<div class="tag-header-main tag-header">
+					<span class="tag-kicker">DOMAIN TAXONOMY // TAG ARCHIVE</span>
+					<h1>#{tag}</h1>
+					<p>
+						{posts.length} post{posts.length !== 1 ? 's' : ''} tagged with "{tag}"
+					</p>
+					<a href="/blog" class="back-link">← All posts</a>
+				</div>
+			</section>
+
+			<!-- Row 2: Tag Rail + Filtered Entries -->
+			<section class="architect-grid">
+				<aside class="architect-rail" aria-label="All Domain Tags">
+					<div class="rail-sticky">
+						<div class="rail-block">
+							<span class="rail-label">ALL DOMAIN TAGS</span>
+							<ul class="rail-tags">
+								{
+									allTags.map((t: string) => (
+										<li>
+											<a
+												href={`/blog/tag/${t.toLowerCase()}/`}
+												class:list={[
+													'rail-tag',
+													{ 'is-active': t.toLowerCase() === tag.toLowerCase() },
+												]}
+											>
+												#{t}
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</div>
+					</div>
+				</aside>
+
+				<div class="architect-main--wide tag-entries-main">
+					{
+						posts.length > 0 ? (
+							<ul class="tag-entries-list">
+								{posts.map((post, idx) => {
+									const docId =
+										post.data.docId ||
+										`ARCH-${post.data.pubDate.getFullYear()}-0${posts.length - idx}`;
+									const category = post.data.category || 'Essay';
+									return (
+										<li class="tag-entry-row">
+											<div class="tag-entry-layout">
+												<div>
+													<a href={`/blog/${post.id}/`} class="tag-entry-link">
+														<div class="tag-entry-meta">
+															<span class="tag-entry-doc">{docId}</span>
+															<span class="tag-entry-cat">{category}</span>
+															<span class="date">
+																<FormattedDate date={post.data.pubDate} />
+															</span>
+														</div>
+														<h4 class="title">{post.data.title}</h4>
+														<p class="tag-entry-desc">{post.data.description}</p>
+													</a>
+												</div>
+												{post.data.heroImage && (
+													<a
+														href={`/blog/${post.id}/`}
+														class="tag-entry-figure"
+														aria-hidden="true"
+														tabindex="-1"
+													>
+														<Image
+															width={480}
+															height={270}
+															src={post.data.heroImage}
+															alt={post.data.title}
+														/>
+													</a>
+												)}
+											</div>
+										</li>
+									);
+								})}
+							</ul>
+						) : (
+							<div class="empty-state">
+								<p>No posts with this tag yet. Check back soon!</p>
+							</div>
+						)
+					}
+				</div>
 			</section>
 		</main>
 		<Footer />

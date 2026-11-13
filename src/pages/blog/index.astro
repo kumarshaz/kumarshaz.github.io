@@ -10,113 +10,431 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))];
+
+const categoryCounts = {
+	all: posts.length,
+	Essay: posts.filter((p) => (p.data.category || 'Essay') === 'Essay').length,
+	'Architecture Note': posts.filter((p) => p.data.category === 'Architecture Note').length,
+	Research: posts.filter(
+		(p) => p.data.category === 'Research' || p.data.category === 'Perspective',
+	).length,
+};
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`Knowledge Index — ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
-			main {
-				width: 960px;
+			.index-header-grid {
+				background-color: var(--bg-surface);
+				border-bottom: 1px solid var(--border-grid);
 			}
-			ul {
+
+			.index-header-main {
+				padding: 3rem 4rem;
+			}
+
+			.index-kicker {
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--accent-primary);
+				margin-bottom: 0.65rem;
+				display: block;
+			}
+
+			.index-header-main h1 {
+				font-family: var(--font-display);
+				font-size: clamp(2.1rem, 3.6vw, 3rem);
+				margin: 0 0 0.75rem 0;
+				color: var(--text-primary);
+			}
+
+			.index-subtitle {
+				font-family: var(--font-sans);
+				font-size: 1.05rem;
+				color: var(--text-muted);
+				max-width: 62ch;
+				margin: 0;
+				line-height: 1.6;
+			}
+
+			/* Taxonomy Filter Buttons in Left Rail */
+			.taxonomy-filter-list {
+				list-style: none;
+				padding: 0;
+				margin: 0.5rem 0 0 0;
 				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+
+			.taxonomy-btn {
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				background-color: var(--bg-surface);
+				border: 1px solid var(--border-grid);
+				padding: 0.5rem 0.65rem;
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				color: var(--text-primary);
+				text-transform: uppercase;
+				letter-spacing: 0.05em;
+				cursor: pointer;
+				text-align: left;
+				transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+			}
+
+			.taxonomy-btn:hover,
+			.taxonomy-btn.is-active {
+				border-color: var(--accent-primary);
+				color: var(--accent-primary);
+				background-color: var(--accent-subtle);
+			}
+
+			.taxonomy-count {
+				font-size: 0.68rem;
+				color: var(--text-muted);
+			}
+
+			/* Main Entries Ledger */
+			.ledger-main {
+				padding: 0;
+			}
+
+			.entries-list {
+				list-style: none;
 				margin: 0;
 				padding: 0;
 			}
-			ul li {
-				width: calc(50% - 1rem);
+
+			.entry-row {
+				border-bottom: 1px solid var(--border-grid);
+				padding: 2.5rem 3.5rem;
+				transition: background-color 0.15s ease;
 			}
-			ul li * {
+
+			.entry-row:last-child {
+				border-bottom: none;
+			}
+
+			.entry-row:hover {
+				background-color: var(--bg-surface);
+			}
+
+			.entry-row[hidden] {
+				display: none !important;
+			}
+
+			.entry-layout {
+				display: grid;
+				grid-template-columns: 1fr 240px;
+				gap: 2.25rem;
+				align-items: start;
+			}
+
+			.entry-link {
 				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			h1 {
-				text-align: center;
-				margin-bottom: 1.5rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
+				color: inherit;
 				display: block;
 			}
-			.title {
+
+			.entry-meta-bar {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-bottom: 0.75rem;
+				font-family: var(--font-mono);
+				font-size: 0.73rem;
+				color: var(--text-muted);
+			}
+
+			.entry-doc-id {
+				font-weight: 700;
+				color: var(--text-primary);
+			}
+
+			.entry-category {
+				padding: 0.12rem 0.5rem;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
+				color: var(--accent-primary);
+				text-transform: uppercase;
+				font-size: 0.68rem;
+				letter-spacing: 0.06em;
+			}
+
+			.entry-status {
+				color: var(--accent-secondary);
+				text-transform: uppercase;
+				font-size: 0.68rem;
+				letter-spacing: 0.06em;
+			}
+
+			.entry-title {
+				font-family: var(--font-display);
+				font-size: 1.7rem;
+				line-height: 1.18;
+				margin: 0 0 0.65rem 0;
+				padding: 0;
+				border: none;
+				color: var(--text-primary);
+				transition: color 0.15s ease;
+			}
+
+			.entry-row:hover .entry-title {
+				color: var(--accent-primary);
+			}
+
+			.entry-desc {
+				font-family: var(--font-sans);
+				font-size: 0.96rem;
+				line-height: 1.65;
+				color: var(--text-muted);
+				margin: 0 0 1rem 0;
+			}
+
+			.entry-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+			}
+
+			.entry-figure {
 				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+				padding: 0.4rem;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
 			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
+
+			.entry-figure img {
+				display: block;
+				width: 100%;
+				height: 135px;
+				object-fit: cover;
+				border: 1px solid var(--border-grid);
+				border-radius: 0;
 			}
-			ul li a:hover h2,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
+
+			@media (max-width: 900px) {
+				.index-header-main {
+					padding: 2rem 1.25rem;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
+				.entry-row {
+					padding: 1.75rem 1.25rem;
 				}
-				ul li:first-child {
-					margin-bottom: 0;
+				.entry-layout {
+					grid-template-columns: 1fr;
+					gap: 1.25rem;
 				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-				h1 {
-					font-size: 1.8em;
+				.entry-figure img {
+					height: 180px;
 				}
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<section>
-				<h1>Blog</h1>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt={post.data.title} />
-									)}
-									<h2 class="title">{post.data.title}</h2>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
+		<main id="main-content">
+			<!-- Row 1: Knowledge Architecture Header -->
+			<section class="architect-grid index-header-grid">
+				<aside class="architect-rail" aria-label="Archive Overview">
+					<div class="rail-block">
+						<span class="rail-label">INDEX ID:</span>
+						<span class="rail-value">ARCH-LEDGER-2026</span>
+					</div>
+					<div class="rail-block">
+						<span class="rail-label">TOTAL ARTIFACTS:</span>
+						<span class="rail-value">{posts.length} Published Specs</span>
+					</div>
+				</aside>
+				<div class="index-header-main">
+					<span class="index-kicker">STRUCTURED KNOWLEDGE ARCHITECTURE // BLOG</span>
+					<h1>Essays, Field Notes &amp; Research</h1>
+					<p class="index-subtitle">
+						Architectural monographs on enterprise composability, domain autonomy, Wardley Mapping,
+						and socio-technical systems.
+					</p>
+				</div>
+			</section>
+
+			<!-- Row 2: Taxonomy Rail + Specification Ledger -->
+			<section class="architect-grid">
+				<aside class="architect-rail" aria-label="Knowledge Taxonomy Filters">
+					<div class="rail-sticky">
+						<div class="rail-block">
+							<span class="rail-label">CONTENT TAXONOMY</span>
+							<ul class="taxonomy-filter-list" role="tablist" aria-label="Filter by category">
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn is-active"
+										data-filter="all"
+										role="tab"
+										aria-selected="true"
+									>
+										<span>All Entries</span>
+										<span class="taxonomy-count">[{categoryCounts.all}]</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Essay"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Essays</span>
+										<span class="taxonomy-count">[{categoryCounts.Essay}]</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Architecture Note"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Field Notes / ADRs</span>
+										<span class="taxonomy-count">[{categoryCounts['Architecture Note']}]</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Research"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Publications</span>
+										<span class="taxonomy-count">[{categoryCounts.Research}]</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+
+						<div class="rail-block">
+							<span class="rail-label">DOMAIN TAGS</span>
+							<ul class="rail-tags">
+								{
+									allTags.map((tag) => (
+										<li>
+											<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+												#{tag}
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</div>
+					</div>
+				</aside>
+
+				<div class="architect-main--wide ledger-main">
+					<ul class="entries-list" id="knowledge-entries">
+						{
+							posts.map((post, idx) => {
+								const docId =
+									post.data.docId ||
+									`ARCH-${post.data.pubDate.getFullYear()}-0${posts.length - idx}`;
+								const category = post.data.category || 'Essay';
+								const status = post.data.status || 'Published';
+								return (
+									<li class="entry-row" data-category={category} data-doc-id={docId}>
+										<div class="entry-layout">
+											<div class="entry-body">
+												<a href={`/blog/${post.id}/`} class="entry-link">
+													<div class="entry-meta-bar">
+														<span class="entry-doc-id">{docId}</span>
+														<span class="entry-category">{category}</span>
+														<span class="entry-status">{status}</span>
+														<span class="date">
+															<FormattedDate date={post.data.pubDate} />
+														</span>
+														{post.data.readingTime && <span>· {post.data.readingTime}</span>}
+													</div>
+													<h2 class="title entry-title">{post.data.title}</h2>
+													<p class="entry-desc">{post.data.description}</p>
+												</a>
+												{post.data.tags && post.data.tags.length > 0 && (
+													<div class="entry-tags">
+														{post.data.tags.map((tag) => (
+															<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+																#{tag}
+															</a>
+														))}
+													</div>
+												)}
+											</div>
+											{post.data.heroImage && (
+												<a href={`/blog/${post.id}/`} class="entry-figure" aria-hidden="true" tabindex="-1">
+													<Image
+														width={480}
+														height={270}
+														src={post.data.heroImage}
+														alt={post.data.title}
+													/>
+												</a>
+											)}
+										</div>
+									</li>
+								);
+							})
+						}
+					</ul>
+				</div>
 			</section>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', () => {
+				const buttons = document.querySelectorAll('.taxonomy-btn');
+				const entries = document.querySelectorAll('.entry-row');
+
+				const applyFilter = (filterValue) => {
+					buttons.forEach((btn) => {
+						const active = btn.getAttribute('data-filter') === filterValue;
+						btn.classList.toggle('is-active', active);
+						btn.setAttribute('aria-selected', active ? 'true' : 'false');
+					});
+
+					entries.forEach((entry) => {
+						const cat = entry.getAttribute('data-category') || 'Essay';
+						if (filterValue === 'all') {
+							entry.hidden = false;
+						} else if (filterValue === 'Research') {
+							entry.hidden = !(cat === 'Research' || cat === 'Perspective');
+						} else {
+							entry.hidden = cat !== filterValue;
+						}
+					});
+				};
+
+				buttons.forEach((btn) => {
+					btn.addEventListener('click', () => {
+						const filter = btn.getAttribute('data-filter') || 'all';
+						applyFilter(filter);
+					});
+				});
+
+				const params = new URLSearchParams(window.location.search);
+				const initialCategory = params.get('category');
+				if (initialCategory) {
+					applyFilter(initialCategory);
+				}
+			});
+		</script>
 	</body>
 </html>
