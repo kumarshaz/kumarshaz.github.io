@@ -254,12 +254,12 @@ const categoryCounts = {
 									<button
 										type="button"
 										class="taxonomy-btn"
-										data-filter="Architecture Note"
+										data-filter="Practitioner Note"
 										role="tab"
 										aria-selected="false"
 									>
-										<span>Field Notes</span>
-										<span class="taxonomy-count">{categoryCounts['Architecture Note']}</span>
+										<span>Practitioner Notes</span>
+										<span class="taxonomy-count">{categoryCounts['Practitioner Note']}</span>
 									</button>
 								</li>
 								<li>
@@ -366,6 +366,8 @@ const categoryCounts = {
 						const cat = entry.getAttribute('data-category') || 'Essay';
 						if (filterValue === 'all') {
 							entry.hidden = false;
+						} else if (filterValue === 'Practitioner Note') {
+							entry.hidden = !(cat === 'Practitioner Note' || cat === 'Architecture Note');
 						} else if (filterValue === 'Research') {
 							entry.hidden = !(cat === 'Research' || cat === 'Perspective');
 						} else {

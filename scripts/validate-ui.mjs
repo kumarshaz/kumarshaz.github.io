@@ -118,8 +118,8 @@ console.log('\n[Gate 3] Auditing Content Schema (src/content.config.ts)...');
 const contentConfig = readFile('src/content.config.ts');
 
 assert(
-	contentConfig.includes("z.enum(['Essay', 'Architecture Note', 'Research', 'Perspective'])"),
-	'Content schema defines category enum (Essay, Architecture Note, Research, Perspective)',
+	contentConfig.includes("'Practitioner Note'") && contentConfig.includes("'Essay'"),
+	'Content schema defines category enum including Essay, Practitioner Note, Research, Perspective',
 );
 assert(
 	contentConfig.includes('readingTime: z.string().optional()'),
@@ -250,9 +250,11 @@ assert(
 const blogIndexHtml = fs.readFileSync(path.join(distDir, 'blog/index.html'), 'utf8');
 assert(
 	blogIndexHtml.includes('data-filter="Essay"') &&
-		blogIndexHtml.includes('data-filter="Architecture Note"') &&
+		blogIndexHtml.includes('data-filter="Practitioner Note"') &&
+		blogIndexHtml.includes('Practitioner Notes') &&
+		!blogIndexHtml.includes('Field Note') &&
 		blogIndexHtml.includes('data-filter="Research"'),
-	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Field Notes, Research)',
+	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Practitioner Notes, Research) with zero Field Note references',
 );
 
 // Inspect Homepage features on /index.html and verify zero noisy // or serial index strings

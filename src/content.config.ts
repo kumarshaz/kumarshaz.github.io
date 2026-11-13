@@ -15,7 +15,9 @@ const blog = defineCollection({
 			updatedDate: z.coerce.date().optional(),
 			heroImage: image().optional(),
 			// Branding & Taxonomy additions:
-			category: z.enum(['Essay', 'Architecture Note', 'Research', 'Perspective']).default('Essay'),
+			category: z
+				.enum(['Essay', 'Practitioner Note', 'Architecture Note', 'Research', 'Perspective'])
+				.default('Essay'),
 			tags: z.array(z.string()).default([]),
 			readingTime: z.string().optional(),
 			status: z.enum(['Draft', 'Evergreen', 'Published']).default('Published'),
