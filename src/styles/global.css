@@ -181,8 +181,9 @@ pre {
 	margin: 1.85rem 0;
 	border-radius: 0;
 	border: 1px solid var(--border-grid);
-	border-left: 3px solid var(--border-strong);
-	background-color: var(--bg-surface) !important;
+	border-left: 3px solid var(--accent-primary);
+	background-color: var(--bg-elevated) !important;
+	color: var(--text-primary) !important;
 	overflow-x: auto;
 }
 
@@ -190,6 +191,26 @@ pre > code {
 	all: unset;
 	font-family: var(--font-mono);
 	font-size: inherit;
+	color: inherit;
+}
+
+/* Shiki Dual Theme Synchronization (Light vs Dark Mode) */
+.astro-code span {
+	font-weight: var(--shiki-light-font-weight, inherit);
+	font-style: var(--shiki-light-font-style, inherit);
+}
+
+:root[data-theme="dark"] .astro-code,
+:root.dark .astro-code {
+	background-color: var(--bg-surface) !important;
+	color: var(--shiki-dark, var(--text-primary)) !important;
+}
+
+:root[data-theme="dark"] .astro-code span,
+:root.dark .astro-code span {
+	color: var(--shiki-dark, inherit) !important;
+	font-weight: var(--shiki-dark-font-weight, inherit);
+	font-style: var(--shiki-dark-font-style, inherit);
 }
 
 /* Editorial Callouts / Blockquotes */

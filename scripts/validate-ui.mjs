@@ -236,6 +236,16 @@ assert(
 	'[why-i-love-wardley-mapping] Preserves Markdown Mermaid timeline diagram source',
 );
 
+const blacksmithHtml = fs.readFileSync(
+	path.join(distDir, 'blog/what-is-blacksmith-to-goldsmith/index.html'),
+	'utf8',
+);
+assert(
+	blacksmithHtml.includes('astro-code-themes github-light github-dark') &&
+		blacksmithHtml.includes('color:#24292E;--shiki-dark:#E1E4E8'),
+	'[what-is-blacksmith-to-goldsmith] Renders high-contrast Shiki dual-theme code blocks for both Light and Dark modes',
+);
+
 // Inspect Structured Knowledge Taxonomy on /blog/index.html
 const blogIndexHtml = fs.readFileSync(path.join(distDir, 'blog/index.html'), 'utf8');
 assert(
