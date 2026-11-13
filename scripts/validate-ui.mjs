@@ -253,8 +253,9 @@ assert(
 		blogIndexHtml.includes('data-filter="Practitioner Note"') &&
 		blogIndexHtml.includes('Practitioner Notes') &&
 		!blogIndexHtml.includes('Field Note') &&
-		blogIndexHtml.includes('data-filter="Research"'),
-	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Practitioner Notes, Research) with zero Field Note references',
+		blogIndexHtml.includes('data-filter="Research"') &&
+		!/class="taxonomy-count"[^>]*>\s*<\/span>/.test(blogIndexHtml),
+	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Practitioner Notes, Research) with populated badge counts',
 );
 
 // Inspect Homepage features on /index.html and verify zero noisy // or serial index strings

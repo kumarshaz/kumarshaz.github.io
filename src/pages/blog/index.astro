@@ -16,7 +16,9 @@ const allTags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))];
 const categoryCounts = {
 	all: posts.length,
 	Essay: posts.filter((p) => (p.data.category || 'Essay') === 'Essay').length,
-	'Architecture Note': posts.filter((p) => p.data.category === 'Architecture Note').length,
+	'Practitioner Note': posts.filter(
+		(p) => p.data.category === 'Practitioner Note' || p.data.category === 'Architecture Note',
+	).length,
 	Research: posts.filter(
 		(p) => p.data.category === 'Research' || p.data.category === 'Perspective',
 	).length,
