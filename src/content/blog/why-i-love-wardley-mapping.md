@@ -3,7 +3,11 @@ title: "Why I Love Wardley Mapping"
 description: "An architectural deep-dive into the pragmatic selection of Wardley Mapping for strategy analysis."
 pubDate: 2026-03-26
 heroImage: '../../assets/PBC-MACH.jpg'
-tags: ["Architecture", "Wardley Mapping", "Strategy"]
+category: "Research"
+tags: ["Architecture", "Wardley Mapping", "Strategy", "Research", "AI"]
+readingTime: "7 min read"
+status: "Published"
+docId: "ARCH-2026-03"
 ---
 
 # Importance of visual analysis in strategy

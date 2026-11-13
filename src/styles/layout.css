@@ -1,0 +1,247 @@
+/* src/styles/layout.css */
+/* ==========================================================================
+   Option D: Engineering Notebook Layout Primitives
+   Open Container + Bold 2px Horizontal Rules + Clean Asymmetric Columns
+   (No outer boxy wireframe walls)
+   ========================================================================== */
+
+.notebook-container {
+	max-width: 1120px;
+	margin: 0 auto;
+	padding: 0 2rem;
+}
+
+/* Bold 2px Horizontal Masthead / Section Rule */
+.rule-heavy {
+	border-bottom: 2px solid var(--border-strong);
+}
+
+.rule-light {
+	border-bottom: 1px solid var(--border-grid);
+}
+
+/* Asymmetric 2-Column Layout (Open outer edges — no box walls) */
+.architect-grid {
+	display: grid;
+	grid-template-columns: 240px 1fr;
+	gap: 3rem;
+	max-width: 1120px;
+	margin: 0 auto;
+	padding: 2.5rem 2rem;
+}
+
+.architect-rail {
+	border-right: 1px solid var(--border-grid);
+	padding-right: 2rem;
+	font-family: var(--font-mono);
+	font-size: 0.8rem;
+	color: var(--text-muted);
+	line-height: 1.55;
+}
+
+.architect-main {
+	max-width: 76ch;
+	min-width: 0;
+}
+
+.architect-main--wide {
+	max-width: 100%;
+	min-width: 0;
+}
+
+/* Metadata Blocks */
+.rail-block {
+	margin-bottom: 1.5rem;
+}
+
+.rail-block:last-child {
+	margin-bottom: 0;
+}
+
+.rail-label {
+	display: block;
+	font-family: var(--font-mono);
+	font-size: 0.7rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+	margin-bottom: 0.35rem;
+}
+
+.rail-value {
+	display: block;
+	font-family: var(--font-mono);
+	font-size: 0.82rem;
+	font-weight: 500;
+	color: var(--text-primary);
+}
+
+/* Bracketed Monospace Badges: e.g. [ESSAY], [RESEARCH] */
+.rail-badge,
+.mono-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.12rem 0.5rem;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	border: 1px solid var(--accent-primary);
+	color: var(--accent-primary);
+	background-color: transparent;
+}
+
+.rail-sticky {
+	position: sticky;
+	top: 2rem;
+}
+
+/* Table of Contents in Rail */
+.rail-toc-list {
+	list-style: none;
+	padding: 0;
+	margin: 0.5rem 0 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+
+.rail-toc-list li {
+	margin: 0;
+	padding: 0;
+	line-height: 1.35;
+}
+
+.rail-toc-list a {
+	display: block;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	text-decoration: none;
+	border-left: 2px solid transparent;
+	padding-left: 0.6rem;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.rail-toc-list a:hover,
+.rail-toc-list a.is-active {
+	color: var(--accent-primary);
+	border-left-color: var(--accent-primary);
+}
+
+.rail-toc-list .toc-depth-3 a {
+	padding-left: 1.15rem;
+	font-size: 0.72rem;
+}
+
+/* Monospace Topic Tags */
+.rail-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-top: 0.5rem;
+	list-style: none;
+	padding: 0;
+}
+
+.rail-tag {
+	display: inline-block;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	color: var(--text-muted);
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-grid);
+	padding: 0.15rem 0.45rem;
+	text-decoration: none;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.rail-tag:hover,
+.rail-tag.is-active {
+	color: var(--accent-primary);
+	border-color: var(--accent-primary);
+}
+
+/* Blueprint Grid Background for Mermaid Containers */
+.mermaid-blueprint {
+	background-color: var(--bg-surface);
+	background-image: radial-gradient(var(--border-grid) 1px, transparent 1px);
+	background-size: 16px 16px;
+	border: 1px solid var(--border-grid);
+	border-left: 3px solid var(--accent-primary);
+	padding: 1.75rem;
+	margin: 2.25rem 0;
+	overflow-x: auto;
+	position: relative;
+}
+
+.mermaid-blueprint.is-expanded {
+	margin-left: -1.5rem;
+	margin-right: -1.5rem;
+}
+
+.mermaid-blueprint-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 0.75rem;
+	margin-bottom: 1.1rem;
+	border-bottom: 1px solid var(--border-grid);
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.mermaid-blueprint-zoom {
+	background: var(--bg-canvas);
+	border: 1px solid var(--border-grid);
+	color: var(--text-muted);
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	padding: 0.2rem 0.55rem;
+	cursor: pointer;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.mermaid-blueprint-zoom:hover {
+	color: var(--accent-primary);
+	border-color: var(--accent-primary);
+}
+
+@media (max-width: 900px) {
+	.notebook-container {
+		padding: 0 1.25rem;
+	}
+	.architect-grid {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+		padding: 1.75rem 1.25rem;
+	}
+	.architect-rail {
+		border-right: none;
+		border-bottom: 1px solid var(--border-grid);
+		padding-right: 0;
+		padding-bottom: 1.5rem;
+	}
+	.architect-main,
+	.architect-main--wide {
+		max-width: 100%;
+	}
+	.rail-sticky {
+		position: static;
+	}
+	.mermaid-blueprint {
+		padding: 1.25rem 1rem;
+	}
+	.mermaid-blueprint.is-expanded {
+		margin-left: 0;
+		margin-right: 0;
+	}
+}

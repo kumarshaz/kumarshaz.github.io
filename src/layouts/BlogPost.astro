@@ -1,124 +1,335 @@
 ---
 import { Image } from 'astro:assets';
+import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type BlogData = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+interface Props extends Partial<BlogData> {
+	title: string;
+	description: string;
+	pubDate: Date;
+	headings?: MarkdownHeading[];
+	slug?: string;
+}
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	category = 'Essay',
+	tags = [],
+	readingTime,
+	headings = [],
+} = Astro.props;
+
+const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
 
+<!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} image={heroImage} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
+			.spec-article {
 				width: 100%;
 			}
-			.hero-image img {
+
+			/* Article Header Masthead (Option D: Bold 2px Bottom Rule) */
+			.article-masthead {
+				padding: 2.75rem 0 2rem 0;
+				border-bottom: 2px solid var(--border-strong);
+			}
+
+			.article-meta-bar {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-bottom: 1rem;
+				font-family: var(--font-mono);
+				font-size: 0.76rem;
+				color: var(--text-muted);
+			}
+
+			.spec-title {
+				font-family: var(--font-display);
+				font-size: clamp(1.95rem, 3.5vw, 2.85rem);
+				font-weight: 700;
+				line-height: 1.15;
+				letter-spacing: -0.025em;
+				color: var(--text-primary);
+				margin: 0 0 1rem 0;
+				max-width: 28ch;
+			}
+
+			.spec-abstract {
+				font-family: var(--font-sans);
+				font-size: 1.08rem;
+				line-height: 1.62;
+				color: var(--text-muted);
+				margin: 0;
+				max-width: 68ch;
+			}
+
+			.spec-hero-figure {
+				margin: 0 0 2.25rem 0;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
+				padding: 0.45rem;
+			}
+
+			.spec-hero-figure img {
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				width: 100%;
+				height: auto;
+				border: 1px solid var(--border-grid);
+				margin: 0;
+				padding: 0;
 			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
+
 			.last-updated-on {
-				font-style: italic;
+				margin-top: 0.35rem;
+				font-size: 0.74rem;
+				color: var(--text-muted);
+			}
+
+			.back-to-index {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				font-family: var(--font-mono);
+				font-size: 0.75rem;
+				color: var(--text-muted);
+				text-decoration: none;
+				padding-top: 1.25rem;
+				border-top: 1px solid var(--border-grid);
+				margin-top: 1.5rem;
+			}
+
+			.back-to-index:hover {
+				color: var(--accent-primary);
 			}
 		</style>
 	</head>
 
 	<body>
 		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
+		<main id="main-content">
+			<article class="spec-article" data-category={category}>
+				<!-- Top Article Masthead -->
+				<header class="notebook-container">
+					<div class="article-masthead">
+						<div class="article-meta-bar">
+							<span class="mono-badge">[{category}]</span>
+							<span>
+								<FormattedDate date={pubDate} />
+							</span>
+							{readingTime && <span>· {readingTime}</span>}
+						</div>
+						<h1 class="spec-title">{title}</h1>
+						<p class="spec-abstract">{description}</p>
+					</div>
+				</header>
+
+				<!-- Open 2-Column Reading Workspace -->
+				<div class="architect-grid">
+					<aside class="architect-rail" aria-label="Article Metadata and Table of Contents">
+						<div class="rail-sticky">
+							<div class="rail-block">
+								<span class="rail-label">Published</span>
+								<span class="rail-value">
+									<FormattedDate date={pubDate} />
+								</span>
+								{
+									updatedDate && (
+										<div class="last-updated-on">
+											Updated <FormattedDate date={updatedDate} />
+										</div>
+									)
+								}
+							</div>
+
+							<div class="rail-block">
+								<span class="rail-label">Category</span>
+								<span class="rail-value">{category}</span>
+							</div>
+
+							<div class="rail-block" id="rail-toc-block">
+								<span class="rail-label">ON THIS PAGE</span>
+								<ul class="rail-toc-list" id="rail-toc-list">
+									{
+										tocHeadings.map((heading) => (
+											<li class={`toc-depth-${heading.depth}`}>
+												<a href={`#${heading.slug}`}>{heading.text}</a>
+											</li>
+										))
+									}
+								</ul>
+							</div>
+
 							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
+								tags && tags.length > 0 && (
+									<div class="rail-block">
+										<span class="rail-label">TAGS</span>
+										<ul class="rail-tags">
+											{tags.map((tag) => (
+												<li>
+													<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+														#{tag}
+													</a>
+												</li>
+											))}
+										</ul>
 									</div>
 								)
 							}
+
+							<a href="/blog" class="back-to-index">← All Articles</a>
 						</div>
-						<h1>{title}</h1>
-						<hr />
+					</aside>
+
+					<div class="architect-main prose" id="article-prose">
+						{
+							heroImage && (
+								<figure class="spec-hero-figure">
+									<Image width={1020} height={510} src={heroImage} alt={title} />
+								</figure>
+							)
+						}
+						<slot />
 					</div>
-					<slot />
 				</div>
 			</article>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			// Populate ON THIS PAGE Table of Contents for pages without pre-extracted Markdown headings (e.g., /about)
+			document.addEventListener('DOMContentLoaded', () => {
+				const tocList = document.getElementById('rail-toc-list');
+				const prose = document.getElementById('article-prose');
+				if (tocList && prose && tocList.children.length === 0) {
+					const headings = prose.querySelectorAll('h1, h2, h3');
+					headings.forEach((h, idx) => {
+						if (!h.id) {
+							h.id =
+								h.textContent
+									.toLowerCase()
+									.replace(/[^a-z0-9]+/g, '-')
+									.replace(/(^-|-$)/g, '') || `section-${idx + 1}`;
+						}
+						const li = document.createElement('li');
+						li.className = `toc-depth-${h.tagName === 'H3' ? '3' : '2'}`;
+						const a = document.createElement('a');
+						a.href = `#${h.id}`;
+						a.textContent = h.textContent;
+						li.appendChild(a);
+						tocList.appendChild(li);
+					});
+				}
+			});
+		</script>
+
 		<script type="module">
 			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-			
-			// Detect if the user's site is currently in light mode to set the correct diagram theme
-			const isLightMode = document.documentElement.classList.contains('light');
-			mermaid.initialize({ 
-				startOnLoad: false, 
-				theme: isLightMode ? 'default' : 'dark'
-			});
 
-			// Find all mermaid code blocks generated by Astro's Shiki highlighter
-			const codeBlocks = document.querySelectorAll('pre[data-language="mermaid"], pre code.language-mermaid');
-			
+			const configureMermaid = () => {
+				const rootStyle = getComputedStyle(document.documentElement);
+				const readToken = (name) => rootStyle.getPropertyValue(name).trim();
+
+				mermaid.initialize({
+					startOnLoad: true,
+					theme: 'base',
+					themeVariables: {
+						fontFamily: readToken('--font-mono') || 'IBM Plex Mono, Space Mono, monospace',
+						fontSize: '13px',
+						primaryColor: readToken('--mermaid-node-bg') || '#FAF9F5',
+						primaryTextColor: readToken('--text-primary') || '#111111',
+						primaryBorderColor: readToken('--mermaid-node-border') || '#C84B20',
+						lineColor: readToken('--mermaid-line') || '#262523',
+						secondaryColor: readToken('--mermaid-cluster-bg') || '#E7E5DD',
+						tertiaryColor: readToken('--bg-surface') || '#E7E5DD',
+					},
+				});
+			};
+
+			// Wrap Astro Shiki mermaid code blocks in the Blueprint Figure Wrapper (.mermaid-blueprint)
+			const codeBlocks = document.querySelectorAll(
+				'pre[data-language="mermaid"], pre code.language-mermaid',
+			);
+
 			if (codeBlocks.length > 0) {
 				codeBlocks.forEach((block, index) => {
-					// If we matched the <code> element, the target to replace is its parent <pre>
-					const targetElement = block.tagName.toLowerCase() === 'code' ? block.parentElement : block;
-					const text = block.textContent;
-					
-					// Create a new container specifically for mermaid's SVG
+					const targetElement =
+						block.tagName.toLowerCase() === 'code' ? block.parentElement : block;
+					const rawSource = (block.textContent || '').trim();
+
+					const figure = document.createElement('figure');
+					figure.className = 'mermaid-blueprint';
+					figure.setAttribute('data-blueprint-fig', String(index + 1));
+
+					const bar = document.createElement('div');
+					bar.className = 'mermaid-blueprint-bar';
+
+					const caption = document.createElement('span');
+					caption.textContent = 'Architecture Diagram';
+
+					const zoomBtn = document.createElement('button');
+					zoomBtn.type = 'button';
+					zoomBtn.className = 'mermaid-blueprint-zoom';
+					zoomBtn.textContent = 'Expand';
+					zoomBtn.addEventListener('click', () => {
+						const expanded = figure.classList.toggle('is-expanded');
+						zoomBtn.textContent = expanded ? 'Collapse' : 'Expand';
+					});
+
+					bar.appendChild(caption);
+					bar.appendChild(zoomBtn);
+
 					const container = document.createElement('div');
 					container.className = 'mermaid';
+					container.setAttribute('data-mermaid-src', rawSource);
 					container.style.display = 'flex';
 					container.style.justifyContent = 'center';
-					container.style.margin = '2rem 0';
-					container.textContent = text;
-					
-					// Swap out the Astro-generated code block with the new container
-					targetElement.replaceWith(container);
+					container.textContent = rawSource;
+
+					figure.appendChild(bar);
+					figure.appendChild(container);
+					targetElement.replaceWith(figure);
 				});
 
-				// Instruct mermaid to convert all .mermaid containers into SVGs
-				try {
-					await mermaid.run({ querySelector: '.mermaid' });
-				} catch (err) {
-					console.error('Mermaid rendering failed:', err);
-				}
+				const renderDiagrams = async () => {
+					configureMermaid();
+					const nodes = document.querySelectorAll('.mermaid');
+					nodes.forEach((node) => {
+						const src = node.getAttribute('data-mermaid-src');
+						if (src) {
+							node.removeAttribute('data-processed');
+							node.textContent = src;
+						}
+					});
+					try {
+						await mermaid.run({ querySelector: '.mermaid' });
+					} catch (err) {
+						console.error('Mermaid rendering failed:', err);
+					}
+				};
+
+				await renderDiagrams();
+
+				// Re-synchronize Mermaid SVG tokens dynamically when the user toggles Light/Dark mode
+				window.addEventListener('theme-change', () => {
+					renderDiagrams();
+				});
+			} else {
+				configureMermaid();
 			}
 		</script>
 	</body>

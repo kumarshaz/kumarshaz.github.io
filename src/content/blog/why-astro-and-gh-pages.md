@@ -3,7 +3,11 @@ title: "Why Astro & GitHub Pages for My Architecture Blog"
 description: "An architectural deep-dive into the pragmatic selection of Astro and GitHub Pages for a blazing-fast, content-driven personal portfolio."
 pubDate: 2026-03-22
 heroImage: '../../assets/blog1.png'
+category: "Practitioner Note"
 tags: ["Architecture", "Astro", "GitHub Pages", "DevEx", "SDLC"]
+readingTime: "4 min read"
+status: "Published"
+docId: "ARCH-2026-01"
 ---
 
 As a Product Architect, my mission is to transition engineering cultures from "Master Blacksmiths"—relying on manual, effort-based labor—to "Master Goldsmiths," where we focus on high-precision logic to handle business uncertainty. 

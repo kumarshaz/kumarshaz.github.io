@@ -13,8 +13,15 @@ const blog = defineCollection({
 			// Transform string to Date object
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
-			heroImage: z.optional(image()),
-			tags: z.array(z.string()).optional(),
+			heroImage: image().optional(),
+			// Branding & Taxonomy additions:
+			category: z
+				.enum(['Essay', 'Practitioner Note', 'Architecture Note', 'Research', 'Perspective'])
+				.default('Essay'),
+			tags: z.array(z.string()).default([]),
+			readingTime: z.string().optional(),
+			status: z.enum(['Draft', 'Evergreen', 'Published']).default('Published'),
+			docId: z.string().optional(),
 		}),
 });
 

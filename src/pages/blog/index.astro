@@ -10,113 +10,387 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))];
+
+const categoryCounts = {
+	all: posts.length,
+	Essay: posts.filter((p) => (p.data.category || 'Essay') === 'Essay').length,
+	'Practitioner Note': posts.filter(
+		(p) => p.data.category === 'Practitioner Note' || p.data.category === 'Architecture Note',
+	).length,
+	Research: posts.filter(
+		(p) => p.data.category === 'Research' || p.data.category === 'Perspective',
+	).length,
+};
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={`Blog — ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 		<style>
-			main {
-				width: 960px;
-			}
-			ul {
+			.index-masthead {
+				padding: 2.5rem 0 1.75rem 0;
+				border-bottom: 2px solid var(--border-strong);
 				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
 				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
+				gap: 1rem;
+			}
+
+			.index-masthead h1 {
+				font-family: var(--font-display);
+				font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+				font-weight: 700;
+				margin: 0 0 0.4rem 0;
+				color: var(--text-primary);
+			}
+
+			.index-subtitle {
+				font-family: var(--font-sans);
+				font-size: 1rem;
+				color: var(--text-muted);
+				max-width: 62ch;
+				margin: 0;
+				line-height: 1.55;
+			}
+
+			.index-count {
+				font-family: var(--font-mono);
+				font-size: 0.76rem;
+				color: var(--text-muted);
+			}
+
+			/* Taxonomy Filter Buttons in Left Sidebar */
+			.taxonomy-filter-list {
+				list-style: none;
+				padding: 0;
+				margin: 0.5rem 0 0 0;
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+
+			.taxonomy-btn {
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				background-color: var(--bg-surface);
+				border: 1px solid var(--border-grid);
+				padding: 0.5rem 0.65rem;
+				font-family: var(--font-mono);
+				font-size: 0.75rem;
+				color: var(--text-primary);
+				cursor: pointer;
+				text-align: left;
+				transition: border-color 0.15s ease, color 0.15s ease;
+			}
+
+			.taxonomy-btn:hover,
+			.taxonomy-btn.is-active {
+				border-color: var(--accent-primary);
+				color: var(--accent-primary);
+			}
+
+			.taxonomy-count {
+				font-size: 0.7rem;
+				color: var(--text-muted);
+			}
+
+			/* Main Entries Stream */
+			.entries-list {
+				list-style: none;
 				margin: 0;
 				padding: 0;
 			}
-			ul li {
-				width: calc(50% - 1rem);
+
+			.entry-row {
+				border-bottom: 1px solid var(--border-grid);
+				padding: 1.85rem 0;
 			}
-			ul li * {
+
+			.entry-row:first-child {
+				padding-top: 0;
+			}
+
+			.entry-row:last-child {
+				border-bottom: none;
+			}
+
+			.entry-row[hidden] {
+				display: none !important;
+			}
+
+			.entry-layout {
+				display: grid;
+				grid-template-columns: 1fr 210px;
+				gap: 2rem;
+				align-items: start;
+			}
+
+			.entry-link {
 				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			h1 {
-				text-align: center;
-				margin-bottom: 1.5rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
+				color: inherit;
 				display: block;
 			}
-			.title {
+
+			.entry-meta-bar {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				margin-bottom: 0.6rem;
+				font-family: var(--font-mono);
+				font-size: 0.74rem;
+				color: var(--text-muted);
+			}
+
+			.entry-title {
+				font-family: var(--font-display);
+				font-size: 1.35rem;
+				font-weight: 700;
+				line-height: 1.25;
+				margin: 0 0 0.55rem 0;
+				padding: 0;
+				border: none;
+				color: var(--text-primary);
+				transition: color 0.15s ease;
+			}
+
+			.entry-link:hover .entry-title {
+				color: var(--accent-primary);
+			}
+
+			.entry-desc {
+				font-family: var(--font-sans);
+				font-size: 0.95rem;
+				line-height: 1.62;
+				color: var(--text-muted);
+				margin: 0 0 0.85rem 0;
+			}
+
+			.entry-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+			}
+
+			.entry-figure {
 				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+				padding: 0.35rem;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
 			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
+
+			.entry-figure img {
+				display: block;
+				width: 100%;
+				height: 120px;
+				object-fit: cover;
+				border: 1px solid var(--border-grid);
 			}
-			ul li a:hover h2,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
+
+			@media (max-width: 900px) {
+				.entry-layout {
+					grid-template-columns: 1fr;
+					gap: 1.25rem;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-				h1 {
-					font-size: 1.8em;
+				.entry-figure img {
+					height: 170px;
 				}
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<section>
-				<h1>Blog</h1>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt={post.data.title} />
-									)}
-									<h2 class="title">{post.data.title}</h2>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
+		<main id="main-content">
+			<!-- Top Notebook Header -->
+			<section class="notebook-container">
+				<div class="index-masthead">
+					<div>
+						<h1>Blog</h1>
+						<p class="index-subtitle">
+							Essays, architecture notes, and research on enterprise composability, domain
+							autonomy, Wardley Mapping, and socio-technical systems.
+						</p>
+					</div>
+					<span class="index-count">[{posts.length} Articles]</span>
+				</div>
+			</section>
+
+			<!-- Sidebar Filters + Notebook Stream -->
+			<section class="architect-grid">
+				<aside class="architect-rail" aria-label="Filter by Category and Tags">
+					<div class="rail-sticky">
+						<div class="rail-block">
+							<span class="rail-label">Categories</span>
+							<ul class="taxonomy-filter-list" role="tablist" aria-label="Filter by category">
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn is-active"
+										data-filter="all"
+										role="tab"
+										aria-selected="true"
+									>
+										<span>All Posts</span>
+										<span class="taxonomy-count">{categoryCounts.all}</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Essay"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Essays</span>
+										<span class="taxonomy-count">{categoryCounts.Essay}</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Practitioner Note"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Practitioner Notes</span>
+										<span class="taxonomy-count">{categoryCounts['Practitioner Note']}</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Research"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Research</span>
+										<span class="taxonomy-count">{categoryCounts.Research}</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+
+						<div class="rail-block">
+							<span class="rail-label">Tags</span>
+							<ul class="rail-tags">
+								{
+									allTags.map((tag) => (
+										<li>
+											<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+												#{tag}
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</div>
+					</div>
+				</aside>
+
+				<div class="architect-main--wide">
+					<ul class="entries-list" id="knowledge-entries">
+						{
+							posts.map((post) => {
+								const category = post.data.category || 'Essay';
+								return (
+									<li class="entry-row" data-category={category}>
+										<div class="entry-layout">
+											<div class="entry-body">
+												<a href={`/blog/${post.id}/`} class="entry-link">
+													<div class="entry-meta-bar">
+														<span class="mono-badge">[{category}]</span>
+														<span class="date">
+															<FormattedDate date={post.data.pubDate} />
+														</span>
+														{post.data.readingTime && <span>· {post.data.readingTime}</span>}
+													</div>
+													<h2 class="title entry-title">{post.data.title}</h2>
+													<p class="entry-desc">{post.data.description}</p>
+												</a>
+												{post.data.tags && post.data.tags.length > 0 && (
+													<div class="entry-tags">
+														{post.data.tags.map((tag) => (
+															<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+																#{tag}
+															</a>
+														))}
+													</div>
+												)}
+											</div>
+											{post.data.heroImage && (
+												<a
+													href={`/blog/${post.id}/`}
+													class="entry-figure"
+													aria-hidden="true"
+													tabindex="-1"
+												>
+													<Image
+														width={480}
+														height={270}
+														src={post.data.heroImage}
+														alt={post.data.title}
+													/>
+												</a>
+											)}
+										</div>
+									</li>
+								);
+							})
+						}
+					</ul>
+				</div>
 			</section>
 		</main>
 		<Footer />
+
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', () => {
+				const buttons = document.querySelectorAll('.taxonomy-btn');
+				const entries = document.querySelectorAll('.entry-row');
+
+				const applyFilter = (filterValue) => {
+					buttons.forEach((btn) => {
+						const active = btn.getAttribute('data-filter') === filterValue;
+						btn.classList.toggle('is-active', active);
+						btn.setAttribute('aria-selected', active ? 'true' : 'false');
+					});
+
+					entries.forEach((entry) => {
+						const cat = entry.getAttribute('data-category') || 'Essay';
+						if (filterValue === 'all') {
+							entry.hidden = false;
+						} else if (filterValue === 'Practitioner Note') {
+							entry.hidden = !(cat === 'Practitioner Note' || cat === 'Architecture Note');
+						} else if (filterValue === 'Research') {
+							entry.hidden = !(cat === 'Research' || cat === 'Perspective');
+						} else {
+							entry.hidden = cat !== filterValue;
+						}
+					});
+				};
+
+				buttons.forEach((btn) => {
+					btn.addEventListener('click', () => {
+						const filter = btn.getAttribute('data-filter') || 'all';
+						applyFilter(filter);
+					});
+				});
+
+				const params = new URLSearchParams(window.location.search);
+				const initialCategory = params.get('category');
+				if (initialCategory) {
+					applyFilter(initialCategory);
+				}
+			});
+		</script>
 	</body>
 </html>

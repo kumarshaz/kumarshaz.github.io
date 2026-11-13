@@ -1,0 +1,85 @@
+/* src/styles/tokens.css */
+/* ==========================================================================
+   Token-Driven Editorial Design System — Option D: Engineering Notebook
+   Typography: Space Mono + IBM Plex Mono / IBM Plex Sans (SIL Open Font License)
+   Palette: Technical Vellum & Stark Ink (Light) / Anvil Carbon & Signal Amber (Dark)
+   ========================================================================== */
+
+:root,
+:root.light,
+[data-theme="light"] {
+	/* Tier 1: Primitives */
+	--palette-paper-50: #F2F1EC;
+	--palette-paper-100: #E7E5DD;
+	--palette-slate-800: #262523;
+	--palette-slate-900: #111111;
+	--palette-slate-500: #57544E;
+	--palette-indigo-600: #C84B20;
+	--palette-amber-600: #1D5B6B;
+
+	/* Typography Tokens (Space Mono + IBM Plex System — SIL OFL 1.1) */
+	--font-display: 'Space Mono', 'IBM Plex Mono', monospace;
+	--font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-mono: 'IBM Plex Mono', 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	/* Tier 2: Semantic Surface & Rule Tokens (Light - Engineering Paper & Signal Rust) */
+	--bg-canvas: var(--palette-paper-50);
+	--bg-surface: var(--palette-paper-100);
+	--bg-elevated: #FAF9F5;
+	--text-primary: var(--palette-slate-900);
+	--text-muted: var(--palette-slate-500);
+	--accent-primary: var(--palette-indigo-600);
+	--accent-secondary: var(--palette-amber-600);
+	--accent-subtle: rgba(200, 75, 32, 0.1);
+	--border-grid: rgba(17, 17, 17, 0.15);
+	--border-strong: #111111;
+
+	/* Tier 3: Mermaid Diagram Tokens */
+	--mermaid-node-bg: #FAF9F5;
+	--mermaid-node-border: var(--palette-indigo-600);
+	--mermaid-line: var(--palette-slate-800);
+	--mermaid-cluster-bg: var(--palette-paper-100);
+
+	/* Legacy Compatibility Bridge */
+	--accent: var(--accent-primary);
+	--accent-dark: #9E3814;
+	--bg-primary: var(--bg-surface);
+	--bg-secondary: var(--bg-canvas);
+	--black: 17, 17, 17;
+	--gray: 87, 84, 78;
+	--gray-light: 231, 229, 221;
+	--gray-dark: 38, 37, 35;
+	--box-shadow: 0 1px 2px rgba(17, 17, 17, 0.06);
+}
+
+[data-theme="dark"],
+:root.dark {
+	/* Tier 2: Semantic Tokens (Dark - Anvil Carbon & Signal Amber) */
+	--bg-canvas: #111214;
+	--bg-surface: #191B1E;
+	--bg-elevated: #212428;
+	--text-primary: #EFECE6;
+	--text-muted: #9A968E;
+	--accent-primary: #E87A48;
+	--accent-secondary: #5BA4B5;
+	--accent-subtle: rgba(232, 122, 72, 0.14);
+	--border-grid: rgba(239, 236, 230, 0.14);
+	--border-strong: #EFECE6;
+
+	/* Tier 3: Mermaid Diagram Tokens */
+	--mermaid-node-bg: #212428;
+	--mermaid-node-border: #E87A48;
+	--mermaid-line: #9A968E;
+	--mermaid-cluster-bg: #191B1E;
+
+	/* Legacy Compatibility Bridge */
+	--accent: var(--accent-primary);
+	--accent-dark: #D06332;
+	--bg-primary: var(--bg-surface);
+	--bg-secondary: var(--bg-canvas);
+	--black: 239, 236, 230;
+	--gray: 154, 150, 142;
+	--gray-light: 33, 36, 40;
+	--gray-dark: 220, 216, 208;
+	--box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
