@@ -16,10 +16,10 @@
 	--palette-indigo-600: #9A4B1A;
 	--palette-amber-600: #1D5B6B;
 
-	/* Typography Tokens (3-Font System) */
-	--font-display: 'Newsreader', Georgia, serif;
-	--font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+	/* Typography Tokens (Space Mono + IBM Plex System) */
+	--font-display: 'Space Mono', 'IBM Plex Mono', 'Newsreader', monospace;
+	--font-sans: 'IBM Plex Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-mono: 'Space Mono', 'IBM Plex Mono', 'JetBrains Mono', ui-monospace, monospace;
 
 	/* Tier 2: Semantic Surface & Grid Tokens (Light - Archival Vellum & Bronze) */
 	--bg-canvas: var(--palette-paper-50);

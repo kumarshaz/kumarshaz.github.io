@@ -72,10 +72,10 @@ for (const token of requiredTokens) {
 	assert(tokensCss.includes(token), `Token defined: ${token}`);
 }
 assert(
-	tokensCss.includes('Newsreader') &&
-		tokensCss.includes('Plus Jakarta Sans') &&
-		tokensCss.includes('JetBrains Mono'),
-	'3-Font typography system (Newsreader, Plus Jakarta Sans, JetBrains Mono) configured',
+	tokensCss.includes('Space Mono') &&
+		tokensCss.includes('IBM Plex Sans') &&
+		tokensCss.includes('IBM Plex Mono'),
+	'Typography system (Space Mono, IBM Plex Sans, IBM Plex Mono) configured',
 );
 assert(
 	tokensCss.includes('[data-theme="dark"]'),
