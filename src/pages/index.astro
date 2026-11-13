@@ -22,24 +22,9 @@ const recentPosts = posts.slice(0, 3);
 	<body>
 		<Header />
 		<main id="main-content">
-			<!-- Row 1: Hero Section -->
-			<section class="architect-grid hero-section">
-				<aside class="architect-rail" aria-label="Profile Summary">
-					<div class="rail-block">
-						<span class="rail-label">Role</span>
-						<span class="rail-value">Product Architect</span>
-					</div>
-					<div class="rail-block">
-						<span class="rail-label">Focus Areas</span>
-						<span class="rail-value">Composable Systems · DDD · Agentic AI</span>
-					</div>
-					<div class="rail-block">
-						<span class="rail-label">Affiliations</span>
-						<span class="rail-value">IEEE Senior Member · Raptors Fellow</span>
-					</div>
-				</aside>
-
-				<div class="architect-main--wide hero">
+			<!-- Hero Banner (Open Notebook Masthead) -->
+			<section class="notebook-container">
+				<div class="hero">
 					<div class="hero-layout">
 						<div class="hero-content">
 							<p class="hero-eyebrow">
@@ -71,182 +56,138 @@ const recentPosts = posts.slice(0, 3);
 				</div>
 			</section>
 
-			<!-- Row 2: Pillars Section -->
-			<section class="architect-grid pillars">
-				<aside class="architect-rail" aria-label="What I Write About">
-					<h2 class="section-title">What I Write About</h2>
-					<p class="rail-description">
-						Core architectural patterns, enterprise delivery practices, and published research.
-					</p>
+			<!-- Option D Asymmetric Notebook Split: Left Sidebar (Domains & Connect) + Right Stream (Recent Writing) -->
+			<section class="architect-grid home-notebook">
+				<aside class="architect-rail" aria-label="What I Write About and Connect">
+					<!-- Pillars Section -->
+					<div class="pillars">
+						<h2 class="sidebar-heading">What I Write About</h2>
+						<div class="pillars-stack">
+							<a href="/blog/tag/architecture" class="pillar-item">
+								<h3>Software Architecture →</h3>
+								<p>
+									Hexagonal, DDD, CQRS, and the "Lego Framework" — composable enterprise systems
+									built on company-proven patterns.
+								</p>
+							</a>
+							<a href="/blog/tag/sdlc" class="pillar-item">
+								<h3>Enterprise SDLC →</h3>
+								<p>
+									CI/CD pipelines, API Design-First, and Spec-Driven Development across
+									heterogeneous stacks.
+								</p>
+							</a>
+							<a href="/blog/tag/ai" class="pillar-item">
+								<h3>AI-Augmented Engineering →</h3>
+								<p>
+									AI as the "Great Teacher" — automating the structural 90% while empowering humans
+									for the final 10% of refinement.
+								</p>
+							</a>
+							<a href="/blog/tag/research" class="pillar-item">
+								<h3>Published Research →</h3>
+								<p>
+									Peer-reviewed papers on Domain Autonomy in Microservices, Composable Enterprise,
+									and IoT Data Processing.
+								</p>
+							</a>
+						</div>
+					</div>
+
+					<!-- Connect Section -->
+					<div class="connect">
+						<h2 class="sidebar-heading">Let's Connect</h2>
+						<p class="connect-note">
+							Open to discussing architecture, enterprise patterns, and agentic AI engineering.
+						</p>
+						<div class="connect-links">
+							<a
+								href="https://www.linkedin.com/in/shashinkumar/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="btn-connect"
+							>
+								<span>Connect on LinkedIn →</span>
+							</a>
+							<a
+								href="https://github.com/kumarshaz"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="btn-connect"
+							>
+								<span>View GitHub →</span>
+							</a>
+							<a
+								href="https://dzone.com/users/5309856/snkumar.html"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="btn-connect"
+							>
+								<span>DZone Publications →</span>
+							</a>
+						</div>
+					</div>
 				</aside>
 
-				<div class="architect-main--wide pillars-container">
-					<div class="pillars-grid">
-						<a href="/blog/tag/architecture" class="pillar-card">
-							<span class="pillar-icon" aria-hidden="true">🏗️</span>
-							<h3>Software Architecture</h3>
-							<p>
-								Hexagonal, DDD, CQRS, and the "Lego Framework" — composable enterprise systems built
-								on company-proven patterns.
-							</p>
-						</a>
-						<a href="/blog/tag/sdlc" class="pillar-card">
-							<span class="pillar-icon" aria-hidden="true">⚙️</span>
-							<h3>Enterprise SDLC</h3>
-							<p>
-								CI/CD pipelines, API Design-First, and Spec-Driven Development across heterogeneous,
-								technology-agnostic stacks — from legacy modernization to cloud-native integration.
-							</p>
-						</a>
-						<a href="/blog/tag/ai" class="pillar-card">
-							<span class="pillar-icon" aria-hidden="true">🤖</span>
-							<h3>AI-Augmented Engineering</h3>
-							<p>
-								AI as the "Great Teacher" — leveraging agentic AI to automate the structural 90% of
-								software engineering, empowering humans for the final 10% of business refinement and
-								creative problem-solving.
-							</p>
-						</a>
-						<a href="/blog/tag/research" class="pillar-card">
-							<span class="pillar-icon" aria-hidden="true">📄</span>
-							<h3>Published Research</h3>
-							<p>
-								Peer-reviewed papers on Domain Autonomy in Microservices, Composable Enterprise, IoT
-								Data Processing, and more.
-							</p>
-						</a>
+				<!-- Right Main Stream: Latest Writing -->
+				<div class="architect-main--wide recent-posts">
+					<div class="stream-header">
+						<h2 class="stream-title">Latest from the Blog</h2>
+						<a href="/blog" class="view-all-link">View all posts →</a>
 					</div>
-				</div>
-			</section>
 
-			<!-- Row 3: Recent Posts Section -->
-			<section class="architect-grid recent-posts">
-				<aside class="architect-rail" aria-label="Latest from the Blog">
-					<h2 class="section-title">Latest from the Blog</h2>
-					<p class="rail-description">
-						Essays, architecture notes, and research on enterprise systems.
-					</p>
-					<div class="view-all">
-						<a href="/blog">View all posts →</a>
-					</div>
-				</aside>
-
-				<div class="architect-main--wide recent-posts-container">
 					<ul class="posts-list">
 						{
 							recentPosts.map((post) => {
 								const category = post.data.category || 'Essay';
 								return (
-									<li class="post-card" data-category={category}>
-										<a href={`/blog/${post.id}/`} class="post-card-link">
-											<div class="post-spec-meta">
-												<span class="post-category-badge">{category}</span>
-												<span class="post-date">
-													<FormattedDate date={post.data.pubDate} />
-												</span>
-												{post.data.readingTime && (
-													<span class="post-reading-time">· {post.data.readingTime}</span>
+									<li class="post-row" data-category={category}>
+										<div class="post-row-inner">
+											<div class="post-row-body">
+												<div class="post-meta">
+													<span class="mono-badge">[{category}]</span>
+													<span class="post-date">
+														<FormattedDate date={post.data.pubDate} />
+													</span>
+													{post.data.readingTime && (
+														<span class="post-reading">· {post.data.readingTime}</span>
+													)}
+												</div>
+												<a href={`/blog/${post.id}/`} class="post-title-link">
+													<h3>{post.data.title}</h3>
+												</a>
+												<p class="post-desc">{post.data.description}</p>
+												{post.data.tags && post.data.tags.length > 0 && (
+													<div class="post-tags-row">
+														{post.data.tags.map((tag) => (
+															<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+																#{tag}
+															</a>
+														))}
+													</div>
 												)}
 											</div>
-											<h3>{post.data.title}</h3>
-											<p class="post-desc">{post.data.description}</p>
-										</a>
-										{post.data.tags && post.data.tags.length > 0 && (
-											<div class="post-tags-row">
-												{post.data.tags.map((tag) => (
-													<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
-														#{tag}
-													</a>
-												))}
-											</div>
-										)}
+											{post.data.heroImage && (
+												<a
+													href={`/blog/${post.id}/`}
+													class="post-thumb"
+													aria-hidden="true"
+													tabindex="-1"
+												>
+													<Image
+														width={360}
+														height={200}
+														src={post.data.heroImage}
+														alt={post.data.title}
+													/>
+												</a>
+											)}
+										</div>
 									</li>
 								);
 							})
 						}
 					</ul>
-				</div>
-			</section>
-
-			<!-- Row 4: Connect Section -->
-			<section class="architect-grid connect">
-				<aside class="architect-rail" aria-label="Let's Connect">
-					<h2 class="section-title">Let's Connect</h2>
-				</aside>
-
-				<div class="architect-main--wide connect-container">
-					<p class="connect-lead">
-						I'm always open to discussing architecture, enterprise patterns, and agentic AI
-						engineering.
-					</p>
-					<div class="connect-links">
-						<a
-							href="https://www.linkedin.com/in/shashinkumar/"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="btn-connect btn-linkedin"
-						>
-							<svg
-								viewBox="0 0 24 24"
-								width="16"
-								height="16"
-								aria-hidden="true"
-								style="vertical-align: middle;"
-							>
-								<path
-									fill="currentColor"
-									d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
-								></path>
-							</svg>
-							<span>Connect on LinkedIn</span>
-						</a>
-						<a
-							href="https://github.com/kumarshaz"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="btn-connect btn-github"
-						>
-							<svg
-								viewBox="0 0 16 16"
-								width="16"
-								height="16"
-								aria-hidden="true"
-								style="vertical-align: middle;"
-							>
-								<path
-									fill="currentColor"
-									d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-								></path>
-							</svg>
-							<span>View GitHub</span>
-						</a>
-						<a
-							href="https://dzone.com/users/5309856/snkumar.html"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="btn-connect btn-dzone"
-						>
-							<svg
-								viewBox="0 0 32 32"
-								width="16"
-								height="16"
-								aria-hidden="true"
-								style="vertical-align: middle;"
-							>
-								<rect width="32" height="32" rx="2" fill="currentColor" opacity="0.18" />
-								<text
-									x="16"
-									y="22"
-									text-anchor="middle"
-									font-family="monospace"
-									font-weight="bold"
-									font-size="15"
-									fill="currentColor">DZ</text
-								>
-							</svg>
-							<span>DZone Publications</span>
-						</a>
-					</div>
 				</div>
 			</section>
 		</main>
@@ -255,13 +196,10 @@ const recentPosts = posts.slice(0, 3);
 </html>
 
 <style>
-	/* ===== Row 1: Hero Section ===== */
-	.hero-section {
-		background-color: var(--bg-surface);
-	}
-
+	/* ===== Hero Masthead ===== */
 	.hero {
-		padding: 3.5rem 4rem;
+		padding: 3rem 0 2.75rem 0;
+		border-bottom: 1px solid var(--border-grid);
 	}
 
 	.hero-layout {
@@ -273,81 +211,76 @@ const recentPosts = posts.slice(0, 3);
 
 	.hero-content {
 		flex: 1;
-		text-align: left;
 	}
 
 	.hero-eyebrow {
 		font-family: var(--font-mono);
-		font-size: 0.74rem;
+		font-size: 0.76rem;
 		text-transform: uppercase;
-		letter-spacing: 0.1em;
+		letter-spacing: 0.08em;
 		color: var(--accent-primary);
-		margin: 0 0 0.85rem 0;
+		margin: 0 0 0.75rem 0;
 		font-weight: 600;
 	}
 
 	.hero h1 {
 		font-family: var(--font-display);
-		font-size: clamp(2.5rem, 4.5vw, 3.6rem);
-		line-height: 1.06;
-		letter-spacing: -0.025em;
-		margin: 0 0 1.15rem 0;
+		font-size: clamp(2.1rem, 4vw, 3.1rem);
+		line-height: 1.12;
+		letter-spacing: -0.03em;
+		margin: 0 0 1rem 0;
 		color: var(--text-primary);
+		font-weight: 700;
 	}
 
 	.hero h1 .accent {
 		color: var(--accent-primary);
-		font-style: italic;
 	}
 
 	.hero-subtitle {
 		font-family: var(--font-sans);
-		font-size: 1.08rem;
+		font-size: 1.05rem;
 		color: var(--text-muted);
-		max-width: 58ch;
-		margin: 0 0 2rem 0;
-		line-height: 1.68;
+		max-width: 60ch;
+		margin: 0 0 1.75rem 0;
+		line-height: 1.65;
 	}
 
 	.hero-cta {
 		display: flex;
-		gap: 1rem;
+		gap: 0.85rem;
 		flex-wrap: wrap;
 	}
 
 	.btn-primary {
 		display: inline-flex;
 		align-items: center;
-		background-color: var(--accent-primary);
-		color: #ffffff !important;
-		padding: 0.75rem 1.6rem;
-		border: 1px solid var(--accent-primary);
-		font-family: var(--font-sans);
-		font-size: 0.9rem;
+		background-color: var(--text-primary);
+		color: var(--bg-canvas) !important;
+		padding: 0.65rem 1.35rem;
+		border: 1px solid var(--text-primary);
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
 		font-weight: 600;
 		text-decoration: none;
 		transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 	}
 
-	:global([data-theme="dark"]) .btn-primary,
-	:global(.dark) .btn-primary {
-		color: #121110 !important;
-	}
-
 	.btn-primary:hover {
-		background-color: transparent;
-		color: var(--accent-primary) !important;
+		background-color: var(--accent-primary);
+		border-color: var(--accent-primary);
+		color: #ffffff !important;
 	}
 
 	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
-		background-color: var(--bg-canvas);
+		background-color: transparent;
 		border: 1px solid var(--border-strong);
 		color: var(--text-primary) !important;
-		padding: 0.75rem 1.6rem;
-		font-family: var(--font-sans);
-		font-size: 0.9rem;
+		padding: 0.65rem 1.35rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
 		font-weight: 600;
 		text-decoration: none;
 		transition: border-color 0.15s ease, color 0.15s ease;
@@ -360,102 +293,144 @@ const recentPosts = posts.slice(0, 3);
 
 	.hero-photo {
 		flex-shrink: 0;
-		padding: 0.5rem;
-		background-color: var(--bg-canvas);
+		padding: 0.4rem;
+		background-color: var(--bg-surface);
 		border: 1px solid var(--border-grid);
 	}
 
 	.hero-photo .profile-img {
 		display: block;
-		width: 176px;
-		height: 176px;
+		width: 164px;
+		height: 164px;
 		object-fit: cover;
 		border: 1px solid var(--border-grid);
-		border-radius: 0;
 	}
 
-	/* ===== Left Rail Section Headings ===== */
-	.section-title {
+	/* ===== Left Sidebar (Domains & Connect) ===== */
+	.home-notebook {
+		grid-template-columns: 300px 1fr;
+	}
+
+	.sidebar-heading {
 		font-family: var(--font-display);
-		font-size: 1.5rem;
-		line-height: 1.2;
-		margin: 0 0 0.6rem 0;
-		padding: 0;
-		border: none;
+		font-size: 0.88rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
 		color: var(--text-primary);
+		margin: 0 0 1rem 0;
+		padding-bottom: 0.45rem;
+		border-bottom: 2px solid var(--border-strong);
 	}
 
-	.rail-description {
-		font-family: var(--font-sans);
-		font-size: 0.85rem;
-		line-height: 1.55;
-		color: var(--text-muted);
-		margin: 0 0 1.25rem 0;
+	.pillars {
+		margin-bottom: 2.5rem;
 	}
 
-	/* ===== Row 2: Pillars Grid (Exposed 1px Hairline Cells) ===== */
-	.pillars-container {
-		padding: 0;
-	}
-
-	.pillars-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-	}
-
-	.pillar-card {
+	.pillars-stack {
 		display: flex;
 		flex-direction: column;
-		padding: 2.25rem 2.75rem;
+		gap: 1.1rem;
+	}
+
+	.pillar-item {
+		display: block;
 		text-decoration: none;
 		color: inherit;
-		border-right: 1px solid var(--border-grid);
+		padding-bottom: 1.1rem;
 		border-bottom: 1px solid var(--border-grid);
-		background-color: var(--bg-canvas);
-		transition: background-color 0.15s ease;
 	}
 
-	.pillar-card:nth-child(2n) {
-		border-right: none;
-	}
-
-	.pillar-card:nth-last-child(-n + 2) {
+	.pillar-item:last-child {
 		border-bottom: none;
+		padding-bottom: 0;
 	}
 
-	.pillar-card:hover {
-		background-color: var(--bg-surface);
-	}
-
-	.pillar-icon {
-		font-size: 1.35rem;
-		margin-bottom: 0.75rem;
-		display: inline-block;
-	}
-
-	.pillar-card h3 {
-		font-family: var(--font-display);
-		font-size: 1.35rem;
-		margin: 0 0 0.5rem 0;
+	.pillar-item h3 {
+		font-family: var(--font-mono);
+		font-size: 0.86rem;
+		font-weight: 700;
+		margin: 0 0 0.35rem 0;
 		color: var(--text-primary);
 		transition: color 0.15s ease;
 	}
 
-	.pillar-card:hover h3 {
+	.pillar-item:hover h3 {
 		color: var(--accent-primary);
 	}
 
-	.pillar-card p {
+	.pillar-item p {
 		font-family: var(--font-sans);
-		font-size: 0.92rem;
+		font-size: 0.82rem;
+		line-height: 1.55;
 		color: var(--text-muted);
-		line-height: 1.65;
 		margin: 0;
 	}
 
-	/* ===== Row 3: Recent Posts List ===== */
-	.recent-posts-container {
+	.connect-note {
+		font-family: var(--font-sans);
+		font-size: 0.82rem;
+		line-height: 1.55;
+		color: var(--text-muted);
+		margin: 0 0 0.85rem 0;
+	}
+
+	.connect-links {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.btn-connect {
+		display: inline-flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.45rem 0.7rem;
+		border: 1px solid var(--border-grid);
+		background-color: var(--bg-surface);
+		color: var(--text-primary);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		text-decoration: none;
+		transition: border-color 0.15s ease, color 0.15s ease;
+	}
+
+	.btn-connect:hover {
+		border-color: var(--accent-primary);
+		color: var(--accent-primary);
+	}
+
+	/* ===== Right Stream: Latest from the Blog ===== */
+	.stream-header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		padding-bottom: 0.45rem;
+		margin-bottom: 0.5rem;
+		border-bottom: 2px solid var(--border-strong);
+	}
+
+	.stream-title {
+		font-family: var(--font-display);
+		font-size: 0.88rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-primary);
+		margin: 0;
 		padding: 0;
+		border: none;
+	}
+
+	.view-all-link {
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		color: var(--accent-primary);
+		text-decoration: none;
+	}
+
+	.view-all-link:hover {
+		text-decoration: underline;
 	}
 
 	.posts-list {
@@ -464,155 +439,97 @@ const recentPosts = posts.slice(0, 3);
 		margin: 0;
 	}
 
-	.post-card {
-		padding: 2rem 3rem;
+	.post-row {
+		padding: 1.65rem 0;
 		border-bottom: 1px solid var(--border-grid);
-		transition: background-color 0.15s ease;
 	}
 
-	.post-card:last-child {
+	.post-row:last-child {
 		border-bottom: none;
 	}
 
-	.post-card:hover {
-		background-color: var(--bg-surface);
+	.post-row-inner {
+		display: grid;
+		grid-template-columns: 1fr 180px;
+		gap: 1.75rem;
+		align-items: start;
 	}
 
-	.post-card-link {
-		display: block;
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.post-spec-meta {
+	.post-meta {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
 		gap: 0.6rem;
 		margin-bottom: 0.55rem;
 		font-family: var(--font-mono);
-		font-size: 0.73rem;
+		font-size: 0.74rem;
 		color: var(--text-muted);
 	}
 
-	.post-category-badge {
-		padding: 0.1rem 0.45rem;
-		border: 1px solid var(--border-grid);
-		background-color: var(--bg-surface);
-		color: var(--accent-primary);
-		text-transform: uppercase;
-		font-size: 0.68rem;
-		letter-spacing: 0.05em;
+	.post-title-link {
+		text-decoration: none;
+		color: inherit;
 	}
 
-	.post-card h3 {
+	.post-row h3 {
 		font-family: var(--font-display);
-		font-size: 1.5rem;
-		margin: 0 0 0.45rem 0;
+		font-size: 1.25rem;
+		font-weight: 700;
+		line-height: 1.28;
+		margin: 0 0 0.5rem 0;
 		color: var(--text-primary);
 		transition: color 0.15s ease;
 	}
 
-	.post-card:hover h3 {
+	.post-title-link:hover h3 {
 		color: var(--accent-primary);
 	}
 
 	.post-desc {
 		font-family: var(--font-sans);
-		font-size: 0.95rem;
+		font-size: 0.94rem;
 		color: var(--text-muted);
 		margin: 0;
 		line-height: 1.6;
-		max-width: 68ch;
 	}
 
 	.post-tags-row {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.4rem;
-		margin-top: 0.85rem;
+		margin-top: 0.75rem;
 	}
 
-	.view-all {
-		margin-top: 0.5rem;
-	}
-
-	.view-all a {
-		font-family: var(--font-mono);
-		font-size: 0.76rem;
-		font-weight: 600;
-		text-decoration: none;
-		color: var(--accent-primary);
-	}
-
-	.view-all a:hover {
-		color: var(--accent-secondary);
-	}
-
-	/* ===== Row 4: Connect Section ===== */
-	.connect-container {
-		padding: 2rem 3rem;
-	}
-
-	.connect-lead {
-		color: var(--text-muted);
-		max-width: 64ch;
-		margin: 0 0 1.25rem 0;
-	}
-
-	.connect-links {
-		display: flex;
-		gap: 0.85rem;
-		flex-wrap: wrap;
-	}
-
-	.btn-connect {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.65rem 1.2rem;
-		border: 1px solid var(--border-grid);
+	.post-thumb {
+		display: block;
+		padding: 0.3rem;
 		background-color: var(--bg-surface);
-		color: var(--text-primary) !important;
-		font-family: var(--font-sans);
-		font-size: 0.85rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+		border: 1px solid var(--border-grid);
 	}
 
-	.btn-connect:hover {
-		border-color: var(--accent-primary);
-		color: var(--accent-primary) !important;
-		background-color: var(--accent-subtle);
+	.post-thumb img {
+		display: block;
+		width: 100%;
+		height: 105px;
+		object-fit: cover;
+		border: 1px solid var(--border-grid);
 	}
 
 	/* ===== Responsive ===== */
 	@media (max-width: 900px) {
-		.hero {
-			padding: 2rem 1.25rem;
+		.home-notebook {
+			grid-template-columns: 1fr;
 		}
 		.hero-layout {
 			flex-direction: column-reverse;
 			align-items: flex-start;
 			gap: 1.5rem;
 		}
-		.pillars-grid {
+		.post-row-inner {
 			grid-template-columns: 1fr;
 		}
-		.pillar-card {
-			border-right: none;
-			border-bottom: 1px solid var(--border-grid);
-			padding: 1.5rem 1.25rem;
-		}
-		.pillar-card:last-child {
-			border-bottom: none;
-		}
-		.post-card {
-			padding: 1.5rem 1.25rem;
-		}
-		.connect-container {
-			padding: 1.5rem 1.25rem;
+		.post-thumb img {
+			height: 160px;
 		}
 	}
 </style>

@@ -41,56 +41,48 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				width: 100%;
 			}
 
-			/* Row 1: Article Header */
-			.spec-header-grid {
-				border-bottom: 1px solid var(--border-grid);
-				background-color: var(--bg-surface);
+			/* Article Header Masthead (Option D: Bold 2px Bottom Rule) */
+			.article-masthead {
+				padding: 2.75rem 0 2rem 0;
+				border-bottom: 2px solid var(--border-strong);
 			}
 
-			.spec-header-main {
-				padding: 3rem 4rem;
+			.article-meta-bar {
 				display: flex;
-				flex-direction: column;
-				justify-content: center;
-			}
-
-			.spec-kicker {
-				display: inline-flex;
 				align-items: center;
-				gap: 0.5rem;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				margin-bottom: 1rem;
 				font-family: var(--font-mono);
-				font-size: 0.74rem;
-				font-weight: 600;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				color: var(--accent-primary);
-				margin-bottom: 0.75rem;
+				font-size: 0.76rem;
+				color: var(--text-muted);
 			}
 
 			.spec-title {
 				font-family: var(--font-display);
-				font-size: clamp(2.1rem, 3.8vw, 3.15rem);
-				line-height: 1.08;
+				font-size: clamp(1.95rem, 3.5vw, 2.85rem);
+				font-weight: 700;
+				line-height: 1.15;
 				letter-spacing: -0.025em;
 				color: var(--text-primary);
 				margin: 0 0 1rem 0;
-				max-width: 24ch;
+				max-width: 28ch;
 			}
 
 			.spec-abstract {
 				font-family: var(--font-sans);
-				font-size: 1.12rem;
+				font-size: 1.08rem;
 				line-height: 1.62;
 				color: var(--text-muted);
 				margin: 0;
-				max-width: 64ch;
+				max-width: 68ch;
 			}
 
 			.spec-hero-figure {
-				margin: 0 0 2.5rem 0;
+				margin: 0 0 2.25rem 0;
 				border: 1px solid var(--border-grid);
 				background-color: var(--bg-surface);
-				padding: 0.5rem;
+				padding: 0.45rem;
 			}
 
 			.spec-hero-figure img {
@@ -113,22 +105,16 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				align-items: center;
 				gap: 0.4rem;
 				font-family: var(--font-mono);
-				font-size: 0.74rem;
+				font-size: 0.75rem;
 				color: var(--text-muted);
 				text-decoration: none;
 				padding-top: 1.25rem;
 				border-top: 1px solid var(--border-grid);
-				margin-top: 1.75rem;
+				margin-top: 1.5rem;
 			}
 
 			.back-to-index:hover {
 				color: var(--accent-primary);
-			}
-
-			@media (max-width: 900px) {
-				.spec-header-main {
-					padding: 2rem 1.25rem;
-				}
 			}
 		</style>
 	</head>
@@ -137,47 +123,44 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 		<Header />
 		<main id="main-content">
 			<article class="spec-article" data-category={category}>
-				<!-- Row 1: Spec Header Grid -->
-				<header class="architect-grid spec-header-grid">
-					<aside class="architect-rail" aria-label="Article Metadata">
-						<div class="rail-block">
-							<span class="rail-label">Published</span>
-							<span class="rail-value">
+				<!-- Top Article Masthead -->
+				<header class="notebook-container">
+					<div class="article-masthead">
+						<div class="article-meta-bar">
+							<span class="mono-badge">[{category}]</span>
+							<span>
 								<FormattedDate date={pubDate} />
 							</span>
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Updated <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
+							{readingTime && <span>· {readingTime}</span>}
 						</div>
-						<div class="rail-block">
-							<span class="rail-label">Category</span>
-							<span class="rail-badge">{category}</span>
-						</div>
-						{
-							readingTime && (
-								<div class="rail-block">
-									<span class="rail-label">Reading Time</span>
-									<span class="rail-value">{readingTime}</span>
-								</div>
-							)
-						}
-					</aside>
-
-					<div class="spec-header-main">
-						<div class="spec-kicker">{category}</div>
 						<h1 class="spec-title">{title}</h1>
 						<p class="spec-abstract">{description}</p>
 					</div>
 				</header>
 
-				<!-- Row 2: Asymmetric 2-Column Body Grid -->
+				<!-- Open 2-Column Reading Workspace -->
 				<div class="architect-grid">
-					<aside class="architect-rail" aria-label="Table of Contents and Tags">
+					<aside class="architect-rail" aria-label="Article Metadata and Table of Contents">
 						<div class="rail-sticky">
+							<div class="rail-block">
+								<span class="rail-label">Published</span>
+								<span class="rail-value">
+									<FormattedDate date={pubDate} />
+								</span>
+								{
+									updatedDate && (
+										<div class="last-updated-on">
+											Updated <FormattedDate date={updatedDate} />
+										</div>
+									)
+								}
+							</div>
+
+							<div class="rail-block">
+								<span class="rail-label">Category</span>
+								<span class="rail-value">{category}</span>
+							</div>
+
 							<div class="rail-block" id="rail-toc-block">
 								<span class="rail-label">ON THIS PAGE</span>
 								<ul class="rail-toc-list" id="rail-toc-list">
@@ -265,14 +248,14 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					startOnLoad: true,
 					theme: 'base',
 					themeVariables: {
-						fontFamily: readToken('--font-mono') || 'JetBrains Mono, monospace',
+						fontFamily: readToken('--font-mono') || 'IBM Plex Mono, Space Mono, monospace',
 						fontSize: '13px',
-						primaryColor: readToken('--mermaid-node-bg') || '#FAF7F2',
-						primaryTextColor: readToken('--text-primary') || '#181615',
-						primaryBorderColor: readToken('--mermaid-node-border') || '#9A4B1A',
-						lineColor: readToken('--mermaid-line') || '#2C2825',
-						secondaryColor: readToken('--mermaid-cluster-bg') || '#EAE3D5',
-						tertiaryColor: readToken('--bg-surface') || '#EAE3D5',
+						primaryColor: readToken('--mermaid-node-bg') || '#FAF9F5',
+						primaryTextColor: readToken('--text-primary') || '#111111',
+						primaryBorderColor: readToken('--mermaid-node-border') || '#C84B20',
+						lineColor: readToken('--mermaid-line') || '#262523',
+						secondaryColor: readToken('--mermaid-cluster-bg') || '#E7E5DD',
+						tertiaryColor: readToken('--bg-surface') || '#E7E5DD',
 					},
 				});
 			};

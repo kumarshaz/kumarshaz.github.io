@@ -46,44 +46,38 @@ const { tag, allTags = [], posts } = Astro.props;
 			description={`Blog posts tagged with "${tag}"`}
 		/>
 		<style>
-			.tag-header-grid {
-				background-color: var(--bg-surface);
-				border-bottom: 1px solid var(--border-grid);
+			.tag-masthead {
+				padding: 2.5rem 0 1.75rem 0;
+				border-bottom: 2px solid var(--border-strong);
+				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
+				flex-wrap: wrap;
+				gap: 1rem;
 			}
 
-			.tag-header-main {
-				padding: 2.5rem 4rem;
-			}
-
-			.tag-header-main h1 {
+			.tag-masthead h1 {
 				font-family: var(--font-display);
-				font-size: clamp(2rem, 3.4vw, 2.85rem);
-				margin: 0 0 0.4rem 0;
+				font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+				font-weight: 700;
+				margin: 0 0 0.35rem 0;
 			}
 
-			.tag-header-main p {
+			.tag-masthead p {
 				font-family: var(--font-sans);
 				color: var(--text-muted);
 				margin: 0;
 			}
 
 			.back-link {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.35rem;
 				font-family: var(--font-mono);
-				font-size: 0.76rem;
+				font-size: 0.78rem;
 				text-decoration: none;
 				color: var(--accent-primary);
-				margin-top: 0.85rem;
 			}
 
 			.back-link:hover {
-				color: var(--accent-secondary);
-			}
-
-			.tag-entries-main {
-				padding: 0;
+				text-decoration: underline;
 			}
 
 			.tag-entries-list {
@@ -94,21 +88,20 @@ const { tag, allTags = [], posts } = Astro.props;
 
 			.tag-entry-row {
 				border-bottom: 1px solid var(--border-grid);
-				padding: 2.25rem 3.5rem;
-				transition: background-color 0.15s ease;
+				padding: 1.85rem 0;
+			}
+
+			.tag-entry-row:first-child {
+				padding-top: 0;
 			}
 
 			.tag-entry-row:last-child {
 				border-bottom: none;
 			}
 
-			.tag-entry-row:hover {
-				background-color: var(--bg-surface);
-			}
-
 			.tag-entry-layout {
 				display: grid;
-				grid-template-columns: 1fr 220px;
+				grid-template-columns: 1fr 200px;
 				gap: 2rem;
 				align-items: start;
 			}
@@ -124,30 +117,23 @@ const { tag, allTags = [], posts } = Astro.props;
 				align-items: center;
 				flex-wrap: wrap;
 				gap: 0.65rem;
-				margin-bottom: 0.65rem;
+				margin-bottom: 0.6rem;
 				font-family: var(--font-mono);
-				font-size: 0.72rem;
+				font-size: 0.74rem;
 				color: var(--text-muted);
-			}
-
-			.tag-entry-cat {
-				padding: 0.1rem 0.45rem;
-				border: 1px solid var(--border-grid);
-				background-color: var(--bg-surface);
-				color: var(--accent-primary);
-				text-transform: uppercase;
-				font-size: 0.68rem;
 			}
 
 			.title {
 				font-family: var(--font-display);
-				font-size: 1.6rem;
+				font-size: 1.35rem;
+				font-weight: 700;
 				margin: 0 0 0.5rem 0;
 				color: var(--text-primary);
-				line-height: 1.2;
+				line-height: 1.25;
+				transition: color 0.15s ease;
 			}
 
-			.tag-entry-row:hover .title {
+			.tag-entry-link:hover .title {
 				color: var(--accent-primary);
 			}
 
@@ -161,7 +147,7 @@ const { tag, allTags = [], posts } = Astro.props;
 
 			.tag-entry-figure {
 				margin: 0;
-				padding: 0.4rem;
+				padding: 0.35rem;
 				border: 1px solid var(--border-grid);
 				background-color: var(--bg-surface);
 			}
@@ -169,25 +155,18 @@ const { tag, allTags = [], posts } = Astro.props;
 			.tag-entry-figure img {
 				display: block;
 				width: 100%;
-				height: 125px;
+				height: 115px;
 				object-fit: cover;
 				border: 1px solid var(--border-grid);
-				border-radius: 0;
 			}
 
 			.empty-state {
-				padding: 3rem 3.5rem;
+				padding: 2rem 0;
 				font-family: var(--font-sans);
 				color: var(--text-muted);
 			}
 
 			@media (max-width: 900px) {
-				.tag-header-main {
-					padding: 2rem 1.25rem;
-				}
-				.tag-entry-row {
-					padding: 1.75rem 1.25rem;
-				}
 				.tag-entry-layout {
 					grid-template-columns: 1fr;
 				}
@@ -197,24 +176,20 @@ const { tag, allTags = [], posts } = Astro.props;
 	<body>
 		<Header />
 		<main id="main-content">
-			<!-- Row 1: Tag Header -->
-			<section class="architect-grid tag-header-grid">
-				<aside class="architect-rail" aria-label="Tag Metadata">
-					<div class="rail-block">
-						<span class="rail-label">Topic</span>
-						<span class="rail-badge">#{tag}</span>
+			<!-- Tag Masthead -->
+			<section class="notebook-container">
+				<div class="tag-masthead tag-header">
+					<div>
+						<h1>#{tag}</h1>
+						<p>
+							{posts.length} post{posts.length !== 1 ? 's' : ''} tagged with "{tag}"
+						</p>
 					</div>
-				</aside>
-				<div class="tag-header-main tag-header">
-					<h1>#{tag}</h1>
-					<p>
-						{posts.length} post{posts.length !== 1 ? 's' : ''} tagged with "{tag}"
-					</p>
 					<a href="/blog" class="back-link">← All posts</a>
 				</div>
 			</section>
 
-			<!-- Row 2: Tag Rail + Filtered Entries -->
+			<!-- Sidebar Topics + Filtered Entries -->
 			<section class="architect-grid">
 				<aside class="architect-rail" aria-label="All Topics">
 					<div class="rail-sticky">
@@ -241,7 +216,7 @@ const { tag, allTags = [], posts } = Astro.props;
 					</div>
 				</aside>
 
-				<div class="architect-main--wide tag-entries-main">
+				<div class="architect-main--wide">
 					{
 						posts.length > 0 ? (
 							<ul class="tag-entries-list">
@@ -253,7 +228,7 @@ const { tag, allTags = [], posts } = Astro.props;
 												<div>
 													<a href={`/blog/${post.id}/`} class="tag-entry-link">
 														<div class="tag-entry-meta">
-															<span class="tag-entry-cat">{category}</span>
+															<span class="mono-badge">[{category}]</span>
 															<span class="date">
 																<FormattedDate date={post.data.pubDate} />
 															</span>

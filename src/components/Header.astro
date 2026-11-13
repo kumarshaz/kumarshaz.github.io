@@ -5,10 +5,10 @@ import HeaderLink from './HeaderLink.astro';
 
 <a href="#main-content" class="skip-link">Skip to content</a>
 <header role="banner" class="site-header">
-	<nav class="header-grid" aria-label="Primary navigation">
+	<nav class="header-inner" aria-label="Primary navigation">
 		<div class="brand">
 			<h2><a href="/">{SITE_TITLE}</a></h2>
-			<span class="tagline">Architecture · Leadership · AI</span>
+			<span class="tagline">— From Blacksmiths to Goldsmiths</span>
 		</div>
 		<div class="header-nav-area">
 			<div class="internal-links">
@@ -27,8 +27,8 @@ import HeaderLink from './HeaderLink.astro';
 					<svg
 						class="icon-sun"
 						viewBox="0 0 24 24"
-						width="17"
-						height="17"
+						width="16"
+						height="16"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="2"
@@ -50,8 +50,8 @@ import HeaderLink from './HeaderLink.astro';
 					<svg
 						class="icon-moon"
 						viewBox="0 0 24 24"
-						width="17"
-						height="17"
+						width="16"
+						height="16"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="2"
@@ -102,41 +102,36 @@ import HeaderLink from './HeaderLink.astro';
 	}
 
 	.site-header {
-		margin: 0;
-		padding: 0;
+		max-width: 1120px;
+		margin: 0 auto;
+		padding: 0 2rem;
 		background-color: var(--bg-canvas);
-		border-bottom: 1px solid var(--border-grid);
-		position: sticky;
-		top: 0;
-		z-index: 50;
 	}
 
-	.header-grid {
-		display: grid;
-		grid-template-columns: 240px 1fr;
-		max-width: 1200px;
-		margin: 0 auto;
-		border-left: 1px solid var(--border-grid);
-		border-right: 1px solid var(--border-grid);
-		align-items: stretch;
+	.header-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1.35rem 0 1rem 0;
+		border-bottom: 2px solid var(--border-strong);
+		gap: 1.5rem;
 	}
 
 	.brand {
 		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		padding: 0.9rem 1.5rem;
-		border-right: 1px solid var(--border-grid);
-		background-color: var(--bg-surface);
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 0.6rem;
 	}
 
 	h2 {
 		margin: 0;
 		font-family: var(--font-display);
-		font-size: 1.25rem;
-		font-weight: 600;
-		letter-spacing: -0.01em;
-		line-height: 1.15;
+		font-size: 1.05rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		line-height: 1.2;
 	}
 
 	h2 a,
@@ -147,31 +142,28 @@ import HeaderLink from './HeaderLink.astro';
 
 	.tagline {
 		font-family: var(--font-mono);
-		font-size: 0.65rem;
+		font-size: 0.78rem;
 		color: var(--text-muted);
-		letter-spacing: 0.06em;
-		margin-top: 0.15rem;
+		letter-spacing: 0.02em;
 	}
 
 	.header-nav-area {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		padding: 0 2.5rem;
+		gap: 1.25rem;
 	}
 
 	.internal-links {
 		display: flex;
-		align-items: stretch;
-		gap: 0.5rem;
+		align-items: center;
+		gap: 1.25rem;
 	}
 
 	.internal-links :global(a) {
-		display: inline-flex;
-		align-items: center;
-		padding: 1.1rem 0.85rem;
-		font-family: var(--font-sans);
-		font-size: 0.9rem;
+		display: inline-block;
+		padding: 0.25rem 0;
+		font-family: var(--font-mono);
+		font-size: 0.84rem;
 		font-weight: 500;
 		color: var(--text-muted);
 		border-bottom: 2px solid transparent;
@@ -198,13 +190,13 @@ import HeaderLink from './HeaderLink.astro';
 	.theme-toggle {
 		background-color: var(--bg-surface);
 		border: 1px solid var(--border-grid);
-		padding: 0.45rem;
+		padding: 0.4rem;
 		cursor: pointer;
 		color: var(--text-primary);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+		transition: color 0.15s ease, border-color 0.15s ease;
 	}
 
 	.theme-toggle:hover {
@@ -241,33 +233,15 @@ import HeaderLink from './HeaderLink.astro';
 		display: block;
 	}
 
-	@media (max-width: 900px) {
-		.header-grid {
-			grid-template-columns: 1fr;
-		}
-		.brand {
-			border-right: none;
-			border-bottom: 1px solid var(--border-grid);
-			flex-direction: row;
-			align-items: center;
-			justify-content: space-between;
-			padding: 0.7rem 1.25rem;
-		}
-		.tagline {
-			margin-top: 0;
-		}
-		.header-nav-area {
+	@media (max-width: 760px) {
+		.site-header {
 			padding: 0 1.25rem;
 		}
-		.internal-links :global(a) {
-			padding: 0.75rem 0.6rem;
-			font-size: 0.85rem;
-		}
-	}
-
-	@media (max-width: 560px) {
 		.tagline {
 			display: none;
+		}
+		.internal-links {
+			gap: 0.85rem;
 		}
 	}
 </style>
