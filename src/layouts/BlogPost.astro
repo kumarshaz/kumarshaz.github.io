@@ -25,17 +25,9 @@ const {
 	heroImage,
 	category = 'Essay',
 	tags = [],
-	readingTime = '5 min read',
-	status = 'Published',
-	docId,
+	readingTime,
 	headings = [],
-	slug = 'doc',
 } = Astro.props;
-
-// Generate deterministic Architectural Spec ID if not explicitly set in frontmatter
-const year = pubDate ? pubDate.getFullYear() : 2026;
-const month = pubDate ? String(pubDate.getMonth() + 1).padStart(2, '0') : '01';
-const computedDocId = docId || `ARCH-${year}-${month}`;
 
 const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 ---
@@ -49,7 +41,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				width: 100%;
 			}
 
-			/* Row 1: Architectural Spec Sheet Header */
+			/* Row 1: Article Header */
 			.spec-header-grid {
 				border-bottom: 1px solid var(--border-grid);
 				background-color: var(--bg-surface);
@@ -65,21 +57,14 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 			.spec-kicker {
 				display: inline-flex;
 				align-items: center;
-				gap: 0.6rem;
+				gap: 0.5rem;
 				font-family: var(--font-mono);
 				font-size: 0.74rem;
 				font-weight: 600;
-				letter-spacing: 0.12em;
+				letter-spacing: 0.1em;
 				text-transform: uppercase;
 				color: var(--accent-primary);
-				margin-bottom: 0.9rem;
-			}
-
-			.spec-kicker-dot {
-				width: 6px;
-				height: 6px;
-				background-color: var(--accent-secondary);
-				display: inline-block;
+				margin-bottom: 0.75rem;
 			}
 
 			.spec-title {
@@ -88,7 +73,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				line-height: 1.08;
 				letter-spacing: -0.025em;
 				color: var(--text-primary);
-				margin: 0 0 1.15rem 0;
+				margin: 0 0 1rem 0;
 				max-width: 24ch;
 			}
 
@@ -105,7 +90,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				margin: 0 0 2.5rem 0;
 				border: 1px solid var(--border-grid);
 				background-color: var(--bg-surface);
-				padding: 0.65rem;
+				padding: 0.5rem;
 			}
 
 			.spec-hero-figure img {
@@ -115,18 +100,6 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				border: 1px solid var(--border-grid);
 				margin: 0;
 				padding: 0;
-			}
-
-			.spec-hero-caption {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding-top: 0.5rem;
-				font-family: var(--font-mono);
-				font-size: 0.7rem;
-				color: var(--text-muted);
-				letter-spacing: 0.06em;
-				text-transform: uppercase;
 			}
 
 			.last-updated-on {
@@ -141,8 +114,6 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				gap: 0.4rem;
 				font-family: var(--font-mono);
 				font-size: 0.74rem;
-				text-transform: uppercase;
-				letter-spacing: 0.08em;
 				color: var(--text-muted);
 				text-decoration: none;
 				padding-top: 1.25rem;
@@ -165,50 +136,47 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 	<body>
 		<Header />
 		<main id="main-content">
-			<article class="spec-article" data-doc-id={computedDocId} data-category={category}>
+			<article class="spec-article" data-category={category}>
 				<!-- Row 1: Spec Header Grid -->
 				<header class="architect-grid spec-header-grid">
-					<aside class="architect-rail" aria-label="Document Metadata">
+					<aside class="architect-rail" aria-label="Article Metadata">
 						<div class="rail-block">
-							<span class="rail-label">DOC ID:</span>
-							<span class="rail-value">{computedDocId}</span>
-						</div>
-						<div class="rail-block">
-							<span class="rail-label">PUBLISHED:</span>
+							<span class="rail-label">Published</span>
 							<span class="rail-value">
 								<FormattedDate date={pubDate} />
 							</span>
 							{
 								updatedDate && (
 									<div class="last-updated-on">
-										UPDATED: <FormattedDate date={updatedDate} />
+										Updated <FormattedDate date={updatedDate} />
 									</div>
 								)
 							}
 						</div>
 						<div class="rail-block">
-							<span class="rail-label">CLASSIFICATION:</span>
+							<span class="rail-label">Category</span>
 							<span class="rail-badge">{category}</span>
 						</div>
-						<div class="rail-block">
-							<span class="rail-label">STATUS // EST. READ:</span>
-							<span class="rail-value">{status} · {readingTime}</span>
-						</div>
+						{
+							readingTime && (
+								<div class="rail-block">
+									<span class="rail-label">Reading Time</span>
+									<span class="rail-value">{readingTime}</span>
+								</div>
+							)
+						}
 					</aside>
 
 					<div class="spec-header-main">
-						<div class="spec-kicker">
-							<span class="spec-kicker-dot"></span>
-							<span>{category} // {computedDocId}</span>
-						</div>
+						<div class="spec-kicker">{category}</div>
 						<h1 class="spec-title">{title}</h1>
 						<p class="spec-abstract">{description}</p>
 					</div>
 				</header>
 
-				<!-- Row 2: Asymmetric 2-Column Spec Body Grid -->
+				<!-- Row 2: Asymmetric 2-Column Body Grid -->
 				<div class="architect-grid">
-					<aside class="architect-rail" aria-label="Table of Contents and Taxonomy">
+					<aside class="architect-rail" aria-label="Table of Contents and Tags">
 						<div class="rail-sticky">
 							<div class="rail-block" id="rail-toc-block">
 								<span class="rail-label">ON THIS PAGE</span>
@@ -240,7 +208,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 								)
 							}
 
-							<a href="/blog" class="back-to-index">← Knowledge Index</a>
+							<a href="/blog" class="back-to-index">← All Articles</a>
 						</div>
 					</aside>
 
@@ -249,10 +217,6 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 							heroImage && (
 								<figure class="spec-hero-figure">
 									<Image width={1020} height={510} src={heroImage} alt={title} />
-									<figcaption class="spec-hero-caption">
-										<span>FIG. 00 // PRIMARY ARCHITECTURAL ARTIFACT</span>
-										<span>REF: {computedDocId}</span>
-									</figcaption>
 								</figure>
 							)
 						}
@@ -293,9 +257,6 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 		<script type="module">
 			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 
-			const style = getComputedStyle(document.documentElement);
-			const getToken = (name) => style.getPropertyValue(name).trim();
-
 			const configureMermaid = () => {
 				const rootStyle = getComputedStyle(document.documentElement);
 				const readToken = (name) => rootStyle.getPropertyValue(name).trim();
@@ -306,12 +267,12 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					themeVariables: {
 						fontFamily: readToken('--font-mono') || 'JetBrains Mono, monospace',
 						fontSize: '13px',
-						primaryColor: readToken('--mermaid-node-bg') || '#FFFFFF',
-						primaryTextColor: readToken('--text-primary') || '#0F172A',
-						primaryBorderColor: readToken('--mermaid-node-border') || '#3730A3',
-						lineColor: readToken('--mermaid-line') || '#1E293B',
-						secondaryColor: readToken('--mermaid-cluster-bg') || '#F4F3EF',
-						tertiaryColor: readToken('--bg-surface') || '#F4F3EF',
+						primaryColor: readToken('--mermaid-node-bg') || '#FAF7F2',
+						primaryTextColor: readToken('--text-primary') || '#181615',
+						primaryBorderColor: readToken('--mermaid-node-border') || '#9A4B1A',
+						lineColor: readToken('--mermaid-line') || '#2C2825',
+						secondaryColor: readToken('--mermaid-cluster-bg') || '#EAE3D5',
+						tertiaryColor: readToken('--bg-surface') || '#EAE3D5',
 					},
 				});
 			};
@@ -335,15 +296,15 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					bar.className = 'mermaid-blueprint-bar';
 
 					const caption = document.createElement('span');
-					caption.textContent = `FIG. 0${index + 1} // TOKEN-SYNCED ARCHITECTURAL BLUEPRINT`;
+					caption.textContent = 'Architecture Diagram';
 
 					const zoomBtn = document.createElement('button');
 					zoomBtn.type = 'button';
 					zoomBtn.className = 'mermaid-blueprint-zoom';
-					zoomBtn.textContent = 'EXPAND VIEW';
+					zoomBtn.textContent = 'Expand';
 					zoomBtn.addEventListener('click', () => {
 						const expanded = figure.classList.toggle('is-expanded');
-						zoomBtn.textContent = expanded ? 'STANDARD VIEW' : 'EXPAND VIEW';
+						zoomBtn.textContent = expanded ? 'Collapse' : 'Expand';
 					});
 
 					bar.appendChild(caption);

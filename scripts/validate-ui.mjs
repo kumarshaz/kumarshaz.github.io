@@ -217,12 +217,11 @@ const wardleyHtml = fs.readFileSync(
 	'utf8',
 );
 assert(
-	wardleyHtml.includes('DOC ID:') &&
-		wardleyHtml.includes('ARCH-2026-03') &&
-		wardleyHtml.includes('PUBLISHED:') &&
+	wardleyHtml.includes('Published') &&
+		wardleyHtml.includes('Category') &&
 		wardleyHtml.includes('ON THIS PAGE') &&
 		wardleyHtml.includes('TAGS'),
-	'[why-i-love-wardley-mapping] Renders full Asymmetric Spec Sheet rail (DOC ID, PUBLISHED, ON THIS PAGE, TAGS)',
+	'[why-i-love-wardley-mapping] Renders clean Asymmetric Spec Sheet rail (Published, Category, ON THIS PAGE, TAGS)',
 );
 assert(
 	wardleyHtml.includes("theme: 'base'") &&
@@ -243,10 +242,10 @@ assert(
 	blogIndexHtml.includes('data-filter="Essay"') &&
 		blogIndexHtml.includes('data-filter="Architecture Note"') &&
 		blogIndexHtml.includes('data-filter="Research"'),
-	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Field Notes / ADRs, Publications)',
+	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Field Notes, Research)',
 );
 
-// Inspect Homepage features on /index.html
+// Inspect Homepage features on /index.html and verify zero noisy // or serial index strings
 const homeHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
 assert(
 	homeHtml.includes('From Blacksmiths') &&
@@ -259,6 +258,13 @@ assert(
 		homeHtml.includes('https://github.com/kumarshaz') &&
 		homeHtml.includes('https://dzone.com/users/5309856/snkumar.html'),
 	'[index.html] Preserves Hero, 4 Domain Pillars, Recent Posts Ledger, and Connect links',
+);
+assert(
+	!homeHtml.includes('MONOGRAPH //') &&
+		!homeHtml.includes('SECTION 01') &&
+		!homeHtml.includes('DOM-01') &&
+		!homeHtml.includes('01 //'),
+	'[index.html] Free of unnecessary // labels, section numbers, and serial numbers',
 );
 
 console.log('\n======================================================================');

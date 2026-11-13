@@ -7,15 +7,13 @@ import HeaderLink from './HeaderLink.astro';
 <header role="banner" class="site-header">
 	<nav class="header-grid" aria-label="Primary navigation">
 		<div class="brand">
-			<span class="brand-code">MONOGRAPH // SYS.ARCH</span>
 			<h2><a href="/">{SITE_TITLE}</a></h2>
 			<span class="tagline">Architecture · Leadership · AI</span>
 		</div>
 		<div class="header-nav-area">
 			<div class="internal-links">
 				<HeaderLink href="/">Home</HeaderLink>
-				<HeaderLink href="/blog">Essays &amp; Notes</HeaderLink>
-				<HeaderLink href="/blog/tag/research">Research</HeaderLink>
+				<HeaderLink href="/blog">Blog</HeaderLink>
 				<HeaderLink href="/about">About</HeaderLink>
 			</div>
 			<div class="header-actions">
@@ -29,8 +27,8 @@ import HeaderLink from './HeaderLink.astro';
 					<svg
 						class="icon-sun"
 						viewBox="0 0 24 24"
-						width="16"
-						height="16"
+						width="17"
+						height="17"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="2"
@@ -52,8 +50,8 @@ import HeaderLink from './HeaderLink.astro';
 					<svg
 						class="icon-moon"
 						viewBox="0 0 24 24"
-						width="16"
-						height="16"
+						width="17"
+						height="17"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="2"
@@ -64,7 +62,6 @@ import HeaderLink from './HeaderLink.astro';
 					>
 						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 					</svg>
-					<span class="theme-label" id="theme-label">MODE</span>
 				</button>
 			</div>
 		</div>
@@ -128,28 +125,18 @@ import HeaderLink from './HeaderLink.astro';
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		padding: 0.85rem 1.5rem;
+		padding: 0.9rem 1.5rem;
 		border-right: 1px solid var(--border-grid);
 		background-color: var(--bg-surface);
 	}
 
-	.brand-code {
-		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--accent-primary);
-		margin-bottom: 0.15rem;
-	}
-
 	h2 {
 		margin: 0;
-		font-family: var(--font-mono);
-		font-size: 0.95rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		line-height: 1.2;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		line-height: 1.15;
 	}
 
 	h2 a,
@@ -160,7 +147,7 @@ import HeaderLink from './HeaderLink.astro';
 
 	.tagline {
 		font-family: var(--font-mono);
-		font-size: 0.64rem;
+		font-size: 0.65rem;
 		color: var(--text-muted);
 		letter-spacing: 0.06em;
 		margin-top: 0.15rem;
@@ -170,24 +157,22 @@ import HeaderLink from './HeaderLink.astro';
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0 2rem;
+		padding: 0 2.5rem;
 	}
 
 	.internal-links {
 		display: flex;
 		align-items: stretch;
-		gap: 0.25rem;
+		gap: 0.5rem;
 	}
 
 	.internal-links :global(a) {
 		display: inline-flex;
 		align-items: center;
-		padding: 1.1rem 0.9rem;
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
+		padding: 1.1rem 0.85rem;
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
 		font-weight: 500;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
 		color: var(--text-muted);
 		border-bottom: 2px solid transparent;
 		text-decoration: none;
@@ -213,16 +198,12 @@ import HeaderLink from './HeaderLink.astro';
 	.theme-toggle {
 		background-color: var(--bg-surface);
 		border: 1px solid var(--border-grid);
-		padding: 0.4rem 0.7rem;
+		padding: 0.45rem;
 		cursor: pointer;
 		color: var(--text-primary);
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
 		display: inline-flex;
 		align-items: center;
-		gap: 0.45rem;
+		justify-content: center;
 		transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 	}
 
@@ -270,26 +251,22 @@ import HeaderLink from './HeaderLink.astro';
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0.65rem 1.25rem;
-		}
-		.brand-code {
-			display: none;
+			padding: 0.7rem 1.25rem;
 		}
 		.tagline {
 			margin-top: 0;
 		}
 		.header-nav-area {
-			padding: 0 1rem;
+			padding: 0 1.25rem;
 		}
 		.internal-links :global(a) {
-			padding: 0.75rem 0.55rem;
-			font-size: 0.72rem;
+			padding: 0.75rem 0.6rem;
+			font-size: 0.85rem;
 		}
 	}
 
 	@media (max-width: 560px) {
-		.tagline,
-		.theme-label {
+		.tagline {
 			display: none;
 		}
 	}
@@ -309,16 +286,6 @@ import HeaderLink from './HeaderLink.astro';
 
 	document.addEventListener('DOMContentLoaded', () => {
 		const btn = document.getElementById('theme-toggle');
-		const label = document.getElementById('theme-label');
-		const updateLabel = (theme) => {
-			if (label) {
-				label.textContent = theme === 'dark' ? 'CARBON' : 'PAPER';
-			}
-		};
-
-		const current = document.documentElement.getAttribute('data-theme') || 'light';
-		updateLabel(current);
-
 		if (btn) {
 			btn.addEventListener('click', () => {
 				const isDark =
@@ -329,7 +296,6 @@ import HeaderLink from './HeaderLink.astro';
 				document.documentElement.classList.add(next);
 				document.documentElement.setAttribute('data-theme', next);
 				localStorage.setItem('theme', next);
-				updateLabel(next);
 				window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: next } }));
 			});
 		}
