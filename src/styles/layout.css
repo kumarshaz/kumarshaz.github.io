@@ -215,6 +215,27 @@
 	border-color: var(--accent-primary);
 }
 
+@keyframes mermaid-edge-flow {
+	from {
+		stroke-dashoffset: 24;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+.mermaid-blueprint svg {
+	max-width: 100%;
+	height: auto;
+}
+
+.mermaid-blueprint .edge-animation-slow,
+.mermaid-blueprint .edge-animation-fast,
+.mermaid-blueprint path[data-animate="true"] {
+	stroke-dasharray: 6 4 !important;
+	animation: mermaid-edge-flow 1.2s linear infinite !important;
+}
+
 @media (max-width: 900px) {
 	.notebook-container {
 		padding: 0 1.25rem;

@@ -146,6 +146,17 @@ const expectedPages = [
 	'blog/what-is-blacksmith-to-goldsmith/index.html',
 	'blog/why-astro-and-gh-pages/index.html',
 	'blog/why-i-love-wardley-mapping/index.html',
+	'blog/clean-core-sidecars-and-cots-stop-rules/index.html',
+	'blog/contract-first-net-beyond-codegen/index.html',
+	'blog/editorial-architecture-and-three-year-tco/index.html',
+	'blog/from-adrs-to-executable-constraints/index.html',
+	'blog/from-partner-diagram-rot-to-context-engineering/index.html',
+	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
+	'foundry/index.html',
+	'foundry/engineering-this-monograph/index.html',
+	'foundry/atruss-code-atlas/index.html',
+	'foundry/tdd-analyzer/index.html',
+	'foundry/to-markdown-converter/index.html',
 	'blog/tag/architecture/index.html',
 	'blog/tag/sdlc/index.html',
 	'blog/tag/ai/index.html',
@@ -155,6 +166,15 @@ const expectedPages = [
 	'blog/tag/github pages/index.html',
 	'blog/tag/wardley mapping/index.html',
 	'blog/tag/strategy/index.html',
+	'blog/tag/enterprise/index.html',
+	'blog/tag/integration/index.html',
+	'blog/tag/cots/index.html',
+	'blog/tag/dotnet/index.html',
+	'blog/tag/api/index.html',
+	'blog/tag/kafka/index.html',
+	'blog/tag/governance/index.html',
+	'blog/tag/cloud/index.html',
+	'blog/tag/resilience/index.html',
 	'rss.xml',
 	'sitemap-index.xml',
 ];
@@ -190,6 +210,10 @@ for (const page of htmlPages) {
 		html.includes('architect-grid') && html.includes('architect-rail'),
 		`[${page}] Renders Swiss Grid (.architect-grid + .architect-rail)`,
 	);
+	assert(
+		html.includes('href="/foundry"') && !html.includes('font-weight:bolder'),
+		`[${page}] Renders stable Header with Foundry tab and zero layout-shifting bold overrides`,
+	);
 
 	// Check internal links resolve to files in dist/
 	let match;
@@ -224,16 +248,63 @@ assert(
 	'[why-i-love-wardley-mapping] Renders clean Asymmetric Spec Sheet rail (Published, Category, ON THIS PAGE, TAGS)',
 );
 assert(
-	wardleyHtml.includes("theme: 'base'") &&
+	wardleyHtml.includes('data-mermaid-engine="v12-elk-tidytree"') &&
 		wardleyHtml.includes('--mermaid-node-bg') &&
 		wardleyHtml.includes('--mermaid-node-border') &&
-		wardleyHtml.includes('mermaid-blueprint'),
-	'[why-i-love-wardley-mapping] Includes Token-Synced Mermaid v11 base theme initializer and .mermaid-blueprint wrapper',
+		wardleyHtml.includes('spec-hero-figure'),
+	'[why-i-love-wardley-mapping] Includes Token-Synced Mermaid v12 + ELK/Tidy-Tree engine and .spec-hero-figure container',
 );
 assert(
 	wardleyHtml.includes('data-language="mermaid"') &&
 		wardleyHtml.includes('The Evolution of Programming Abstractions'),
 	'[why-i-love-wardley-mapping] Preserves Markdown Mermaid timeline diagram source',
+);
+
+// Validate all 6 new blog posts have hero images, ELK layout, colored nodes, animated edges, and tidy-tree mindmaps
+const sixNewPosts = [
+	'blog/clean-core-sidecars-and-cots-stop-rules/index.html',
+	'blog/contract-first-net-beyond-codegen/index.html',
+	'blog/editorial-architecture-and-three-year-tco/index.html',
+	'blog/from-adrs-to-executable-constraints/index.html',
+	'blog/from-partner-diagram-rot-to-context-engineering/index.html',
+	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
+];
+
+for (const postPage of sixNewPosts) {
+	const postHtml = fs.readFileSync(path.join(distDir, postPage), 'utf8');
+	assert(
+		postHtml.includes('spec-hero-figure') &&
+			postHtml.includes('layout: elk') &&
+			postHtml.includes('classDef') &&
+			postHtml.includes('animate: true') &&
+			postHtml.includes('mindmap') &&
+			postHtml.includes('layout: tidy-tree'),
+		`[${postPage}] Renders Hero Banner, ELK layout, colored nodes (classDef), animated edges, and Tidy-Tree Mindmap diagram`,
+	);
+}
+
+// Verify every mindmap fenced block across src/content/{blog,foundry} explicitly sets layout: tidy-tree
+const contentCollections = ['src/content/blog', 'src/content/foundry'];
+for (const relDir of contentCollections) {
+	const absDir = path.join(rootDir, relDir);
+	for (const file of fs.readdirSync(absDir).filter((f) => f.endsWith('.md'))) {
+		const md = fs.readFileSync(path.join(absDir, file), 'utf8');
+		const mermaidBlocks = [...md.matchAll(/```mermaid\s*\n([\s\S]*?)```/g)];
+		for (const [, block] of mermaidBlocks) {
+			if (/\bmindmap\b/.test(block)) {
+				assert(
+					/\blayout:\s*tidy-tree\b/.test(block),
+					`[${relDir}/${file}] Mindmap block explicitly declares layout: tidy-tree`,
+				);
+			}
+		}
+	}
+}
+
+const blogPostLayout = readFile('src/layouts/BlogPost.astro');
+assert(
+	blogPostLayout.includes('ensureMindmapTidyTree') && blogPostLayout.includes('layout: tidy-tree'),
+	'[src/layouts/BlogPost.astro] Enforces tidy-tree layout fallback for mindmap diagrams at runtime',
 );
 
 const blacksmithHtml = fs.readFileSync(
@@ -258,19 +329,63 @@ assert(
 	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Practitioner Notes, Research) with populated badge counts',
 );
 
+// Inspect Foundry index and Foundry entries
+const foundryIndexHtml = fs.readFileSync(path.join(distDir, 'foundry/index.html'), 'utf8');
+assert(
+	foundryIndexHtml.includes('Foundry') &&
+		foundryIndexHtml.includes('/foundry/engineering-this-monograph/') &&
+		foundryIndexHtml.includes('/foundry/atruss-code-atlas/') &&
+		foundryIndexHtml.includes('/foundry/tdd-analyzer/') &&
+		foundryIndexHtml.includes('/foundry/to-markdown-converter/') &&
+		!/class="taxonomy-count"[^>]*>\s*<\/span>/.test(foundryIndexHtml),
+	'[foundry/index.html] Renders Foundry index with populated taxonomy badge counts and all 4 Foundry entries',
+);
+
+const foundryProductPages = [
+	['foundry/atruss-code-atlas/index.html', '6-Dimension A'],
+	['foundry/tdd-analyzer/index.html', 'Static RAG'],
+	['foundry/to-markdown-converter/index.html', 'MarkItDown'],
+];
+
+for (const [foundryPage, keyPhrase] of foundryProductPages) {
+	const pageHtml = fs.readFileSync(path.join(distDir, foundryPage), 'utf8');
+	assert(
+		pageHtml.includes(keyPhrase) &&
+			pageHtml.includes('spec-hero-figure') &&
+			pageHtml.includes('layout: elk') &&
+			pageHtml.includes('classDef') &&
+			pageHtml.includes('animate: true') &&
+			pageHtml.includes('mindmap') &&
+			pageHtml.includes('layout: tidy-tree'),
+		`[${foundryPage}] Renders Hero Banner, "${keyPhrase}", ELK layout, colored nodes, animated edges, and Tidy-Tree Mindmap diagram`,
+	);
+}
+
 // Inspect Homepage features on /index.html and verify zero noisy // or serial index strings
 const homeHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
+const writeSidebarMatch = homeHtml.match(/id="sidebar-write"[\s\S]*?<\/div>\s*<\/div>/);
+const buildSidebarMatch = homeHtml.match(/id="sidebar-build"[\s\S]*?<\/div>\s*<\/div>/);
+const writeItemCount = writeSidebarMatch
+	? (writeSidebarMatch[0].match(/class="pillar-item"/g) || []).length
+	: 0;
+const buildItemCount = buildSidebarMatch
+	? (buildSidebarMatch[0].match(/class="pillar-item"/g) || []).length
+	: 0;
+
 assert(
 	homeHtml.includes('From Blacksmiths') &&
 		homeHtml.includes('to Goldsmiths.') &&
-		homeHtml.includes('/blog/tag/architecture') &&
-		homeHtml.includes('/blog/tag/sdlc') &&
-		homeHtml.includes('/blog/tag/ai') &&
-		homeHtml.includes('/blog/tag/research') &&
+		homeHtml.includes('Explore the Foundry') &&
+		homeHtml.includes('What I Write About') &&
+		homeHtml.includes('What I Build') &&
+		writeItemCount > 0 &&
+		writeItemCount <= 3 &&
+		buildItemCount > 0 &&
+		buildItemCount <= 3 &&
 		homeHtml.includes('https://www.linkedin.com/in/shashinkumar/') &&
 		homeHtml.includes('https://github.com/kumarshaz') &&
 		homeHtml.includes('https://dzone.com/users/5309856/snkumar.html'),
-	'[index.html] Preserves Hero, 4 Domain Pillars, Recent Posts Ledger, and Connect links',
+	'[index.html] Preserves Hero, Explore the Foundry CTA, What I Write About (<=3 items), What I Build (<=3 items), and Connect links',
 );
 assert(
 	!homeHtml.includes('MONOGRAPH //') &&

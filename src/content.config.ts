@@ -25,4 +25,26 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const foundry = defineCollection({
+	// Load Markdown and MDX files in the `src/content/foundry/` directory.
+	loader: glob({ base: './src/content/foundry', pattern: '**/*.{md,mdx}' }),
+	schema: ({ image }) =>
+		z.object({
+			title: z.string(),
+			description: z.string(),
+			pubDate: z.coerce.date(),
+			updatedDate: z.coerce.date().optional(),
+			heroImage: image().optional(),
+			category: z
+				.enum(['Platform', 'Architecture Toolkit', 'Developer Tool', 'Open Source'])
+				.default('Architecture Toolkit'),
+			tags: z.array(z.string()).default([]),
+			readingTime: z.string().optional(),
+			status: z.enum(['Active', 'Evergreen', 'Production', 'Open Source']).default('Active'),
+			repoUrl: z.string().url().optional(),
+			docId: z.string().optional(),
+		}),
+});
+
+export const collections = { blog, foundry };
+

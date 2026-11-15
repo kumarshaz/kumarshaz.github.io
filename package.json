@@ -10,13 +10,17 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "validate": "node scripts/validate-ui.mjs"
+    "validate": "node scripts/validate-ui.mjs",
+    "check": "npm run build && npm run validate"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.2",
     "@astrojs/rss": "^4.0.17",
     "@astrojs/sitemap": "^3.7.1",
+    "@mermaid-js/layout-elk": "^1.0.2",
+    "@mermaid-js/layout-tidy-tree": "^1.0.1",
     "astro": "^6.0.8",
+    "mermaid": "^12.3.0",
     "sharp": "^0.34.3"
   }
 }

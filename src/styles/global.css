@@ -16,6 +16,7 @@ html {
 	background-color: var(--bg-canvas);
 	color: var(--text-primary);
 	scroll-behavior: smooth;
+	scrollbar-gutter: stable;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
