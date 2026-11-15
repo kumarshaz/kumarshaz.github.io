@@ -12,6 +12,32 @@ const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 const recentPosts = posts.slice(0, 3);
+
+const builds = (await getCollection('foundry')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const recentBuilds = builds.slice(0, 3);
+
+const writingPillars = [
+	{
+		href: '/blog/tag/architecture',
+		title: 'Software Architecture →',
+		description:
+			'Hexagonal, DDD, CQRS, and the "Lego Framework" — composable enterprise systems built on company-proven patterns.',
+	},
+	{
+		href: '/blog/tag/sdlc',
+		title: 'Enterprise SDLC →',
+		description:
+			'CI/CD pipelines, API Design-First, and Spec-Driven Development across heterogeneous stacks.',
+	},
+	{
+		href: '/blog/tag/ai',
+		title: 'AI & Published Research →',
+		description:
+			'AI as the "Great Teacher", Wardley Mapping, and peer-reviewed research on Domain Autonomy and Composable Enterprise.',
+	},
+].slice(0, 3);
 ---
 
 <!doctype html>
@@ -40,6 +66,7 @@ const recentPosts = posts.slice(0, 3);
 							</p>
 							<div class="hero-cta">
 								<a href="/blog" class="btn-primary">Read the Blog</a>
+								<a href="/foundry" class="btn-foundry">Explore the Foundry</a>
 								<a href="/about" class="btn-secondary">About Me</a>
 							</div>
 						</div>
@@ -56,41 +83,42 @@ const recentPosts = posts.slice(0, 3);
 				</div>
 			</section>
 
-			<!-- Option D Asymmetric Notebook Split: Left Sidebar (Domains & Connect) + Right Stream (Recent Writing) -->
+			<!-- Option D Asymmetric Notebook Split: Left Sidebar (What I Write About, What I Build & Connect) + Right Stream -->
 			<section class="architect-grid home-notebook">
-				<aside class="architect-rail" aria-label="What I Write About and Connect">
-					<!-- Pillars Section -->
-					<div class="pillars">
-						<h2 class="sidebar-heading">What I Write About</h2>
+				<aside class="architect-rail" aria-label="What I Write About, What I Build, and Connect">
+					<!-- What I Write About (Latest 3) -->
+					<div class="pillars" id="sidebar-write">
+						<div class="sidebar-heading-row">
+							<h2 class="sidebar-heading">What I Write About</h2>
+							<a href="/blog" class="sidebar-more">All →</a>
+						</div>
 						<div class="pillars-stack">
-							<a href="/blog/tag/architecture" class="pillar-item">
-								<h3>Software Architecture →</h3>
-								<p>
-									Hexagonal, DDD, CQRS, and the "Lego Framework" — composable enterprise systems
-									built on company-proven patterns.
-								</p>
-							</a>
-							<a href="/blog/tag/sdlc" class="pillar-item">
-								<h3>Enterprise SDLC →</h3>
-								<p>
-									CI/CD pipelines, API Design-First, and Spec-Driven Development across
-									heterogeneous stacks.
-								</p>
-							</a>
-							<a href="/blog/tag/ai" class="pillar-item">
-								<h3>AI-Augmented Engineering →</h3>
-								<p>
-									AI as the "Great Teacher" — automating the structural 90% while empowering humans
-									for the final 10% of refinement.
-								</p>
-							</a>
-							<a href="/blog/tag/research" class="pillar-item">
-								<h3>Published Research →</h3>
-								<p>
-									Peer-reviewed papers on Domain Autonomy in Microservices, Composable Enterprise,
-									and IoT Data Processing.
-								</p>
-							</a>
+							{
+								writingPillars.map((pillar) => (
+									<a href={pillar.href} class="pillar-item">
+										<h3>{pillar.title}</h3>
+										<p>{pillar.description}</p>
+									</a>
+								))
+							}
+						</div>
+					</div>
+
+					<!-- What I Build (Latest 3 from Foundry) -->
+					<div class="pillars" id="sidebar-build">
+						<div class="sidebar-heading-row">
+							<h2 class="sidebar-heading">What I Build</h2>
+							<a href="/foundry" class="sidebar-more">Foundry →</a>
+						</div>
+						<div class="pillars-stack">
+							{
+								recentBuilds.map((item) => (
+									<a href={`/foundry/${item.id}/`} class="pillar-item">
+										<h3>{item.data.title} →</h3>
+										<p>{item.data.description}</p>
+									</a>
+								))
+							}
 						</div>
 					</div>
 
@@ -129,7 +157,7 @@ const recentPosts = posts.slice(0, 3);
 					</div>
 				</aside>
 
-				<!-- Right Main Stream: Latest Writing -->
+				<!-- Right Main Stream: Latest Writing & Foundry Builds -->
 				<div class="architect-main--wide recent-posts">
 					<div class="stream-header">
 						<h2 class="stream-title">Latest from the Blog</h2>
@@ -179,6 +207,64 @@ const recentPosts = posts.slice(0, 3);
 														height={200}
 														src={post.data.heroImage}
 														alt={post.data.title}
+													/>
+												</a>
+											)}
+										</div>
+									</li>
+								);
+							})
+						}
+					</ul>
+
+					<div class="stream-header foundry-stream-header">
+						<h2 class="stream-title">Latest from the Foundry</h2>
+						<a href="/foundry" class="view-all-link">Explore all builds →</a>
+					</div>
+
+					<ul class="posts-list">
+						{
+							recentBuilds.map((item) => {
+								const category = item.data.category || 'Architecture Toolkit';
+								return (
+									<li class="post-row" data-category={category}>
+										<div class="post-row-inner">
+											<div class="post-row-body">
+												<div class="post-meta">
+													<span class="mono-badge">[{category}]</span>
+													<span class="post-date">
+														<FormattedDate date={item.data.pubDate} />
+													</span>
+													{item.data.readingTime && (
+														<span class="post-reading">· {item.data.readingTime}</span>
+													)}
+												</div>
+												<a href={`/foundry/${item.id}/`} class="post-title-link">
+													<h3>{item.data.title}</h3>
+												</a>
+												<p class="post-desc">{item.data.description}</p>
+												{item.data.tags && item.data.tags.length > 0 && (
+													<div class="post-tags-row">
+														{item.data.tags.map((tag) => (
+															<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+																#{tag}
+															</a>
+														))}
+													</div>
+												)}
+											</div>
+											{item.data.heroImage && (
+												<a
+													href={`/foundry/${item.id}/`}
+													class="post-thumb"
+													aria-hidden="true"
+													tabindex="-1"
+												>
+													<Image
+														width={360}
+														height={200}
+														src={item.data.heroImage}
+														alt={item.data.title}
 													/>
 												</a>
 											)}
@@ -272,6 +358,26 @@ const recentPosts = posts.slice(0, 3);
 		color: #ffffff !important;
 	}
 
+	.btn-foundry {
+		display: inline-flex;
+		align-items: center;
+		background-color: var(--bg-surface);
+		border: 1px solid var(--accent-primary);
+		color: var(--accent-primary) !important;
+		padding: 0.65rem 1.35rem;
+		font-family: var(--font-mono);
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	}
+
+	.btn-foundry:hover {
+		background-color: var(--accent-primary);
+		border-color: var(--accent-primary);
+		color: #ffffff !important;
+	}
+
 	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
@@ -306,9 +412,18 @@ const recentPosts = posts.slice(0, 3);
 		border: 1px solid var(--border-grid);
 	}
 
-	/* ===== Left Sidebar (Domains & Connect) ===== */
+	/* ===== Left Sidebar (Domains, Foundry & Connect) ===== */
 	.home-notebook {
 		grid-template-columns: 300px 1fr;
+	}
+
+	.sidebar-heading-row {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin: 0 0 1rem 0;
+		padding-bottom: 0.45rem;
+		border-bottom: 2px solid var(--border-strong);
 	}
 
 	.sidebar-heading {
@@ -323,8 +438,25 @@ const recentPosts = posts.slice(0, 3);
 		border-bottom: 2px solid var(--border-strong);
 	}
 
+	.sidebar-heading-row .sidebar-heading {
+		margin: 0;
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+
+	.sidebar-more {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: var(--accent-primary);
+		text-decoration: none;
+	}
+
+	.sidebar-more:hover {
+		text-decoration: underline;
+	}
+
 	.pillars {
-		margin-bottom: 2.5rem;
+		margin-bottom: 2.25rem;
 	}
 
 	.pillars-stack {
@@ -400,7 +532,7 @@ const recentPosts = posts.slice(0, 3);
 		color: var(--accent-primary);
 	}
 
-	/* ===== Right Stream: Latest from the Blog ===== */
+	/* ===== Right Stream: Latest from the Blog & Foundry ===== */
 	.stream-header {
 		display: flex;
 		align-items: baseline;
@@ -408,6 +540,10 @@ const recentPosts = posts.slice(0, 3);
 		padding-bottom: 0.45rem;
 		margin-bottom: 0.5rem;
 		border-bottom: 2px solid var(--border-strong);
+	}
+
+	.foundry-stream-header {
+		margin-top: 2.75rem;
 	}
 
 	.stream-title {

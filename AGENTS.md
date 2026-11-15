@@ -75,6 +75,8 @@ docId: "ARCH-YYYY-NN"
 | `status` | Yes | `"Published"` \| `"Evergreen"` \| `"Draft"` | Defaults to `"Published"`. |
 | `docId` | Recommended | `string` (e.g., `"ARCH-2026-04"`) | Sequential document identifier in `ARCH-YYYY-NN` format. |
 
+> **Foundry ("What I Build") Collection (`src/content/foundry/`)**: Architecture products, platforms, and toolkits live in `src/content/foundry/{slug}.md` and render at `/foundry` and `/foundry/{slug}/`. Foundry frontmatter uses the same structure with `category` (`"Platform"` | `"Architecture Toolkit"` | `"Developer Tool"` | `"Open Source"`), `status` (`"Active"` | `"Evergreen"` | `"Production"` | `"Open Source"`), optional `repoUrl`, and `docId` (`"FNDRY-YYYY-NN"`).
+
 ### Step 4: Authoring Mermaid Diagrams & Code Blocks
 
 - **Mermaid Diagrams**:

@@ -1,0 +1,412 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+
+const builds = (await getCollection('foundry')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const allTags = [...new Set(builds.flatMap((entry) => entry.data.tags ?? []))];
+
+const categoryCounts = {
+	all: builds.length,
+	Platform: builds.filter((b) => b.data.category === 'Platform').length,
+	'Architecture Toolkit': builds.filter(
+		(b) =>
+			(b.data.category || 'Architecture Toolkit') === 'Architecture Toolkit' ||
+			b.data.category === 'Developer Tool' ||
+			b.data.category === 'Open Source',
+	).length,
+};
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Foundry — ${SITE_TITLE}`}
+			description="What I Build: Reusable architecture products, governance toolkits, and token-driven engineering platforms."
+		/>
+		<style>
+			.index-masthead {
+				padding: 2.5rem 0 1.75rem 0;
+				border-bottom: 2px solid var(--border-strong);
+				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+
+			.index-masthead h1 {
+				font-family: var(--font-display);
+				font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+				font-weight: 700;
+				margin: 0 0 0.4rem 0;
+				color: var(--text-primary);
+			}
+
+			.index-subtitle {
+				font-family: var(--font-sans);
+				font-size: 1rem;
+				color: var(--text-muted);
+				max-width: 62ch;
+				margin: 0;
+				line-height: 1.55;
+			}
+
+			.index-count {
+				font-family: var(--font-mono);
+				font-size: 0.76rem;
+				color: var(--text-muted);
+			}
+
+			/* Taxonomy Filter Buttons in Left Sidebar */
+			.taxonomy-filter-list {
+				list-style: none;
+				padding: 0;
+				margin: 0.5rem 0 0 0;
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+
+			.taxonomy-btn {
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				background-color: var(--bg-surface);
+				border: 1px solid var(--border-grid);
+				padding: 0.5rem 0.65rem;
+				font-family: var(--font-mono);
+				font-size: 0.75rem;
+				color: var(--text-primary);
+				cursor: pointer;
+				text-align: left;
+				transition: border-color 0.15s ease, color 0.15s ease;
+			}
+
+			.taxonomy-btn:hover,
+			.taxonomy-btn.is-active {
+				border-color: var(--accent-primary);
+				color: var(--accent-primary);
+			}
+
+			.taxonomy-count {
+				font-size: 0.7rem;
+				color: var(--text-muted);
+			}
+
+			/* Main Entries Stream */
+			.entries-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+
+			.entry-row {
+				border-bottom: 1px solid var(--border-grid);
+				padding: 1.85rem 0;
+			}
+
+			.entry-row:first-child {
+				padding-top: 0;
+			}
+
+			.entry-row:last-child {
+				border-bottom: none;
+			}
+
+			.entry-row[hidden] {
+				display: none !important;
+			}
+
+			.entry-layout {
+				display: grid;
+				grid-template-columns: 1fr 210px;
+				gap: 2rem;
+				align-items: start;
+			}
+
+			.entry-link {
+				text-decoration: none;
+				color: inherit;
+				display: block;
+			}
+
+			.entry-meta-bar {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				margin-bottom: 0.6rem;
+				font-family: var(--font-mono);
+				font-size: 0.74rem;
+				color: var(--text-muted);
+			}
+
+			.entry-title {
+				font-family: var(--font-display);
+				font-size: 1.35rem;
+				font-weight: 700;
+				line-height: 1.25;
+				margin: 0 0 0.55rem 0;
+				padding: 0;
+				border: none;
+				color: var(--text-primary);
+				transition: color 0.15s ease;
+			}
+
+			.entry-link:hover .entry-title {
+				color: var(--accent-primary);
+			}
+
+			.entry-desc {
+				font-family: var(--font-sans);
+				font-size: 0.95rem;
+				line-height: 1.62;
+				color: var(--text-muted);
+				margin: 0 0 0.85rem 0;
+			}
+
+			.entry-tags {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.4rem;
+			}
+
+			.repo-pill {
+				display: inline-flex;
+				align-items: center;
+				font-family: var(--font-mono);
+				font-size: 0.72rem;
+				font-weight: 600;
+				padding: 0.15rem 0.55rem;
+				border: 1px solid var(--accent-primary);
+				color: var(--accent-primary);
+				text-decoration: none;
+				transition: background-color 0.15s ease, color 0.15s ease;
+			}
+
+			.repo-pill:hover {
+				background-color: var(--accent-primary);
+				color: #fff;
+			}
+
+			.entry-figure {
+				margin: 0;
+				padding: 0.35rem;
+				border: 1px solid var(--border-grid);
+				background-color: var(--bg-surface);
+			}
+
+			.entry-figure img {
+				display: block;
+				width: 100%;
+				height: 120px;
+				object-fit: cover;
+				border: 1px solid var(--border-grid);
+			}
+
+			@media (max-width: 900px) {
+				.entry-layout {
+					grid-template-columns: 1fr;
+					gap: 1.25rem;
+				}
+				.entry-figure img {
+					height: 170px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main id="main-content">
+			<!-- Top Notebook Header -->
+			<section class="notebook-container">
+				<div class="index-masthead">
+					<div>
+						<h1>Foundry</h1>
+						<p class="index-subtitle">
+							What I Build — reusable architecture products, multi-repo governance engines,
+							specification analyzers, and token-driven engineering platforms built on the Lego
+							Framework.
+						</p>
+					</div>
+					<span class="index-count">[{builds.length} Builds]</span>
+				</div>
+			</section>
+
+			<!-- Sidebar Filters + Notebook Stream -->
+			<section class="architect-grid">
+				<aside class="architect-rail" aria-label="Filter Foundry by Category and Tags">
+					<div class="rail-sticky">
+						<div class="rail-block">
+							<span class="rail-label">Categories</span>
+							<ul class="taxonomy-filter-list" role="tablist" aria-label="Filter by category">
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn is-active"
+										data-filter="all"
+										role="tab"
+										aria-selected="true"
+									>
+										<span>All Builds</span>
+										<span class="taxonomy-count">{categoryCounts.all}</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Architecture Toolkit"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Architecture Toolkits</span>
+										<span class="taxonomy-count">{categoryCounts['Architecture Toolkit']}</span>
+									</button>
+								</li>
+								<li>
+									<button
+										type="button"
+										class="taxonomy-btn"
+										data-filter="Platform"
+										role="tab"
+										aria-selected="false"
+									>
+										<span>Platforms</span>
+										<span class="taxonomy-count">{categoryCounts.Platform}</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+
+						<div class="rail-block">
+							<span class="rail-label">Tags</span>
+							<ul class="rail-tags">
+								{
+									allTags.map((tag) => (
+										<li>
+											<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+												#{tag}
+											</a>
+										</li>
+									))
+								}
+							</ul>
+						</div>
+					</div>
+				</aside>
+
+				<div class="architect-main--wide">
+					<ul class="entries-list" id="foundry-entries">
+						{
+							builds.map((item) => {
+								const category = item.data.category || 'Architecture Toolkit';
+								return (
+									<li class="entry-row" data-category={category}>
+										<div class="entry-layout">
+											<div class="entry-body">
+												<a href={`/foundry/${item.id}/`} class="entry-link">
+													<div class="entry-meta-bar">
+														<span class="mono-badge">[{category}]</span>
+														<span class="date">
+															<FormattedDate date={item.data.pubDate} />
+														</span>
+														{item.data.readingTime && <span>· {item.data.readingTime}</span>}
+													</div>
+													<h2 class="title entry-title">{item.data.title}</h2>
+													<p class="entry-desc">{item.data.description}</p>
+												</a>
+												<div class="entry-tags">
+													{item.data.repoUrl && (
+														<a
+															href={item.data.repoUrl}
+															target="_blank"
+															rel="noopener noreferrer"
+															class="repo-pill"
+														>
+															GitHub Repo ↗
+														</a>
+													)}
+													{item.data.tags &&
+														item.data.tags.map((tag) => (
+															<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
+																#{tag}
+															</a>
+														))}
+												</div>
+											</div>
+											{item.data.heroImage && (
+												<a
+													href={`/foundry/${item.id}/`}
+													class="entry-figure"
+													aria-hidden="true"
+													tabindex="-1"
+												>
+													<Image
+														width={480}
+														height={270}
+														src={item.data.heroImage}
+														alt={item.data.title}
+													/>
+												</a>
+											)}
+										</div>
+									</li>
+								);
+							})
+						}
+					</ul>
+				</div>
+			</section>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', () => {
+				const buttons = document.querySelectorAll('.taxonomy-btn');
+				const entries = document.querySelectorAll('.entry-row');
+
+				const applyFilter = (filterValue) => {
+					buttons.forEach((btn) => {
+						const active = btn.getAttribute('data-filter') === filterValue;
+						btn.classList.toggle('is-active', active);
+						btn.setAttribute('aria-selected', active ? 'true' : 'false');
+					});
+
+					entries.forEach((entry) => {
+						const cat = entry.getAttribute('data-category') || 'Architecture Toolkit';
+						if (filterValue === 'all') {
+							entry.hidden = false;
+						} else if (filterValue === 'Architecture Toolkit') {
+							entry.hidden = !(
+								cat === 'Architecture Toolkit' ||
+								cat === 'Developer Tool' ||
+								cat === 'Open Source'
+							);
+						} else {
+							entry.hidden = cat !== filterValue;
+						}
+					});
+				};
+
+				buttons.forEach((btn) => {
+					btn.addEventListener('click', () => {
+						const filter = btn.getAttribute('data-filter') || 'all';
+						applyFilter(filter);
+					});
+				});
+			});
+		</script>
+	</body>
+</html>

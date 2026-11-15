@@ -8,11 +8,16 @@ import Header from '../../../components/Header.astro';
 import { SITE_TITLE } from '../../../consts';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	const blogPosts = await getCollection('blog');
+	const foundryBuilds = await getCollection('foundry');
+	const allItems = [
+		...blogPosts.map((p) => ({ ...p, basePath: '/blog' })),
+		...foundryBuilds.map((b) => ({ ...b, basePath: '/foundry' })),
+	];
 	const pillarTags = ['Architecture', 'SDLC', 'AI', 'Research'];
-	const postTags = posts.flatMap((post) => post.data.tags ?? []);
+	const itemTags = allItems.flatMap((item) => item.data.tags ?? []);
 	const tagMap = new Map<string, string>();
-	for (const t of [...pillarTags, ...postTags]) {
+	for (const t of [...pillarTags, ...itemTags]) {
 		const lower = t.toLowerCase();
 		if (!tagMap.has(lower)) {
 			tagMap.set(lower, t);
@@ -26,9 +31,9 @@ export async function getStaticPaths() {
 		props: {
 			tag,
 			allTags,
-			posts: posts
-				.filter((post) =>
-					post.data.tags?.map((t: string) => t.toLowerCase()).includes(tag.toLowerCase()),
+			posts: allItems
+				.filter((item) =>
+					item.data.tags?.map((t: string) => t.toLowerCase()).includes(tag.toLowerCase()),
 				)
 				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
 		},
@@ -222,11 +227,12 @@ const { tag, allTags = [], posts } = Astro.props;
 							<ul class="tag-entries-list">
 								{posts.map((post) => {
 									const category = post.data.category || 'Essay';
+									const itemHref = `${post.basePath || '/blog'}/${post.id}/`;
 									return (
 										<li class="tag-entry-row">
 											<div class="tag-entry-layout">
 												<div>
-													<a href={`/blog/${post.id}/`} class="tag-entry-link">
+													<a href={itemHref} class="tag-entry-link">
 														<div class="tag-entry-meta">
 															<span class="mono-badge">[{category}]</span>
 															<span class="date">
@@ -239,7 +245,7 @@ const { tag, allTags = [], posts } = Astro.props;
 												</div>
 												{post.data.heroImage && (
 													<a
-														href={`/blog/${post.id}/`}
+														href={itemHref}
 														class="tag-entry-figure"
 														aria-hidden="true"
 														tabindex="-1"

@@ -146,6 +146,9 @@ const expectedPages = [
 	'blog/what-is-blacksmith-to-goldsmith/index.html',
 	'blog/why-astro-and-gh-pages/index.html',
 	'blog/why-i-love-wardley-mapping/index.html',
+	'foundry/index.html',
+	'foundry/engineering-this-monograph/index.html',
+	'foundry/reusable-architecture-products/index.html',
 	'blog/tag/architecture/index.html',
 	'blog/tag/sdlc/index.html',
 	'blog/tag/ai/index.html',
@@ -189,6 +192,10 @@ for (const page of htmlPages) {
 	assert(
 		html.includes('architect-grid') && html.includes('architect-rail'),
 		`[${page}] Renders Swiss Grid (.architect-grid + .architect-rail)`,
+	);
+	assert(
+		html.includes('href="/foundry"') && !html.includes('font-weight:bolder'),
+		`[${page}] Renders stable Header with Foundry tab and zero layout-shifting bold overrides`,
 	);
 
 	// Check internal links resolve to files in dist/
@@ -258,19 +265,53 @@ assert(
 	'[blog/index.html] Renders Structured Knowledge Architecture taxonomy filters (Essays, Practitioner Notes, Research) with populated badge counts',
 );
 
+// Inspect Foundry index and Foundry entries
+const foundryIndexHtml = fs.readFileSync(path.join(distDir, 'foundry/index.html'), 'utf8');
+assert(
+	foundryIndexHtml.includes('Foundry') &&
+		foundryIndexHtml.includes('/foundry/engineering-this-monograph/') &&
+		foundryIndexHtml.includes('/foundry/reusable-architecture-products/') &&
+		!/class="taxonomy-count"[^>]*>\s*<\/span>/.test(foundryIndexHtml),
+	'[foundry/index.html] Renders Foundry index with populated taxonomy badge counts and both Foundry entries',
+);
+
+const foundryProductsHtml = fs.readFileSync(
+	path.join(distDir, 'foundry/reusable-architecture-products/index.html'),
+	'utf8',
+);
+assert(
+	foundryProductsHtml.includes('Atruss Code Atlas') &&
+		foundryProductsHtml.includes('TDD Analyser') &&
+		foundryProductsHtml.includes('Visio-to-Markdown Mermaid Converter') &&
+		foundryProductsHtml.includes('data-language="mermaid"'),
+	'[foundry/reusable-architecture-products] Documents Atruss Code Atlas, TDD Analyser, and Visio-to-Markdown Mermaid Converter with Mermaid diagrams',
+);
+
 // Inspect Homepage features on /index.html and verify zero noisy // or serial index strings
 const homeHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
+const writeSidebarMatch = homeHtml.match(/id="sidebar-write"[\s\S]*?<\/div>\s*<\/div>/);
+const buildSidebarMatch = homeHtml.match(/id="sidebar-build"[\s\S]*?<\/div>\s*<\/div>/);
+const writeItemCount = writeSidebarMatch
+	? (writeSidebarMatch[0].match(/class="pillar-item"/g) || []).length
+	: 0;
+const buildItemCount = buildSidebarMatch
+	? (buildSidebarMatch[0].match(/class="pillar-item"/g) || []).length
+	: 0;
+
 assert(
 	homeHtml.includes('From Blacksmiths') &&
 		homeHtml.includes('to Goldsmiths.') &&
-		homeHtml.includes('/blog/tag/architecture') &&
-		homeHtml.includes('/blog/tag/sdlc') &&
-		homeHtml.includes('/blog/tag/ai') &&
-		homeHtml.includes('/blog/tag/research') &&
+		homeHtml.includes('Explore the Foundry') &&
+		homeHtml.includes('What I Write About') &&
+		homeHtml.includes('What I Build') &&
+		writeItemCount > 0 &&
+		writeItemCount <= 3 &&
+		buildItemCount > 0 &&
+		buildItemCount <= 3 &&
 		homeHtml.includes('https://www.linkedin.com/in/shashinkumar/') &&
 		homeHtml.includes('https://github.com/kumarshaz') &&
 		homeHtml.includes('https://dzone.com/users/5309856/snkumar.html'),
-	'[index.html] Preserves Hero, 4 Domain Pillars, Recent Posts Ledger, and Connect links',
+	'[index.html] Preserves Hero, Explore the Foundry CTA, What I Write About (<=3 items), What I Build (<=3 items), and Connect links',
 );
 assert(
 	!homeHtml.includes('MONOGRAPH //') &&

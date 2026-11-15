@@ -40,8 +40,10 @@ Instead of a generic starter blog template, this site uses a custom **Token-Driv
   - Standard fenced ```` ```mermaid ```` blocks in Markdown are automatically wrapped in `.mermaid-blueprint` containers with a dot-matrix technical background, an `Expand`/`Collapse` toggle, and live Light/Dark CSS variable synchronization (`theme: 'base'`).
 - **Dual-Theme Code Highlighting**:
   - Configured with Shiki dual themes (`github-light` and `github-dark`) in [`astro.config.mjs`](astro.config.mjs) and [`src/styles/global.css`](src/styles/global.css) for WCAG AA+ readability across both Light and Dark modes.
-- **Structured Knowledge Taxonomy ([`src/content.config.ts`](src/content.config.ts))**:
-  - Articles are organized into **Essays**, **Practitioner Notes**, **Research**, and **Perspectives** with interactive category filtering and populated badge counts on `/blog`.
+- **Structured Knowledge Taxonomy & Foundry ([`src/content.config.ts`](src/content.config.ts))**:
+  - **Blog (`/blog`)**: Organized into **Essays**, **Practitioner Notes**, **Research**, and **Perspectives** with interactive category filtering and populated badge counts.
+  - **Foundry (`/foundry` — *What I Build*)**: Dedicated specification showcase for reusable architecture products and platforms—including **This Website's Token-Driven Monograph Architecture**, **[Atruss Code Atlas](https://github.com/kumarshaz/atruss-code-atlas)**, **TDD Analyser**, and the **Visio-to-Markdown Mermaid Converter**.
+  - **Home Page Left Rail**: Surfaces the top 3 items for both **What I Write About** and **What I Build** (`Foundry`).
 
 ---
 
@@ -65,7 +67,7 @@ npm ci
 # Start local dev server at http://localhost:4321
 npm run dev
 
-# Build static production output and run all 118 UI & content validation checks
+# Build static production output and run all 153 UI & content validation checks
 npm run check
 ```
 

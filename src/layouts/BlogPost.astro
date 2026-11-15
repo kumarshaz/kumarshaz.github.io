@@ -15,6 +15,11 @@ interface Props extends Partial<BlogData> {
 	pubDate: Date;
 	headings?: MarkdownHeading[];
 	slug?: string;
+	category?: string;
+	status?: string;
+	repoUrl?: string;
+	backHref?: string;
+	backLabel?: string;
 }
 
 const {
@@ -27,6 +32,9 @@ const {
 	tags = [],
 	readingTime,
 	headings = [],
+	repoUrl,
+	backHref = '/blog',
+	backLabel = '← All Articles',
 } = Astro.props;
 
 const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
@@ -161,6 +169,23 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 								<span class="rail-value">{category}</span>
 							</div>
 
+							{
+								repoUrl && (
+									<div class="rail-block">
+										<span class="rail-label">Repository</span>
+										<a
+											href={repoUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="rail-tag"
+											style="display: inline-block; margin-top: 0.2rem;"
+										>
+											View Source on GitHub →
+										</a>
+									</div>
+								)
+							}
+
 							<div class="rail-block" id="rail-toc-block">
 								<span class="rail-label">ON THIS PAGE</span>
 								<ul class="rail-toc-list" id="rail-toc-list">
@@ -191,7 +216,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 								)
 							}
 
-							<a href="/blog" class="back-to-index">← All Articles</a>
+							<a href={backHref} class="back-to-index">{backLabel}</a>
 						</div>
 					</aside>
 
