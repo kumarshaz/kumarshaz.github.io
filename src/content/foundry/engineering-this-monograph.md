@@ -24,24 +24,46 @@ Most developer blogs fall into one of two traps:
 Following my **Master Goldsmith** philosophy and the **Lego Framework**, I designed this platform around a strict separation of concerns: **zero client-side JavaScript by default**, pure **Markdown + Mermaid** authoring, and a **single CSS token source of truth** shared across typography, layout rails, syntax highlighting, and architectural diagrams.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart LR
+    classDef token fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
+    classDef layout fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
+    classDef gate fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
+
     subgraph Layer1["1. Token Foundation (CSS)"]
-        PT["Primitive Tokens<br/>(Paper, Carbon, Rust, Amber)"] --> ST["Semantic Surface Tokens<br/>(--bg-canvas, --border-strong)"]
-        PT --> MT["Mermaid Diagram Tokens<br/>(--mermaid-node-bg, --mermaid-line)"]
+        PT["Primitive Tokens<br/>(Paper, Carbon, Rust, Amber)"]:::token
+        ST["Semantic Surface Tokens<br/>(--bg-canvas, --border-strong)"]:::token
+        MT["Mermaid Diagram Tokens<br/>(--mermaid-node-bg, --mermaid-line)"]:::token
+        PT e1@--> ST
+        PT e2@--> MT
     end
 
     subgraph Layer2["2. Astro Layout Primitives"]
-        ST --> NB["Engineering Notebook Layout<br/>(Asymmetric Rail + 72ch Stream)"]
-        ST --> SH["Shiki Dual-Theme Engine<br/>(github-light / github-dark)"]
+        NB["Engineering Notebook Layout<br/>(Asymmetric Rail + 72ch Stream)"]:::layout
+        SH["Shiki Dual-Theme Engine<br/>(github-light / github-dark)"]:::layout
+        ST e3@--> NB
+        ST e4@--> SH
     end
 
     subgraph Layer3["3. Content & Governance Pipeline"]
-        MD["Markdown (.md)<br/>+ Mermaid Blocks"] --> MF["Blueprint Figure Wrapper<br/>(.mermaid-blueprint + Expand)"]
-        MT -.->|"Dynamic CSS Variable Sync"| MF
-        NB --> VG["118-Check UI & Link Validator<br/>(scripts/validate-ui.mjs)"]
+        MD["Markdown (.md)<br/>+ Mermaid v12 Blocks"]:::layout
+        MF["Blueprint Figure Wrapper<br/>(.mermaid-blueprint + ELK / Tidy-Tree)"]:::gate
+        VG["Automated UI & Link Validator<br/>(scripts/validate-ui.mjs)"]:::gate
+        MD e5@--> MF
+        MT e6@-.->|"Dynamic CSS Variable Sync"| MF
+        NB e7@--> VG
         SH --> VG
-        MF --> VG
+        MF e8@--> VG
     end
+
+    e1@{ animate: true }
+    e3@{ animate: true }
+    e5@{ animate: true }
+    e6@{ animate: true }
+    e8@{ animate: true }
 ```
 
 ---
@@ -52,7 +74,7 @@ Instead of scattering hex codes across components, [`src/styles/tokens.css`](htt
 
 - **Tier 1 — Primitives**: Raw archival paper tones (`#F2F1EC`, `#E7E5DD`), deep anvil carbon (`#111214`, `#181A1E`), and high-contrast signal accents (`#C84B20` Signal Rust for Light Mode; `#E87A48` Signal Amber for Dark Mode).
 - **Tier 2 — Semantic Surfaces & Rules**: Context-aware tokens (`--bg-canvas`, `--bg-surface`, `--text-primary`, `--border-grid`, `--border-strong`) that switch instantaneously when `[data-theme="dark"]` is toggled.
-- **Tier 3 — Mermaid Diagram Tokens**: Dedicated diagram primitives (`--mermaid-node-bg`, `--mermaid-node-border`, `--mermaid-line`, `--mermaid-cluster-bg`) consumed at runtime by Mermaid v11.
+- **Tier 3 — Mermaid Diagram Tokens**: Dedicated diagram primitives (`--mermaid-node-bg`, `--mermaid-node-border`, `--mermaid-line`, `--mermaid-cluster-bg`) consumed at runtime by Mermaid v12.
 
 ### Open-Source Technical Typography
 
@@ -63,13 +85,13 @@ Every typographic role is mapped to open-source fonts licensed under the **SIL O
 
 ---
 
-## 3. Token-Synced Mermaid v11 Blueprint Pipeline
+## 3. Token-Synced Mermaid v12 Blueprint Pipeline (ELK & Tidy-Tree)
 
 Mermaid diagrams often look disconnected from the host site because Mermaid injects isolated default stylesheets. In this platform's [`BlogPost.astro`](https://github.com/kumarshaz/kumarshaz.github.io/blob/main/src/layouts/BlogPost.astro) layout:
 
 1. **Zero-Friction Authoring**: Diagrams are authored as standard ```` ```mermaid ```` fenced blocks inside Markdown.
 2. **Blueprint Figure Framing**: At load time, each Mermaid block is wrapped in a `.mermaid-blueprint` figure container featuring a radial dot-matrix technical background, an `Architecture Diagram` header bar, and an interactive `Expand` / `Collapse` viewport toggle.
-3. **Live Theme Synchronization**: Mermaid v11 is initialized with `theme: 'base'`, reading active CSS variables via `getComputedStyle(document.documentElement)`. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
+3. **Live Theme Synchronization & ELK Layout**: Mermaid v12 is bundled with `@mermaid-js/layout-elk` and `@mermaid-js/layout-tidy-tree`, initialized with `layout: 'elk'` and `theme: 'base'`, reading active CSS variables via `getComputedStyle(document.documentElement)`. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
 
 ---
 

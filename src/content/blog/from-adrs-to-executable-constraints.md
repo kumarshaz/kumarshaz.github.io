@@ -2,17 +2,12 @@
 title: "From ADRs to Executable Constraints: Why Verification Is the Asset in 2026"
 description: "How autonomous coding agents exposed the collapse of prose Architecture Decision Records—and why deterministic type boundaries, architectural unit tests, and verification gates have become the only compounding engineering asset."
 pubDate: 2026-11-14
-category: "Architecture Note"
-tags: ["Architecture", "SDLC", "AI", "Research", ".NET", "Governance"]
+heroImage: '../../assets/from-adrs-to-executable-constraints.jpeg'
+category: "Practitioner Note"
+tags: ["Architecture", "SDLC", "AI", "Research", "DotNet", "Governance"]
 readingTime: "12 min read"
 status: "Published"
 docId: "ARCH-2026-04"
-intent: "Flagship Astro-ready blog essay evolving Shashi Kumar's Guardrail Architect and Verification-as-the-Asset theses into the November 2026 autonomous engineering reality."
-type: "reference"
-skills_applied:
-  - "voice-note-backlog-harvester"
-  - "research-market-analyst"
-last_updated: "2026-11-14"
 ---
 
 > **Original Thought & Source Lineage:** This architecture note expands ideas first published across two essays: [*VS Code Agent Mode: An Architect's Perspective for the .NET Ecosystem*](https://dzone.com/articles/vs-code-agent-mode-dotnet) (DZone, **September 19, 2025** — open companion to the earlier [Medium preview](https://medium.com/@kumar.shashinath/vs-code-agent-mode-an-architects-perspective-for-the-net-ecosystem-7749fa038699) on August 11, 2025) and [*The Automation Boomerang*](https://www.linkedin.com/feed/update/urn:li:activity:7330076293637566464/) (LinkedIn, **May 18, 2025**), crystallized in January 2026 into a single maxim on [LinkedIn (January 8, 2026)](https://www.linkedin.com/feed/update/urn:li:activity:7414916817858736128/):
@@ -54,19 +49,46 @@ When we examine real open-source multi-agent pull request corpora in late 2026�
 Prose instructions are **advisory hints**. Only deterministic build, type, and graph checks are **gates**.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart LR
-    subgraph Broken["Broken 2025 Loop: Advisory Prose"]
-        A1["Autonomous Agent PR"] --> B1["Markdown Rules\n(AGENTS.md / ADR Wiki)"]
-        B1 --> C1["Verbose LLM Reviewer\n(Low Human Veto 8.58%)"]
-        C1 --> D1["Rubber-Stamped Merge\n(82.13% Bypass / 33.26% Regression)"]
+    subgraph Broken["1. Broken 2025 Loop: Advisory Prose"]
+        A1["Autonomous Agent PR"]:::intakeNode
+        B1["Markdown Rules\n(AGENTS.md / ADR Wiki)"]:::warnNode
+        C1["Verbose LLM Reviewer\n(Low Human Veto 8.58%)"]:::warnNode
+        D1["Rubber-Stamped Merge\n(82.13% Bypass / 33.26% Regression)"]:::dangerNode
     end
 
-    subgraph Guardrail["2026 Guardrail Architecture: Executable Asset"]
-        A2["Autonomous Agent PR"] --> B2["Deterministic Static Gate\n(NetArchTest + Roslyn + OpenAPI)"]
-        B2 -->|Fail Fast| A2
-        B2 -->|Structural Pass| C2["Typed Domain Contracts\n(Compile-Time Invariants)"]
-        C2 -->|Bounded Diff| D2["Focused Human Audit\n(Business Edge & Trade-offs)"]
+    subgraph Guardrail["2. 2026 Guardrail Architecture: Executable Asset"]
+        A2["Autonomous Agent PR"]:::intakeNode
+        B2["Deterministic Static Gate\n(NetArchTest + Roslyn + OpenAPI)"]:::gateNode
+        C2["Typed Domain Contracts\n(Compile-Time Invariants)"]:::codeNode
+        D2["Focused Human Audit\n(Business Edge & Trade-offs)"]:::safeNode
     end
+
+    A1 e1@==> B1
+    B1 e2@==> C1
+    C1 e3@==> D1
+
+    A2 e4@==> B2
+    B2 e5@-.->|"Fail Fast (400ms)"| A2
+    B2 e6@==>|"Structural Pass"| C2
+    C2 e7@==>|"Bounded Diff"| D2
+
+    e1@{ animate: true }
+    e3@{ animate: true }
+    e4@{ animate: true }
+    e6@{ animate: true }
+    e7@{ animate: true }
+
+    classDef intakeNode fill:#1E293B,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC
+    classDef warnNode fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#111111
+    classDef dangerNode fill:#FEF2F2,stroke:#DC2626,stroke-width:2.5px,color:#7F1D1D
+    classDef gateNode fill:#EFF6FF,stroke:#2563EB,stroke-width:2.5px,color:#1E3A8A
+    classDef codeNode fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#4C1D95
+    classDef safeNode fill:#ECFDF5,stroke:#059669,stroke-width:2.5px,color:#064E3B
 ```
 
 ---
@@ -176,10 +198,32 @@ Back in my September 2025 piece, I proposed adapting four formal checks—**The 
 
 1. **Systematicity:** Do handlers follow a predictable, uniform contract shape so agents and humans compose new endpoints reliably?
 2. **Productivity:** Can teams recombine existing validated domain services without inventing bespoke glue code?
-3. **Substitutivity:** Can you swap an Infrastructure adapter (SQL Server $\to$ Postgres, Kafka $\to$ Azure Service Bus) without mutating Domain logic?
+3. **Substitutivity:** Can you swap an Infrastructure adapter (SQL Server → Postgres, Kafka → Azure Service Bus) without mutating Domain logic?
 4. **Localism:** Does changing one feature leave unrelated Vertical Slices untouched?
 
 If an agent-authored PR breaks any of those four properties, automated AST + dependency checks should reject it *before* spending a single minute of staff-engineer review capacity.
+
+```mermaid
+mindmap
+  root(("Executable Verification Asset"))
+    ("Compile-Time Types")
+      ("IValidatedRequest Primitives")
+      ("Result<T> Over Exceptions")
+      ("Roslyn TreatWarningsAsErrors")
+    ("CI Dependency Gates")
+      ("NetArchTest Hexagonal Rules")
+      ("Sealed Handler Enforcement")
+      ("400ms Pre-Review Feedback")
+    ("Composability Check")
+      ("Systematicity")
+      ("Productivity")
+      ("Substitutivity")
+      ("Localism")
+    ("Human Focus (0->1)")
+      ("Business Invariants")
+      ("Failure Mode Design")
+      ("High-Risk Trade-Offs")
+```
 
 ---
 

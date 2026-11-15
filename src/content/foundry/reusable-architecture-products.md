@@ -16,23 +16,48 @@ Transitioning an engineering organization from **Master Blacksmiths** (manual, r
 Rather than treating governance, design reviews, and diagramming as manual gatekeeping exercises, I build modular tools that automate the structural **90%** so architects and engineers can focus on the critical **10%** of domain complexity and business trade-offs. Below are three reusable products from my architectural foundry.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TB
+    classDef legacy fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#7F1D1D
+    classDef gate fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
+    classDef atlas fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
+
     subgraph Legacy["1. Diagram Liberation (Visio-to-Mermaid)"]
-        VSDX["Locked Binary Diagrams<br/>(.vsdx / Enterprise Visio)"] --> V2M["Visio-to-Markdown<br/>Mermaid Converter"]
-        V2M --> DAC["Versioned Markdown +<br/>Mermaid Architecture Specs"]
+        VSDX["Locked Binary Diagrams<br/>(.vsdx / Enterprise Visio)"]:::legacy
+        V2M["Visio-to-Markdown<br/>Mermaid Converter"]:::gate
+        DAC["Versioned Markdown +<br/>Mermaid Architecture Specs"]:::atlas
+        VSDX e1@--> V2M
+        V2M e2@--> DAC
     end
 
     subgraph DesignGate["2. Design-Time Governance (TDD Analyser)"]
-        DAC --> TDD["TDD Analyser<br/>(Spec & NFR Conformance)"]
-        ADR["Target State Reference<br/>Architecture & Guardrails"] --> TDD
-        TDD --> SPEC["Validated Technical Design<br/>& Executable Contracts"]
+        TDD["TDD Analyser<br/>(Spec & NFR Conformance)"]:::gate
+        ADR["Target State Reference<br/>Architecture & Guardrails"]:::gate
+        SPEC["Validated Technical Design<br/>& Executable Contracts"]:::atlas
+        DAC e3@--> TDD
+        ADR --> TDD
+        TDD e4@--> SPEC
     end
 
     subgraph RuntimeAtlas["3. Code & Pipeline Governance (Atruss Code Atlas)"]
-        SPEC --> AST["Polyglot Tree-sitter AST<br/>& Pipeline DAG Scanner"]
-        AST --> SCORE["6-D Architecture Scorecard,<br/>CycloneDX SBOM & SARIF Gate"]
-        SCORE --> MCP["Read-Only MCP Server<br/>& Astro Starlight Portal"]
+        AST["Polyglot Tree-sitter AST<br/>& Pipeline DAG Scanner"]:::atlas
+        SCORE["6-D Architecture Scorecard,<br/>CycloneDX SBOM & SARIF Gate"]:::atlas
+        MCP["Read-Only MCP Server<br/>& Astro Starlight Portal"]:::atlas
+        SPEC e5@--> AST
+        AST e6@--> SCORE
+        SCORE e7@--> MCP
     end
+
+    e1@{ animate: true }
+    e2@{ animate: true }
+    e3@{ animate: true }
+    e4@{ animate: true }
+    e5@{ animate: true }
+    e6@{ animate: true }
+    e7@{ animate: true }
 ```
 
 ---
@@ -41,7 +66,7 @@ flowchart TB
 
 **[Atruss Code Atlas](https://github.com/kumarshaz/atruss-code-atlas)** is an open-source, zero-backend structural analysis engine and documentation portal built using **Hexagonal Architecture (Ports & Adapters)** in Python and **Astro Starlight (Material Design 3)**.
 
-In large enterprise portfolios, architectural drift happens silently across ratusan of repositories and CI/CD workflows. Atruss turns opaque repository fleets into deterministic, queryable architectural telemetry.
+In large enterprise portfolios, architectural drift happens silently across hundreds of repositories and CI/CD workflows. Atruss turns opaque repository fleets into deterministic, queryable architectural telemetry.
 
 ### Core Capabilities
 
@@ -52,30 +77,44 @@ In large enterprise portfolios, architectural drift happens silently across ratu
 - **AI Context & Read-Only MCP Server (`atruss mcp`)**: Exports deterministic `llms.txt` / `llms-full.txt` context bundles and exposes 10 read-only Model Context Protocol (MCP) tools so AI agents can query real architectural graphs without hallucinating.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart LR
+    classDef inbound fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
+    classDef core fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
+    classDef outbound fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
+
     subgraph Inbound["Inbound Ports"]
-        CLI["CLI Adapter<br/>(discover, analyze, check, diff)"]
-        MCPPort["MCP Server Adapter<br/>(10 Read-Only Tools)"]
+        CLI["CLI Adapter<br/>(discover, analyze, check, diff)"]:::inbound
+        MCPPort["MCP Server Adapter<br/>(10 Read-Only Tools)"]:::inbound
     end
 
     subgraph Core["Hexagonal Core Domain (Python)"]
-        ASTEngine["Tree-sitter 10-Ecosystem<br/>AST & Fitness Engine"]
-        PipeDAG["CI/CD Pipeline DAG<br/>& OSV/SBOM Scanner"]
-        Scorecard["6-D Scorecard &<br/>Arc42 Synthesizer"]
+        ASTEngine["Tree-sitter 10-Ecosystem<br/>AST & Fitness Engine"]:::core
+        PipeDAG["CI/CD Pipeline DAG<br/>& OSV/SBOM Scanner"]:::core
+        Scorecard["6-D Scorecard &<br/>Arc42 Synthesizer"]:::core
     end
 
     subgraph Outbound["Outbound Exporters"]
-        Artifacts["JSON / CycloneDX v1.6 /<br/>SARIF v2.1.0 / llms.txt"]
-        Portal["Astro Starlight M3<br/>Visualizer Portal"]
+        Artifacts["JSON / CycloneDX v1.6 /<br/>SARIF v2.1.0 / llms.txt"]:::outbound
+        Portal["Astro Starlight M3<br/>Visualizer Portal"]:::outbound
     end
 
-    CLI --> ASTEngine
-    CLI --> PipeDAG
-    MCPPort --> Scorecard
-    ASTEngine --> Scorecard
-    PipeDAG --> Scorecard
-    Scorecard --> Artifacts
-    Artifacts --> Portal
+    CLI e1@--> ASTEngine
+    CLI e2@--> PipeDAG
+    MCPPort e3@--> Scorecard
+    ASTEngine e4@--> Scorecard
+    PipeDAG e5@--> Scorecard
+    Scorecard e6@--> Artifacts
+    Artifacts e7@--> Portal
+
+    e1@{ animate: true }
+    e3@{ animate: true }
+    e4@{ animate: true }
+    e6@{ animate: true }
+    e7@{ animate: true }
 ```
 
 ---

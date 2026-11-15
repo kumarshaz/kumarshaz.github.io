@@ -2,17 +2,12 @@
 title: "Contract-First .NET Beyond Codegen: OpenAPI, AsyncAPI Event Meshes, and Temporal Invariants"
 description: "Why generating .NET clients from OpenAPI and Terraform from AsyncAPI solved static drift in 2025—yet autonomous agents and multi-agent protocols in 2026 require transactional outbox and temporal state-machine contracts."
 pubDate: 2026-11-14
+heroImage: '../../assets/contract-first-net-beyond-codegen.jpeg'
 category: "Practitioner Note"
-tags: ["Architecture", "SDLC", "AI", ".NET", "API", "Kafka"]
+tags: ["Architecture", "SDLC", "AI", "DotNet", "API", "Kafka"]
 readingTime: "13 min read"
 status: "Published"
 docId: "ARCH-2026-05"
-intent: "Flagship Astro-ready practitioner deep dive unifying Shashi Kumar's OpenAPI, AsyncAPI (.NET/Terraform), and MCP/A2A integration articles into the November 2026 stateful contract reality."
-type: "reference"
-skills_applied:
-  - "voice-note-backlog-harvester"
-  - "research-market-analyst"
-last_updated: "2026-11-14"
 ---
 
 > **Original Thought & Source Lineage:** This practitioner note synthesizes three foundational 2025 publications: [*Implementing API Design First in .NET for Efficient Development, Testing, and CI/CD*](https://dzone.com/articles/implementing-api-design-first-ci-cd-testing) (DZone, **May 23, 2025** — `6,183` views), [*API Design First: AsyncAPI in .Net*](https://dzone.com/articles/api-design-first-asyncapi-in-dotnet) (DZone, **September 8, 2025** — `2,773` views; companion code in [`kumarshaz/kafka-dotnet`](https://github.com/kumarshaz/kafka-dotnet)), and [*The Evolving Landscape of AI Communication: From IPC to MCP and A2A*](https://medium.com/@kumar.shashinath/the-evolving-landscape-of-ai-communication-from-inter-process-communication-to-agent-to-agent-0dd526b94bde) (Medium, **April 27, 2025**; DZone cross-post [August 22, 2025](https://dzone.com/articles/a2a-mcp-agent-ai-communication-evolution), `2,659` views).
@@ -58,14 +53,47 @@ In [my September 2025 AsyncAPI walkthrough](https://dzone.com/articles/api-desig
 - **Infrastructure Layer:** Matching **Terraform** (`kafka_topic`, partition count, replication factor, retention MS, and least-privilege ACLs) committed right next to the application build.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart TD
-    Spec["Authoritative Contracts\n(openapi.yaml + asyncapi.yaml)"] --> Lint["CI Schema Linter & Breaking-Change Diff\n(oasdiff + Schema Registry Compatibility)"]
-    Lint --> GenCode["Co-Generated .NET Artifacts\n(Kiota Client + Typed Interfaces + C# Event POCOs)"]
-    Lint --> GenInfra["Co-Generated Infra Artifacts\n(APIM Policies + Terraform Topics & ACLs)"]
-    GenCode --> Outbox["Runtime Invariant Boundary\n(Transactional Outbox + Typestate Guard)"]
-    GenInfra --> Broker["Kafka Mesh & API Gateway"]
-    Outbox -->|Atomic DB Commit -> Relay| Broker
-    Outbox -.->|Protocol Violation| Quarantine["Blocked at Boundary\n(DLQ + OTel Trace + Alert)"]
+    subgraph SpecLayer["1. Authoritative Specification Source"]
+        Spec["Authoritative Contracts\n(openapi.yaml + asyncapi.yaml)"]:::specNode
+        Lint["CI Schema Linter & Breaking-Change Diff\n(oasdiff + Schema Registry Compatibility)"]:::gateNode
+    end
+
+    subgraph CodegenLayer["2. Deterministic Dual Codegen"]
+        GenCode["Co-Generated .NET Artifacts\n(Kiota Client + Typed Interfaces + C# Event POCOs)"]:::codeNode
+        GenInfra["Co-Generated Infra Artifacts\n(APIM Policies + Terraform Topics & ACLs)"]:::infraNode
+    end
+
+    subgraph RuntimeBoundary["3. Runtime Invariant & Event Mesh"]
+        Outbox["Runtime Invariant Boundary\n(Transactional Outbox + Typestate Guard)"]:::gateNode
+        Broker["Kafka Event Mesh & API Gateway"]:::safeNode
+        Quarantine["Blocked at Boundary\n(DLQ + OTel Trace + Alert)"]:::dangerNode
+    end
+
+    Spec e1@==> Lint
+    Lint e2@==> GenCode
+    Lint e3@==> GenInfra
+    GenCode e4@==> Outbox
+    GenInfra e5@==> Broker
+    Outbox e6@==>|"Atomic DB Commit -> Relay"| Broker
+    Outbox e7@-.->|"Protocol / Typestate Violation"| Quarantine
+
+    e1@{ animate: true }
+    e2@{ animate: true }
+    e3@{ animate: true }
+    e4@{ animate: true }
+    e6@{ animate: true }
+
+    classDef specNode fill:#1E293B,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC
+    classDef gateNode fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#111111
+    classDef codeNode fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
+    classDef infraNode fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#4C1D95
+    classDef safeNode fill:#ECFDF5,stroke:#059669,stroke-width:2.5px,color:#064E3B
+    classDef dangerNode fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#7F1D1D
 ```
 
 If an architect enforces compatibility rules in Confluent Schema Registry (`BACKWARD_TRANSITIVE` or `FULL_TRANSITIVE`) alongside generated Terraform ACLs, no service accidentally poisons a shared Kafka topic with ad-hoc JSON strings.
@@ -88,7 +116,28 @@ Because transport schemas are now cheap to generate, teams expose **hundreds of 
 - Performing dual-writes (saving `Order` in SQL Server and firing `OrderCreated` to Kafka inside the same method, leaking phantom events when SQL rolls back).
 - Issuing parallel A2A/MCP retries without cryptographic `IdempotencyKey` + monotonic sequence enforcement, triggering duplicate settlements.
 
-In our empirical software engineering research workspace (`MEIGS Theory`), we call this the **Syntactic–Typestate Gap**: an agent-synthesized change passes `100%` of static schema validators and mocked local unit tests (`local pass = 1.0`), yet breaks the cross-service state protocol over time.
+In empirical software engineering analysis, we call this the **Syntactic–Typestate Gap**: an agent-synthesized change passes `100%` of static schema validators and mocked local unit tests (`local pass = 1.0`), yet breaks the cross-service state protocol over time.
+
+```mermaid
+mindmap
+  root(("Contract-First .NET 2026"))
+    ("1. Synchronous OpenAPI")
+      ("Dual-Spec Drift UI")
+      ("Kiota / NSwag Codegen")
+      ("oasdiff + WireMock CI")
+    ("2. Asynchronous AsyncAPI")
+      ("C# Event POCOs")
+      ("Co-Generated Terraform Topics & ACLs")
+      ("Schema Registry Compatibility")
+    ("3. Temporal Invariants")
+      ("Sealed Typestate Records")
+      ("Monotonic Sequence Guards")
+      ("Idempotency-Key Enforcement")
+    ("4. Transactional Outbox")
+      ("Single ACID Commit")
+      ("Causation & Correlation Headers")
+      ("Zero Phantom Dual-Writes")
+```
 
 ---
 

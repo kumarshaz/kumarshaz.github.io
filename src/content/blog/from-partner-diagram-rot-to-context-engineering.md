@@ -2,17 +2,12 @@
 title: "From Partner Diagram Rot to Executable Context Engineering: Solving the SI \"Haircut Paradox\""
 description: "Why multi-million-dollar transformation slide decks and ambiguous prose specifications fail both engineers and coding agents in 2026—and how standardized skeletal joints turn tribal knowledge into machine-readable architecture."
 pubDate: 2026-11-14
+heroImage: '../../assets/from-partner-diagram-rot-to-context-engineering.jpeg'
 category: "Essay"
 tags: ["Architecture", "AI", "DevEx", "SDLC"]
 readingTime: "11 min read"
 status: "Published"
 docId: "ARCH-2026-08"
-intent: "Flagship Astro-ready essay uniting Shashi Kumar's Partner Diagram Rot, Haircut Paradox, VS Code Standardized Joints, and Connecting the Dots essays into a 2026 context-engineering blueprint."
-type: "reference"
-skills_applied:
-  - "voice-note-backlog-harvester"
-  - "research-market-analyst"
-last_updated: "2026-11-14"
 ---
 
 > **Original Thought & Source Lineage:** This essay builds on four 2026 reflections: [*The Haircut Paradox in Software Requirements*](https://www.linkedin.com/feed/update/urn:li:activity:7426766861784231936/) (LinkedIn, **February 9, 2026**), [*Partner Diagram Rot & Context Engineering*](https://www.linkedin.com/feed/update/urn:li:activity:7438041594374737920/) (LinkedIn, **March 12, 2026**), [*Standardized Joints & The VS Code Architectural Skeleton*](https://www.linkedin.com/feed/update/urn:li:activity:7505271064604803072/) (LinkedIn, **September 14, 2026**), and [*Connecting the Dots: Learning Business Economics & Ecosystem for Software Architects*](https://medium.com/@kumar.shashinath/connecting-the-dots-78a6c1c120a7) (Medium, **January 5, 2026**).
@@ -88,18 +83,45 @@ Microsoft transformed a JavaScript/Electron shell into the dominant operating sk
 Think about the lesson for enterprise context engineering: **VS Code scaled because the joints carried typed protocol contracts, not slide-deck arrows.**
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 flowchart LR
-    subgraph OldWay["Opaque Legacy Context (Fails Humans + Agents)"]
-        S1["180-Slide SI Deck\n(PowerPoint / Visio Blobs)"] --> S2["Vague Jira Clip Notes\n(Make It Fast & Scalable)"]
-        S2 --> S3["Single Bus-Factor-1 Architect\n(66.43% Review Overload)"]
-        S3 --> S4["Inconsistent Code or Silent Bypass"]
+    subgraph OldWay["1. Opaque Legacy Context (Fails Humans + Agents)"]
+        S1["180-Slide SI Deck\n(PowerPoint / Visio Blobs)"]:::warnNode
+        S2["Vague Jira Clip Notes\n(Make It Fast & Scalable)"]:::warnNode
+        S3["Single Bus-Factor-1 Architect\n(66.43% Review Overload)"]:::dangerNode
+        S4["Inconsistent Code or Silent Bypass"]:::dangerNode
     end
 
-    subgraph NewWay["Standardized Joint Context Engineering"]
-        N1["Versioned Markdown + Mermaid\n(Committed Next to Code)"] --> N2["Machine-Readable Invariants\n(-ility Budgets + Domain Glossary)"]
-        N2 --> N3["Typed Extension Joints\n(OpenAPI / AsyncAPI / Port Interfaces)"]
-        N3 --> N4["Predictable Parallel Slices\n(Safe for Teams & Coding Agents)"]
+    subgraph NewWay["2. Standardized Joint Context Engineering"]
+        N1["Versioned Markdown + Mermaid\n(Committed Next to Code)"]:::intakeNode
+        N2["Machine-Readable Invariants\n(-ility Budgets + Domain Glossary)"]:::codeNode
+        N3["Typed Extension Joints\n(OpenAPI / AsyncAPI / Port Interfaces)"]:::gateNode
+        N4["Predictable Parallel Slices\n(Safe for Teams & Coding Agents)"]:::safeNode
     end
+
+    S1 e1@==> S2
+    S2 e2@==> S3
+    S3 e3@==> S4
+
+    N1 e4@==> N2
+    N2 e5@==> N3
+    N3 e6@==> N4
+
+    e1@{ animate: true }
+    e3@{ animate: true }
+    e4@{ animate: true }
+    e5@{ animate: true }
+    e6@{ animate: true }
+
+    classDef intakeNode fill:#1E293B,stroke:#38BDF8,stroke-width:2px,color:#F8FAFC
+    classDef warnNode fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#111111
+    classDef dangerNode fill:#FEF2F2,stroke:#DC2626,stroke-width:2.5px,color:#7F1D1D
+    classDef codeNode fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#4C1D95
+    classDef gateNode fill:#EFF6FF,stroke:#2563EB,stroke-width:2.5px,color:#1E3A8A
+    classDef safeNode fill:#ECFDF5,stroke:#059669,stroke-width:2.5px,color:#064E3B
 ```
 
 ---
@@ -114,6 +136,25 @@ When an enterprise team retires partner PowerPoints and adopts context engineeri
 | **2. Machine-Readable `-ility` & Stop-Rule Contract** | `docs/nfr-budget.yaml` (or frontmatter spec) | Haircut *Clip Notes* (*"keep it reliable/fast"*) | Quantitative latency p99 targets, retry caps, consistency model, and COTS sidecar rules |
 | **3. Typed Boundary Contracts (`contracts/`)** | `openapi.yaml`, `asyncapi.yaml`, C# Port Interfaces | Unlabeled connectors between diagram boxes | Codegen, `oasdiff`, Schema Registry, and `NetArchTest` boundary checks |
 | **4. Domain Economics & Exception Glossary** | `docs/domain-ledger.md` | Cross-domain tribal knowledge locked in veteran heads | Explicit edge semantics: how underwriting, settlement, chargebacks, or partial failures resolve |
+
+```mermaid
+mindmap
+  root(("4-Layer Repo Context Pack"))
+    ("1. ARCHITECTURE.md + Mermaid")
+      ("Replaces Stale Visio & PPTX")
+      ("Git-Diffable System Topology")
+    ("2. nfr-budget.yaml")
+      ("p99 Latency & SLO Budgets")
+      ("Consistency vs Availability")
+      ("COTS Stop-Rule Thresholds")
+    ("3. Typed Boundary Contracts")
+      ("openapi.yaml & asyncapi.yaml")
+      ("Hexagonal C# Port Interfaces")
+      ("NetArchTest CI Enforcement")
+    ("4. domain-ledger.md")
+      ("Underwriting & Settlement Rules")
+      ("Idempotency & Quarantine Paths")
+```
 
 Notice what happens when you capture an explicit `-ility` contract next to the code instead of writing fuzzy prose:
 

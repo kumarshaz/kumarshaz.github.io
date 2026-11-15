@@ -146,6 +146,12 @@ const expectedPages = [
 	'blog/what-is-blacksmith-to-goldsmith/index.html',
 	'blog/why-astro-and-gh-pages/index.html',
 	'blog/why-i-love-wardley-mapping/index.html',
+	'blog/clean-core-sidecars-and-cots-stop-rules/index.html',
+	'blog/contract-first-net-beyond-codegen/index.html',
+	'blog/editorial-architecture-and-three-year-tco/index.html',
+	'blog/from-adrs-to-executable-constraints/index.html',
+	'blog/from-partner-diagram-rot-to-context-engineering/index.html',
+	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
 	'foundry/index.html',
 	'foundry/engineering-this-monograph/index.html',
 	'foundry/reusable-architecture-products/index.html',
@@ -158,6 +164,15 @@ const expectedPages = [
 	'blog/tag/github pages/index.html',
 	'blog/tag/wardley mapping/index.html',
 	'blog/tag/strategy/index.html',
+	'blog/tag/enterprise/index.html',
+	'blog/tag/integration/index.html',
+	'blog/tag/cots/index.html',
+	'blog/tag/dotnet/index.html',
+	'blog/tag/api/index.html',
+	'blog/tag/kafka/index.html',
+	'blog/tag/governance/index.html',
+	'blog/tag/cloud/index.html',
+	'blog/tag/resilience/index.html',
 	'rss.xml',
 	'sitemap-index.xml',
 ];
@@ -231,17 +246,39 @@ assert(
 	'[why-i-love-wardley-mapping] Renders clean Asymmetric Spec Sheet rail (Published, Category, ON THIS PAGE, TAGS)',
 );
 assert(
-	wardleyHtml.includes("theme: 'base'") &&
+	wardleyHtml.includes('data-mermaid-engine="v12-elk-tidytree"') &&
 		wardleyHtml.includes('--mermaid-node-bg') &&
 		wardleyHtml.includes('--mermaid-node-border') &&
-		wardleyHtml.includes('mermaid-blueprint'),
-	'[why-i-love-wardley-mapping] Includes Token-Synced Mermaid v11 base theme initializer and .mermaid-blueprint wrapper',
+		wardleyHtml.includes('spec-hero-figure'),
+	'[why-i-love-wardley-mapping] Includes Token-Synced Mermaid v12 + ELK/Tidy-Tree engine and .spec-hero-figure container',
 );
 assert(
 	wardleyHtml.includes('data-language="mermaid"') &&
 		wardleyHtml.includes('The Evolution of Programming Abstractions'),
 	'[why-i-love-wardley-mapping] Preserves Markdown Mermaid timeline diagram source',
 );
+
+// Validate all 6 new blog posts have hero images, ELK layout, colored nodes, animated edges, and mindmaps
+const sixNewPosts = [
+	'blog/clean-core-sidecars-and-cots-stop-rules/index.html',
+	'blog/contract-first-net-beyond-codegen/index.html',
+	'blog/editorial-architecture-and-three-year-tco/index.html',
+	'blog/from-adrs-to-executable-constraints/index.html',
+	'blog/from-partner-diagram-rot-to-context-engineering/index.html',
+	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
+];
+
+for (const postPage of sixNewPosts) {
+	const postHtml = fs.readFileSync(path.join(distDir, postPage), 'utf8');
+	assert(
+		postHtml.includes('spec-hero-figure') &&
+			postHtml.includes('layout: elk') &&
+			postHtml.includes('classDef') &&
+			postHtml.includes('animate: true') &&
+			postHtml.includes('mindmap'),
+		`[${postPage}] Renders Hero Banner, ELK layout, colored nodes (classDef), animated edges, and Mindmap diagram`,
+	);
+}
 
 const blacksmithHtml = fs.readFileSync(
 	path.join(distDir, 'blog/what-is-blacksmith-to-goldsmith/index.html'),
