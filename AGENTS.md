@@ -81,7 +81,8 @@ docId: "ARCH-YYYY-NN"
 
 - **Mermaid Diagrams**:
   - Write standard fenced ```` ```mermaid ```` code blocks directly in Markdown.
-  - [`src/layouts/BlogPost.astro`](src/layouts/BlogPost.astro) automatically transforms every ```` ```mermaid ```` block into a `.mermaid-blueprint` figure container with a dot-matrix blueprint background, an `Architecture Diagram` header bar, an interactive `Expand`/`Collapse` toggle, and live Light/Dark theme token synchronization via Mermaid v11 (`theme: 'base'`).
+  - [`src/layouts/BlogPost.astro`](src/layouts/BlogPost.astro) automatically transforms every ```` ```mermaid ```` block into a `.mermaid-blueprint` figure container with a dot-matrix blueprint background, an `Architecture Diagram` header bar, an interactive `Expand`/`Collapse` toggle, and live Light/Dark theme token synchronization via Mermaid v12 (`theme: 'base'`, `@mermaid-js/layout-elk`, and `@mermaid-js/layout-tidy-tree`).
+  - For multi-stage `flowchart` diagrams, opt into ELK via diagram frontmatter (`---\nconfig:\n  layout: elk\n---`) and prefer `flowchart TB` when chaining 3+ subgraphs so SVGs remain readable inside the main prose column.
   - Quote node labels that contain parentheses, colons, slashes, or special characters (e.g., `A["Domain Service (Hexagonal Port)"] --> B["Event Bus"]`).
   - Do **not** embed hardcoded theme overrides (`%%{init: {'theme': 'dark'}}%%`) that prevent automatic Light/Dark mode token synchronization.
 - **Code & ASCII Blocks**:
@@ -136,5 +137,5 @@ The site implements a **Token-Driven Editorial Design System** inspired by techn
 | :--- | :--- |
 | `npm run dev` | Start the local Astro development server at `http://localhost:4321`. |
 | `npm run build` | Build the production static site into `dist/`. |
-| `npm run validate` | Run [`scripts/validate-ui.mjs`](scripts/validate-ui.mjs) (118 automated checks covering CSS token tiers, layout primitives, Zod content schema, static route generation, internal link integrity, taxonomy badge counts, Shiki dual-theme contrast, and Mermaid blueprint rendering). |
+| `npm run validate` | Run [`scripts/validate-ui.mjs`](scripts/validate-ui.mjs) (260+ automated checks covering CSS token tiers, layout primitives, Zod content schema, static route generation, internal link integrity, taxonomy badge counts, Shiki dual-theme contrast, and Mermaid blueprint rendering). |
 | `npm run check` | Convenience alias for `npm run build && npm run validate`. |

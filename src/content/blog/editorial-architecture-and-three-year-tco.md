@@ -52,7 +52,7 @@ By mid-2026, watching teams push frontier coding harnesses across Claude Opus / 
 config:
   layout: elk
 ---
-flowchart LR
+flowchart TB
     subgraph Zone01["1. 0 -> 1 Problem Space (Human Editorial Anchor)"]
         A["Ill-Defined Business Need"]:::intakeNode
         B["Discover Competing Constraints\n(Org Politics + Legacy Gravity + FinOps)"]:::gateNode

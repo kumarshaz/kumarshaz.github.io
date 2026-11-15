@@ -23,7 +23,7 @@ My approach is deeply rooted in structured, business-aligned architecture. Some 
 
 ## 🏛️ Design System: The "Engineering Notebook" Architecture
 
-Instead of a generic starter blog template, this site uses a custom **Token-Driven Editorial Design System** where long-form Markdown prose, layout structure, syntax-highlighted code blocks, and Mermaid v11 diagrams share a single CSS token source of truth:
+Instead of a generic starter blog template, this site uses a custom **Token-Driven Editorial Design System** where long-form Markdown prose, layout structure, syntax-highlighted code blocks, and Mermaid v12 diagrams share a single CSS token source of truth:
 
 - **3-Tier Design Token Foundation ([`src/styles/tokens.css`](src/styles/tokens.css))**:
   - **Light Mode (*Engineering Paper & Signal Rust*)**: Warm technical paper canvas (`#F2F1EC`), stone surface (`#E7E5DD`), carbon ink (`#111111`), and signal rust accents (`#C84B20`).
@@ -36,13 +36,13 @@ Instead of a generic starter blog template, this site uses a custom **Token-Driv
 - **Open Engineering Notebook Layout ([`src/styles/layout.css`](src/styles/layout.css))**:
   - Open `1120px` reading container anchored by bold `2px` horizontal masthead and section rules.
   - Asymmetric 2-column article workspace ([`src/layouts/BlogPost.astro`](src/layouts/BlogPost.astro)) pairing a `230px` sticky left rail (`Published`, `Category`, `ON THIS PAGE` table of contents, and `TAGS`) with a `72ch` main prose stream.
-- **Token-Synced Mermaid v11 Blueprints**:
-  - Standard fenced ```` ```mermaid ```` blocks in Markdown are automatically wrapped in `.mermaid-blueprint` containers with a dot-matrix technical background, an `Expand`/`Collapse` toggle, and live Light/Dark CSS variable synchronization (`theme: 'base'`).
+- **Token-Synced Mermaid v12 Blueprints (`@mermaid-js/layout-elk` + `@mermaid-js/layout-tidy-tree`)**:
+  - Standard fenced ```` ```mermaid ```` blocks in Markdown are automatically wrapped in `.mermaid-blueprint` containers with a dot-matrix technical background, an `Expand`/`Collapse` toggle, animated edges, and live Light/Dark CSS variable synchronization (`theme: 'base'`).
 - **Dual-Theme Code Highlighting**:
   - Configured with Shiki dual themes (`github-light` and `github-dark`) in [`astro.config.mjs`](astro.config.mjs) and [`src/styles/global.css`](src/styles/global.css) for WCAG AA+ readability across both Light and Dark modes.
 - **Structured Knowledge Taxonomy & Foundry ([`src/content.config.ts`](src/content.config.ts))**:
   - **Blog (`/blog`)**: Organized into **Essays**, **Practitioner Notes**, **Research**, and **Perspectives** with interactive category filtering and populated badge counts.
-  - **Foundry (`/foundry` — *What I Build*)**: Dedicated specification showcase for reusable architecture products and platforms—including **This Website's Token-Driven Monograph Architecture**, **[Atruss Code Atlas](https://github.com/kumarshaz/atruss-code-atlas)**, **TDD Analyser**, and the **Visio-to-Markdown Mermaid Converter**.
+  - **Foundry (`/foundry` — *What I Build*)**: Dedicated specification showcase for reusable architecture products and platforms—including **Engineering This Monograph**, **[Atruss Code Atlas](https://github.com/kumarshaz/atruss-code-atlas)**, **[TDD Analyzer](https://github.com/kumarshaz/tdd-analyzer)**, and the **To-Markdown Converter (Visio, Draw.io & MS Office via Microsoft MarkItDown)**.
   - **Home Page Left Rail**: Surfaces the top 3 items for both **What I Write About** and **What I Build** (`Foundry`).
 
 ---
@@ -67,7 +67,7 @@ npm ci
 # Start local dev server at http://localhost:4321
 npm run dev
 
-# Build static production output and run all 153 UI & content validation checks
+# Build static production output and run all automated UI & content validation checks
 npm run check
 ```
 

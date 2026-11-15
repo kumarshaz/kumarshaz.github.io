@@ -1,7 +1,7 @@
 ---
 title: "Engineering This Monograph: A Token-Driven Astro & Mermaid Architecture"
-description: "How this personal architecture platform is engineered as a zero-JS-by-default Engineering Notebook using a 3-tier CSS token system, Token-Synced Mermaid v11 blueprints, and a 118-check validation gate."
-pubDate: 2026-11-13
+description: "How this personal architecture platform is engineered as a zero-JS-by-default Engineering Notebook using a 3-tier CSS token system, Token-Synced Mermaid v12 blueprints, and an automated 260+ check validation gate."
+pubDate: 2026-11-12
 heroImage: '../../assets/blog1.png'
 category: "Platform"
 tags: ["Architecture", "Astro", "GitHub Pages", "DevEx", "SDLC"]
@@ -28,7 +28,7 @@ Following my **Master Goldsmith** philosophy and the **Lego Framework**, I desig
 config:
   layout: elk
 ---
-flowchart LR
+flowchart TB
     classDef token fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
     classDef layout fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
     classDef gate fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
@@ -91,11 +91,11 @@ Mermaid diagrams often look disconnected from the host site because Mermaid inje
 
 1. **Zero-Friction Authoring**: Diagrams are authored as standard ```` ```mermaid ```` fenced blocks inside Markdown.
 2. **Blueprint Figure Framing**: At load time, each Mermaid block is wrapped in a `.mermaid-blueprint` figure container featuring a radial dot-matrix technical background, an `Architecture Diagram` header bar, and an interactive `Expand` / `Collapse` viewport toggle.
-3. **Live Theme Synchronization & ELK Layout**: Mermaid v12 is bundled with `@mermaid-js/layout-elk` and `@mermaid-js/layout-tidy-tree`, initialized with `layout: 'elk'` and `theme: 'base'`, reading active CSS variables via `getComputedStyle(document.documentElement)`. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
+3. **Live Theme Synchronization & Multi-Engine Layout**: Mermaid v12 is bundled with `@mermaid-js/layout-elk` and `@mermaid-js/layout-tidy-tree`, initialized with `theme: 'base'`, and reads active CSS variables via `getComputedStyle(document.documentElement)`. Flowcharts opt into `layout: elk` via diagram frontmatter while mindmaps, sequences, and timelines render on their native tree/sequential engines sequentially with monotonic SVG IDs. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
 
 ---
 
-## 4. Agentic Authoring & The 118-Check Validation Gate
+## 4. Agentic Authoring & The Automated Validation Gate
 
 True **Spec-Driven Development (SDD)** means both human architects and AI coding agents operate under explicit, machine-verifiable contracts:
 

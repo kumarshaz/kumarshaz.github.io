@@ -154,7 +154,9 @@ const expectedPages = [
 	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
 	'foundry/index.html',
 	'foundry/engineering-this-monograph/index.html',
-	'foundry/reusable-architecture-products/index.html',
+	'foundry/atruss-code-atlas/index.html',
+	'foundry/tdd-analyzer/index.html',
+	'foundry/to-markdown-converter/index.html',
 	'blog/tag/architecture/index.html',
 	'blog/tag/sdlc/index.html',
 	'blog/tag/ai/index.html',
@@ -307,22 +309,31 @@ const foundryIndexHtml = fs.readFileSync(path.join(distDir, 'foundry/index.html'
 assert(
 	foundryIndexHtml.includes('Foundry') &&
 		foundryIndexHtml.includes('/foundry/engineering-this-monograph/') &&
-		foundryIndexHtml.includes('/foundry/reusable-architecture-products/') &&
+		foundryIndexHtml.includes('/foundry/atruss-code-atlas/') &&
+		foundryIndexHtml.includes('/foundry/tdd-analyzer/') &&
+		foundryIndexHtml.includes('/foundry/to-markdown-converter/') &&
 		!/class="taxonomy-count"[^>]*>\s*<\/span>/.test(foundryIndexHtml),
-	'[foundry/index.html] Renders Foundry index with populated taxonomy badge counts and both Foundry entries',
+	'[foundry/index.html] Renders Foundry index with populated taxonomy badge counts and all 4 Foundry entries',
 );
 
-const foundryProductsHtml = fs.readFileSync(
-	path.join(distDir, 'foundry/reusable-architecture-products/index.html'),
-	'utf8',
-);
-assert(
-	foundryProductsHtml.includes('Atruss Code Atlas') &&
-		foundryProductsHtml.includes('TDD Analyser') &&
-		foundryProductsHtml.includes('Visio-to-Markdown Mermaid Converter') &&
-		foundryProductsHtml.includes('data-language="mermaid"'),
-	'[foundry/reusable-architecture-products] Documents Atruss Code Atlas, TDD Analyser, and Visio-to-Markdown Mermaid Converter with Mermaid diagrams',
-);
+const foundryProductPages = [
+	['foundry/atruss-code-atlas/index.html', '6-Dimension A'],
+	['foundry/tdd-analyzer/index.html', 'Static RAG'],
+	['foundry/to-markdown-converter/index.html', 'MarkItDown'],
+];
+
+for (const [foundryPage, keyPhrase] of foundryProductPages) {
+	const pageHtml = fs.readFileSync(path.join(distDir, foundryPage), 'utf8');
+	assert(
+		pageHtml.includes(keyPhrase) &&
+			pageHtml.includes('spec-hero-figure') &&
+			pageHtml.includes('layout: elk') &&
+			pageHtml.includes('classDef') &&
+			pageHtml.includes('animate: true') &&
+			pageHtml.includes('mindmap'),
+		`[${foundryPage}] Renders Hero Banner, "${keyPhrase}", ELK layout, colored nodes, animated edges, and Mindmap diagram`,
+	);
+}
 
 // Inspect Homepage features on /index.html and verify zero noisy // or serial index strings
 const homeHtml = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');

@@ -277,10 +277,49 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 			const configureMermaid = () => {
 				const rootStyle = getComputedStyle(document.documentElement);
 				const readToken = (name: string) => rootStyle.getPropertyValue(name).trim();
+				const isDark =
+					document.documentElement.getAttribute('data-theme') === 'dark' ||
+					document.documentElement.classList.contains('dark');
+
+				const nodeBg = readToken('--mermaid-node-bg') || (isDark ? '#212428' : '#FAF9F5');
+				const nodeBorder = readToken('--mermaid-node-border') || (isDark ? '#E87A48' : '#C84B20');
+				const textPrimary = readToken('--text-primary') || (isDark ? '#EFECE6' : '#111111');
+				const lineColor = readToken('--mermaid-line') || (isDark ? '#9A968E' : '#262523');
+				const clusterBg = readToken('--mermaid-cluster-bg') || (isDark ? '#191B1E' : '#E7E5DD');
+				const surfaceBg = readToken('--bg-surface') || clusterBg;
+
+				const darkScale = {
+					cScale0: '#F97316',
+					cScale1: '#3B82F6',
+					cScale2: '#34D399',
+					cScale3: '#8B5CF6',
+					cScale4: '#F59E0B',
+					cScale5: '#38BDF8',
+					cScaleLabel0: '#FFFFFF',
+					cScaleLabel1: '#FFFFFF',
+					cScaleLabel2: '#FFFFFF',
+					cScaleLabel3: '#FFFFFF',
+					cScaleLabel4: '#FFFFFF',
+					cScaleLabel5: '#FFFFFF',
+				};
+
+				const lightScale = {
+					cScale0: '#FAF9F5',
+					cScale1: '#EFF6FF',
+					cScale2: '#ECFDF5',
+					cScale3: '#F5F3FF',
+					cScale4: '#FFFBEB',
+					cScale5: '#ECFEFF',
+					cScaleLabel0: '#111111',
+					cScaleLabel1: '#111111',
+					cScaleLabel2: '#111111',
+					cScaleLabel3: '#111111',
+					cScaleLabel4: '#111111',
+					cScaleLabel5: '#111111',
+				};
 
 				mermaid.initialize({
 					startOnLoad: false,
-					layout: 'elk',
 					elk: {
 						mergeEdges: false,
 						nodePlacementStrategy: 'NETWORK_SIMPLEX',
@@ -289,12 +328,25 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					themeVariables: {
 						fontFamily: readToken('--font-mono') || 'IBM Plex Mono, Space Mono, monospace',
 						fontSize: '13px',
-						primaryColor: readToken('--mermaid-node-bg') || '#FAF9F5',
-						primaryTextColor: readToken('--text-primary') || '#111111',
-						primaryBorderColor: readToken('--mermaid-node-border') || '#C84B20',
-						lineColor: readToken('--mermaid-line') || '#262523',
-						secondaryColor: readToken('--mermaid-cluster-bg') || '#E7E5DD',
-						tertiaryColor: readToken('--bg-surface') || '#E7E5DD',
+						background: surfaceBg,
+						primaryColor: nodeBg,
+						primaryTextColor: textPrimary,
+						primaryBorderColor: nodeBorder,
+						lineColor,
+						secondaryColor: clusterBg,
+						tertiaryColor: surfaceBg,
+						textColor: textPrimary,
+						edgeLabelBackground: clusterBg,
+						actorBkg: nodeBg,
+						actorBorder: nodeBorder,
+						actorTextColor: textPrimary,
+						actorLineColor: lineColor,
+						signalColor: lineColor,
+						signalTextColor: textPrimary,
+						noteBkgColor: nodeBg,
+						noteBorderColor: nodeBorder,
+						noteTextColor: textPrimary,
+						...(isDark ? darkScale : lightScale),
 					},
 				});
 			};
@@ -338,27 +390,38 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					container.setAttribute('data-mermaid-src', rawSource);
 					container.style.display = 'flex';
 					container.style.justifyContent = 'center';
-					container.textContent = rawSource;
 
 					figure.appendChild(bar);
 					figure.appendChild(container);
 					targetElement.replaceWith(figure);
 				});
 
+				let renderEpoch = 0;
+
 				const renderDiagrams = async () => {
 					configureMermaid();
+					renderEpoch += 1;
 					const nodes = document.querySelectorAll<HTMLElement>('.mermaid');
-					nodes.forEach((node) => {
-						const src = node.getAttribute('data-mermaid-src');
-						if (src) {
-							node.removeAttribute('data-processed');
-							node.textContent = src;
+					for (let i = 0; i < nodes.length; i++) {
+						const node = nodes[i];
+						const rawSrc = node.getAttribute('data-mermaid-src');
+						if (!rawSrc) continue;
+						const diagramId = `mermaid-fig-${renderEpoch}-${i + 1}`;
+						try {
+							const { svg, bindFunctions } = await mermaid.render(diagramId, rawSrc);
+							node.innerHTML = svg;
+							bindFunctions?.(node);
+							node.removeAttribute('data-mermaid-error');
+						} catch (err) {
+							const msg =
+								err instanceof Error
+									? err.message
+									: typeof err === 'object' && err !== null && 'message' in err
+										? String((err as { message: unknown }).message)
+										: JSON.stringify(err);
+							console.error(`Mermaid rendering failed on ${diagramId}:`, msg, err);
+							node.setAttribute('data-mermaid-error', msg || String(err));
 						}
-					});
-					try {
-						await mermaid.run({ querySelector: '.mermaid' });
-					} catch (err) {
-						console.error('Mermaid rendering failed:', err);
 					}
 				};
 
