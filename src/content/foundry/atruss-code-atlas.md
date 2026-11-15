@@ -145,6 +145,10 @@ flowchart TB
 Over iterations `001` through `009` and Horizon 2, Atruss Code Atlas served as an empirical testbed for combining **SpecKit Specification-Driven Development** (`specs/001`–`006A`) with **Antigravity Native Agentic Coding & Parallel Swarms** (`006B`–`009`).
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Atruss Code Atlas<br/>Capability & Governance Taxonomy"))
     ("Discovery & Policy-as-Code")

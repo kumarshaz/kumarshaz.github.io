@@ -83,6 +83,7 @@ docId: "ARCH-YYYY-NN"
   - Write standard fenced ```` ```mermaid ```` code blocks directly in Markdown.
   - [`src/layouts/BlogPost.astro`](src/layouts/BlogPost.astro) automatically transforms every ```` ```mermaid ```` block into a `.mermaid-blueprint` figure container with a dot-matrix blueprint background, an `Architecture Diagram` header bar, an interactive `Expand`/`Collapse` toggle, and live Light/Dark theme token synchronization via Mermaid v12 (`theme: 'base'`, `@mermaid-js/layout-elk`, and `@mermaid-js/layout-tidy-tree`).
   - For multi-stage `flowchart` diagrams, opt into ELK via diagram frontmatter (`---\nconfig:\n  layout: elk\n---`) and prefer `flowchart TB` when chaining 3+ subgraphs so SVGs remain readable inside the main prose column.
+  - For `mindmap` diagrams, opt into Tidy-Tree via diagram frontmatter (`---\nconfig:\n  layout: tidy-tree\n---`) so branches render cleanly with the bidirectional `@mermaid-js/layout-tidy-tree` engine ([`src/layouts/BlogPost.astro`](src/layouts/BlogPost.astro) also enforces `tidy-tree` automatically at runtime if omitted).
   - Quote node labels that contain parentheses, colons, slashes, or special characters (e.g., `A["Domain Service (Hexagonal Port)"] --> B["Event Bus"]`).
   - Do **not** embed hardcoded theme overrides (`%%{init: {'theme': 'dark'}}%%`) that prevent automatic Light/Dark mode token synchronization.
 - **Code & ASCII Blocks**:

@@ -107,6 +107,10 @@ In Case Study B of [*The Signal in the Noise*](https://medium.com/@kumar.shashin
 4. **Commodity Plumbing Compounds Vendor Leverage:** When you rebuild commodity billing, audit trails, SOC 2 logging, payroll rules, or multi-carrier tax compliance in-house using an agent, you haven't eliminated vendor lock-in—you have just appointed yourself the permanent maintenance vendor for zero competitive differentiation.
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Editorial Architecture Rubric"))
     ("1. Decision-Space Reduction")

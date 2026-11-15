@@ -91,7 +91,7 @@ Mermaid diagrams often look disconnected from the host site because Mermaid inje
 
 1. **Zero-Friction Authoring**: Diagrams are authored as standard ```` ```mermaid ```` fenced blocks inside Markdown.
 2. **Blueprint Figure Framing**: At load time, each Mermaid block is wrapped in a `.mermaid-blueprint` figure container featuring a radial dot-matrix technical background, an `Architecture Diagram` header bar, and an interactive `Expand` / `Collapse` viewport toggle.
-3. **Live Theme Synchronization & Multi-Engine Layout**: Mermaid v12 is bundled with `@mermaid-js/layout-elk` and `@mermaid-js/layout-tidy-tree`, initialized with `theme: 'base'`, and reads active CSS variables via `getComputedStyle(document.documentElement)`. Flowcharts opt into `layout: elk` via diagram frontmatter while mindmaps, sequences, and timelines render on their native tree/sequential engines sequentially with monotonic SVG IDs. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
+3. **Live Theme Synchronization & Multi-Engine Layout**: Mermaid v12 is bundled with `@mermaid-js/layout-elk` and `@mermaid-js/layout-tidy-tree`, initialized with `theme: 'base'`, and reads active CSS variables via `getComputedStyle(document.documentElement)`. Flowcharts opt into `layout: elk` and mindmaps opt into `layout: tidy-tree` via diagram frontmatter (with runtime fallback in [`BlogPost.astro`](https://github.com/kumarshaz/kumarshaz.github.io/blob/main/src/layouts/BlogPost.astro)), while sequences and timelines render sequentially with monotonic SVG IDs. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
 
 ---
 

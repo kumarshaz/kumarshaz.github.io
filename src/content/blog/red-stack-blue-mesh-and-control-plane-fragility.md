@@ -115,6 +115,10 @@ flowchart TD
 ```
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Criticality & Control-Plane Resilience"))
     ("1. Static Stability on Data Plane")

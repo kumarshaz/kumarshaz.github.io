@@ -113,6 +113,10 @@ Look closely at why concrete thresholds beat architectural slogans:
 Every single rule converts an emotional stakeholder negotiation into a falsifiable architectural measurement.
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Clean-Core COTS Governance"))
     ("Rule 1: Shoehorn Stop")

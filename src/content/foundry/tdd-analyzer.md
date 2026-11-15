@@ -346,6 +346,10 @@ flowchart TD
 Building **TDD Analyzer** against real enterprise Word specifications surfaced four practical constraints that shaped its architecture:
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Static RAG<br/>Production Guardrails"))
     ("Anti-Hallucination Controls")

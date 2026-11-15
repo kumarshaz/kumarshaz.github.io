@@ -118,6 +118,10 @@ Rather than writing fragile custom Office XML readers for spreadsheets, slide sp
 ## 4. Format Coverage & Role in the Foundry Ecosystem
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("To-Markdown Converter<br/>Catch-All Format Taxonomy"))
     ("Diagram XML Compilers")

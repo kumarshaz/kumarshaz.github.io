@@ -398,6 +398,25 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 
 				let renderEpoch = 0;
 
+				const ensureMindmapTidyTree = (src: string) => {
+					const trimmed = src.trim();
+					if (/^mindmap\b/.test(trimmed) || /^(?:%%[^\n]*\n\s*)+mindmap\b/.test(trimmed)) {
+						return `---\nconfig:\n  layout: tidy-tree\n---\n${trimmed}`;
+					}
+					const fmMatch = trimmed.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+					if (
+						fmMatch &&
+						/^\s*(?:%%[^\n]*\n\s*)*mindmap\b/.test(fmMatch[2]) &&
+						!/\blayout\s*:/.test(fmMatch[1])
+					) {
+						if (/^config\s*:/m.test(fmMatch[1])) {
+							return `---\n${fmMatch[1].replace(/^config\s*:[^\n]*$/m, (m) => `${m}\n  layout: tidy-tree`)}\n---\n${fmMatch[2]}`;
+						}
+						return `---\n${fmMatch[1]}\nconfig:\n  layout: tidy-tree\n---\n${fmMatch[2]}`;
+					}
+					return trimmed;
+				};
+
 				const renderDiagrams = async () => {
 					configureMermaid();
 					renderEpoch += 1;
@@ -408,7 +427,10 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 						if (!rawSrc) continue;
 						const diagramId = `mermaid-fig-${renderEpoch}-${i + 1}`;
 						try {
-							const { svg, bindFunctions } = await mermaid.render(diagramId, rawSrc);
+							const { svg, bindFunctions } = await mermaid.render(
+								diagramId,
+								ensureMindmapTidyTree(rawSrc),
+							);
 							node.innerHTML = svg;
 							bindFunctions?.(node);
 							node.removeAttribute('data-mermaid-error');

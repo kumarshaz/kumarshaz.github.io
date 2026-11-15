@@ -119,6 +119,10 @@ Because transport schemas are now cheap to generate, teams expose **hundreds of 
 In empirical software engineering analysis, we call this the **Syntactic–Typestate Gap**: an agent-synthesized change passes `100%` of static schema validators and mocked local unit tests (`local pass = 1.0`), yet breaks the cross-service state protocol over time.
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Contract-First .NET 2026"))
     ("1. Synchronous OpenAPI")

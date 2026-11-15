@@ -204,6 +204,10 @@ Back in my September 2025 piece, I proposed adapting four formal checks—**The 
 If an agent-authored PR breaks any of those four properties, automated AST + dependency checks should reject it *before* spending a single minute of staff-engineer review capacity.
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("Executable Verification Asset"))
     ("Compile-Time Types")

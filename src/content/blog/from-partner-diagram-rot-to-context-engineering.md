@@ -138,6 +138,10 @@ When an enterprise team retires partner PowerPoints and adopts context engineeri
 | **4. Domain Economics & Exception Glossary** | `docs/domain-ledger.md` | Cross-domain tribal knowledge locked in veteran heads | Explicit edge semantics: how underwriting, settlement, chargebacks, or partial failures resolve |
 
 ```mermaid
+---
+config:
+  layout: tidy-tree
+---
 mindmap
   root(("4-Layer Repo Context Pack"))
     ("1. ARCHITECTURE.md + Mermaid")

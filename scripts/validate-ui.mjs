@@ -260,7 +260,7 @@ assert(
 	'[why-i-love-wardley-mapping] Preserves Markdown Mermaid timeline diagram source',
 );
 
-// Validate all 6 new blog posts have hero images, ELK layout, colored nodes, animated edges, and mindmaps
+// Validate all 6 new blog posts have hero images, ELK layout, colored nodes, animated edges, and tidy-tree mindmaps
 const sixNewPosts = [
 	'blog/clean-core-sidecars-and-cots-stop-rules/index.html',
 	'blog/contract-first-net-beyond-codegen/index.html',
@@ -277,10 +277,35 @@ for (const postPage of sixNewPosts) {
 			postHtml.includes('layout: elk') &&
 			postHtml.includes('classDef') &&
 			postHtml.includes('animate: true') &&
-			postHtml.includes('mindmap'),
-		`[${postPage}] Renders Hero Banner, ELK layout, colored nodes (classDef), animated edges, and Mindmap diagram`,
+			postHtml.includes('mindmap') &&
+			postHtml.includes('layout: tidy-tree'),
+		`[${postPage}] Renders Hero Banner, ELK layout, colored nodes (classDef), animated edges, and Tidy-Tree Mindmap diagram`,
 	);
 }
+
+// Verify every mindmap fenced block across src/content/{blog,foundry} explicitly sets layout: tidy-tree
+const contentCollections = ['src/content/blog', 'src/content/foundry'];
+for (const relDir of contentCollections) {
+	const absDir = path.join(rootDir, relDir);
+	for (const file of fs.readdirSync(absDir).filter((f) => f.endsWith('.md'))) {
+		const md = fs.readFileSync(path.join(absDir, file), 'utf8');
+		const mermaidBlocks = [...md.matchAll(/```mermaid\s*\n([\s\S]*?)```/g)];
+		for (const [, block] of mermaidBlocks) {
+			if (/\bmindmap\b/.test(block)) {
+				assert(
+					/\blayout:\s*tidy-tree\b/.test(block),
+					`[${relDir}/${file}] Mindmap block explicitly declares layout: tidy-tree`,
+				);
+			}
+		}
+	}
+}
+
+const blogPostLayout = readFile('src/layouts/BlogPost.astro');
+assert(
+	blogPostLayout.includes('ensureMindmapTidyTree') && blogPostLayout.includes('layout: tidy-tree'),
+	'[src/layouts/BlogPost.astro] Enforces tidy-tree layout fallback for mindmap diagrams at runtime',
+);
 
 const blacksmithHtml = fs.readFileSync(
 	path.join(distDir, 'blog/what-is-blacksmith-to-goldsmith/index.html'),
@@ -330,8 +355,9 @@ for (const [foundryPage, keyPhrase] of foundryProductPages) {
 			pageHtml.includes('layout: elk') &&
 			pageHtml.includes('classDef') &&
 			pageHtml.includes('animate: true') &&
-			pageHtml.includes('mindmap'),
-		`[${foundryPage}] Renders Hero Banner, "${keyPhrase}", ELK layout, colored nodes, animated edges, and Mindmap diagram`,
+			pageHtml.includes('mindmap') &&
+			pageHtml.includes('layout: tidy-tree'),
+		`[${foundryPage}] Renders Hero Banner, "${keyPhrase}", ELK layout, colored nodes, animated edges, and Tidy-Tree Mindmap diagram`,
 	);
 }
 
