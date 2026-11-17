@@ -243,9 +243,29 @@ const writingPillars = [
 													<h3>{item.data.title}</h3>
 												</a>
 												<p class="post-desc">{item.data.description}</p>
-												{item.data.tags && item.data.tags.length > 0 && (
+												{((item.data.liveUrl || item.data.repoUrl) || (item.data.tags && item.data.tags.length > 0)) && (
 													<div class="post-tags-row">
-														{item.data.tags.map((tag) => (
+														{item.data.liveUrl && (
+															<a
+																href={item.data.liveUrl}
+																target="_blank"
+																rel="noopener noreferrer"
+																class="action-pill live-pill"
+															>
+																Product UI ↗
+															</a>
+														)}
+														{item.data.repoUrl && (
+															<a
+																href={item.data.repoUrl}
+																target="_blank"
+																rel="noopener noreferrer"
+																class="action-pill repo-pill"
+															>
+																GitHub Repo ↗
+															</a>
+														)}
+														{item.data.tags?.map((tag) => (
 															<a href={`/blog/tag/${tag.toLowerCase()}/`} class="rail-tag">
 																#{tag}
 															</a>
@@ -338,63 +358,55 @@ const writingPillars = [
 		flex-wrap: wrap;
 	}
 
-	.btn-primary {
-		display: inline-flex;
-		align-items: center;
-		background-color: var(--text-primary);
-		color: var(--bg-canvas) !important;
-		padding: 0.65rem 1.35rem;
-		border: 1px solid var(--text-primary);
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-	}
-
-	.btn-primary:hover {
-		background-color: var(--accent-primary);
-		border-color: var(--accent-primary);
-		color: #ffffff !important;
-	}
-
-	.btn-foundry {
-		display: inline-flex;
-		align-items: center;
-		background-color: var(--bg-surface);
-		border: 1px solid var(--accent-primary);
-		color: var(--accent-primary) !important;
-		padding: 0.65rem 1.35rem;
-		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-	}
-
-	.btn-foundry:hover {
-		background-color: var(--accent-primary);
-		border-color: var(--accent-primary);
-		color: #ffffff !important;
-	}
-
+	.btn-primary,
+	.btn-foundry,
 	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
-		background-color: transparent;
-		border: 1px solid var(--border-strong);
-		color: var(--text-primary) !important;
+		justify-content: center;
 		padding: 0.65rem 1.35rem;
 		font-family: var(--font-mono);
 		font-size: 0.8rem;
 		font-weight: 600;
 		text-decoration: none;
-		transition: border-color 0.15s ease, color 0.15s ease;
+		transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+			transform 0.15s ease, box-shadow 0.15s ease;
 	}
 
-	.btn-secondary:hover {
-		border-color: var(--accent-primary);
+	.btn-primary {
+		background-color: var(--text-primary);
+		border: 1px solid var(--text-primary);
+		color: var(--bg-canvas) !important;
+	}
+
+	.btn-foundry {
+		background-color: var(--bg-surface);
+		border: 1px solid var(--accent-primary);
 		color: var(--accent-primary) !important;
+	}
+
+	.btn-secondary {
+		background-color: transparent;
+		border: 1px solid var(--border-strong);
+		color: var(--text-primary) !important;
+	}
+
+	.btn-primary:hover,
+	.btn-foundry:hover,
+	.btn-secondary:hover {
+		background-color: var(--accent-primary);
+		border-color: var(--accent-primary);
+		color: #ffffff !important;
+		transform: translateY(-1px);
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+		text-decoration: none;
+	}
+
+	.btn-primary:active,
+	.btn-foundry:active,
+	.btn-secondary:active {
+		transform: translateY(0);
+		box-shadow: none;
 	}
 
 	.hero-photo {
@@ -449,10 +461,13 @@ const writingPillars = [
 		font-size: 0.72rem;
 		color: var(--accent-primary);
 		text-decoration: none;
+		transition: color 0.15s ease;
 	}
 
 	.sidebar-more:hover {
+		color: var(--accent-secondary);
 		text-decoration: underline;
+		text-underline-offset: 0.22em;
 	}
 
 	.pillars {
@@ -524,10 +539,11 @@ const writingPillars = [
 		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		text-decoration: none;
-		transition: border-color 0.15s ease, color 0.15s ease;
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 	}
 
 	.btn-connect:hover {
+		background-color: var(--accent-subtle);
 		border-color: var(--accent-primary);
 		color: var(--accent-primary);
 	}
@@ -563,10 +579,13 @@ const writingPillars = [
 		font-size: 0.76rem;
 		color: var(--accent-primary);
 		text-decoration: none;
+		transition: color 0.15s ease;
 	}
 
 	.view-all-link:hover {
+		color: var(--accent-secondary);
 		text-decoration: underline;
+		text-underline-offset: 0.22em;
 	}
 
 	.posts-list {
@@ -632,7 +651,8 @@ const writingPillars = [
 	.post-tags-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.4rem;
+		align-items: center;
+		gap: 0.45rem;
 		margin-top: 0.75rem;
 	}
 
@@ -641,6 +661,11 @@ const writingPillars = [
 		padding: 0.3rem;
 		background-color: var(--bg-surface);
 		border: 1px solid var(--border-grid);
+		transition: border-color 0.15s ease;
+	}
+
+	.post-thumb:hover {
+		border-color: var(--accent-primary);
 	}
 
 	.post-thumb img {

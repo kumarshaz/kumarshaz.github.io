@@ -130,8 +130,9 @@ assert(
 	'Content schema defines status enum (Draft, Evergreen, Published)',
 );
 assert(
-	contentConfig.includes('docId: z.string().optional()'),
-	'Content schema defines optional docId',
+	contentConfig.includes('docId: z.string().optional()') &&
+		contentConfig.includes('liveUrl: z.string().url().optional()'),
+	'Content schema defines optional docId and Foundry liveUrl',
 );
 
 // ---------------------------------------------------------------------------
@@ -306,6 +307,37 @@ assert(
 	blogPostLayout.includes('ensureMindmapTidyTree') && blogPostLayout.includes('layout: tidy-tree'),
 	'[src/layouts/BlogPost.astro] Enforces tidy-tree layout fallback for mindmap diagrams at runtime',
 );
+assert(
+	blogPostLayout.includes('createUniformSubgraphRender') &&
+		blogPostLayout.includes('exportSvgToPng') &&
+		blogPostLayout.includes('downloadSvgFromContainer') &&
+		blogPostLayout.includes('mermaid-lightbox-backdrop') &&
+		blogPostLayout.includes('data-export-format'),
+	'[src/layouts/BlogPost.astro] Includes uniform subgraph ELK layout wrapper, fullscreen lightbox modal, and SVG/PNG exporter toolbar',
+);
+assert(
+	layoutCss.includes('.mermaid-lightbox-backdrop') &&
+		layoutCss.includes('.mermaid-blueprint.is-expanded') &&
+		layoutCss.includes('position: fixed') &&
+		layoutCss.includes('.action-pill') &&
+		layoutCss.includes('.live-pill'),
+	'[src/styles/layout.css] Configures fullscreen lightbox modal and shared action pills (.live-pill / .repo-pill)',
+);
+
+const homePageSrc = readFile('src/pages/index.astro');
+assert(
+	homePageSrc.includes('.btn-primary:hover,\n\t.btn-foundry:hover,\n\t.btn-secondary:hover'),
+	'[src/pages/index.astro] Unifies Hero CTA hover rule across Blog, Foundry, and About Me buttons',
+);
+
+const tcoHtml = fs.readFileSync(
+	path.join(distDir, 'blog/editorial-architecture-and-three-year-tco/index.html'),
+	'utf8',
+);
+assert(
+	tcoHtml.includes('Jev') && tcoHtml.includes('decision model'),
+	'[editorial-architecture-and-three-year-tco] Notes unobserved net TCO impact of decision models like Jev in Point 3',
+);
 
 const blacksmithHtml = fs.readFileSync(
 	path.join(distDir, 'blog/what-is-blacksmith-to-goldsmith/index.html'),
@@ -337,8 +369,20 @@ assert(
 		foundryIndexHtml.includes('/foundry/atruss-code-atlas/') &&
 		foundryIndexHtml.includes('/foundry/tdd-analyzer/') &&
 		foundryIndexHtml.includes('/foundry/to-markdown-converter/') &&
+		foundryIndexHtml.includes('https://kumarshaz.github.io/atruss-code-atlas/') &&
+		foundryIndexHtml.includes('Product UI') &&
 		!/class="taxonomy-count"[^>]*>\s*<\/span>/.test(foundryIndexHtml),
-	'[foundry/index.html] Renders Foundry index with populated taxonomy badge counts and all 4 Foundry entries',
+	'[foundry/index.html] Renders Foundry index with Product UI links (including Atruss Code Atlas live URL), populated taxonomy badge counts, and all 4 Foundry entries',
+);
+
+const atrussHtml = fs.readFileSync(
+	path.join(distDir, 'foundry/atruss-code-atlas/index.html'),
+	'utf8',
+);
+assert(
+	atrussHtml.includes('https://kumarshaz.github.io/atruss-code-atlas/') &&
+		atrussHtml.includes('Product UI'),
+	'[foundry/atruss-code-atlas] Renders Product UI link in left metadata rail beside GitHub Repo',
 );
 
 const foundryProductPages = [
