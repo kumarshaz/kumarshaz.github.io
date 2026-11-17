@@ -42,6 +42,7 @@ const foundry = defineCollection({
 			readingTime: z.string().optional(),
 			status: z.enum(['Active', 'Evergreen', 'Production', 'Open Source']).default('Active'),
 			repoUrl: z.string().url().optional(),
+			liveUrl: z.string().url().optional(),
 			docId: z.string().optional(),
 		}),
 });

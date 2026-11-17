@@ -155,13 +155,62 @@
 	border: 1px solid var(--border-grid);
 	padding: 0.15rem 0.45rem;
 	text-decoration: none;
-	transition: color 0.15s ease, border-color 0.15s ease;
+	transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .rail-tag:hover,
 .rail-tag.is-active {
 	color: var(--accent-primary);
 	border-color: var(--accent-primary);
+	background-color: var(--accent-subtle);
+}
+
+/* Shared Action Pills (Product UI ↗ / GitHub Repo ↗) */
+.rail-action-links {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.45rem;
+	margin-top: 0.35rem;
+}
+
+.action-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	padding: 0.22rem 0.6rem;
+	text-decoration: none;
+	transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+		transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.live-pill {
+	background-color: var(--accent-subtle);
+	border: 1px solid var(--accent-primary);
+	color: var(--accent-primary) !important;
+}
+
+.repo-pill {
+	background-color: var(--bg-surface);
+	border: 1px solid var(--border-strong);
+	color: var(--text-primary) !important;
+}
+
+.action-pill:hover {
+	background-color: var(--accent-primary);
+	border-color: var(--accent-primary);
+	color: #ffffff !important;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+	text-decoration: none;
+}
+
+.action-pill:active {
+	transform: translateY(0);
+	box-shadow: none;
 }
 
 /* Blueprint Grid Background for Mermaid Containers */
@@ -171,22 +220,40 @@
 	background-size: 16px 16px;
 	border: 1px solid var(--border-grid);
 	border-left: 3px solid var(--accent-primary);
-	padding: 1.75rem;
+	padding: 1.5rem 1.75rem 1.75rem 1.75rem;
 	margin: 2.25rem 0;
-	overflow-x: auto;
 	position: relative;
 }
 
+.mermaid-lightbox-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 1990;
+	background: rgba(17, 17, 17, 0.74);
+	backdrop-filter: blur(2px);
+}
+
+.mermaid-lightbox-backdrop[hidden] {
+	display: none !important;
+}
+
 .mermaid-blueprint.is-expanded {
-	margin-left: -1.5rem;
-	margin-right: -1.5rem;
+	position: fixed;
+	inset: 1.5rem;
+	z-index: 2000;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
 }
 
 .mermaid-blueprint-bar {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 1rem;
+	flex-wrap: wrap;
+	gap: 0.75rem 1rem;
 	padding-bottom: 0.75rem;
 	margin-bottom: 1.1rem;
 	border-bottom: 1px solid var(--border-grid);
@@ -195,24 +262,121 @@
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
 	color: var(--text-muted);
+	flex-shrink: 0;
 }
 
+.mermaid-blueprint-title {
+	font-weight: 600;
+}
+
+.mermaid-toolbar {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.mermaid-toolbar-sep {
+	width: 1px;
+	height: 1.1rem;
+	background-color: var(--border-grid);
+	margin: 0 0.15rem;
+}
+
+.mermaid-zoom-label {
+	min-width: 3.1rem;
+	text-align: center;
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	letter-spacing: 0.03em;
+}
+
+.mermaid-toolbar-btn,
 .mermaid-blueprint-zoom {
 	background: var(--bg-canvas);
 	border: 1px solid var(--border-grid);
-	color: var(--text-muted);
+	color: var(--text-primary);
 	font-family: var(--font-mono);
 	font-size: 0.68rem;
+	font-weight: 500;
+	line-height: 1.2;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
-	padding: 0.2rem 0.55rem;
+	padding: 0.28rem 0.55rem;
 	cursor: pointer;
-	transition: color 0.15s ease, border-color 0.15s ease;
+	transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
+.mermaid-toolbar-btn:hover,
 .mermaid-blueprint-zoom:hover {
+	background-color: var(--accent-subtle);
 	color: var(--accent-primary);
 	border-color: var(--accent-primary);
+}
+
+.mermaid-toolbar-btn:disabled,
+.mermaid-blueprint-zoom:disabled {
+	opacity: 0.55;
+	cursor: wait;
+}
+
+.mermaid-viewport {
+	width: 100%;
+	overflow: auto;
+	min-height: 0;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(130, 126, 120, 0.5) var(--bg-surface);
+}
+
+.mermaid-viewport::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+.mermaid-viewport::-webkit-scrollbar-track {
+	background: var(--bg-surface);
+}
+
+.mermaid-viewport::-webkit-scrollbar-thumb {
+	background-color: rgba(130, 126, 120, 0.5);
+	border: 2px solid var(--bg-surface);
+	border-radius: 4px;
+}
+
+.mermaid-viewport::-webkit-scrollbar-thumb:hover {
+	background-color: var(--accent-primary);
+}
+
+.mermaid-blueprint.is-expanded .mermaid-viewport {
+	flex: 1;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	padding: 0.75rem;
+}
+
+.mermaid-zoom-stage {
+	width: 100%;
+	margin: 0 auto;
+}
+
+.mermaid-blueprint.is-expanded .mermaid-zoom-stage {
+	width: auto;
+	min-width: 100%;
+	margin: auto;
+}
+
+.mermaid-blueprint svg {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+}
+
+.mermaid-blueprint.is-expanded svg {
+	max-width: none;
 }
 
 @keyframes mermaid-edge-flow {
@@ -222,11 +386,6 @@
 	to {
 		stroke-dashoffset: 0;
 	}
-}
-
-.mermaid-blueprint svg {
-	max-width: 100%;
-	height: auto;
 }
 
 .mermaid-blueprint .edge-animation-slow,
@@ -259,10 +418,22 @@
 		position: static;
 	}
 	.mermaid-blueprint {
-		padding: 1.25rem 1rem;
+		padding: 1.15rem 1rem;
 	}
 	.mermaid-blueprint.is-expanded {
-		margin-left: 0;
-		margin-right: 0;
+		inset: 0.5rem;
+		padding: 0.85rem;
+	}
+	.mermaid-toolbar {
+		gap: 0.25rem;
+	}
+	.mermaid-toolbar-btn,
+	.mermaid-blueprint-zoom {
+		padding: 0.24rem 0.42rem;
+		font-size: 0.64rem;
+	}
+	.mermaid-zoom-label {
+		min-width: 2.6rem;
+		font-size: 0.64rem;
 	}
 }

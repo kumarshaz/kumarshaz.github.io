@@ -86,11 +86,12 @@ const categoryCounts = {
 				color: var(--text-primary);
 				cursor: pointer;
 				text-align: left;
-				transition: border-color 0.15s ease, color 0.15s ease;
+				transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 			}
 
 			.taxonomy-btn:hover,
 			.taxonomy-btn.is-active {
+				background-color: var(--accent-subtle);
 				border-color: var(--accent-primary);
 				color: var(--accent-primary);
 			}
@@ -98,6 +99,12 @@ const categoryCounts = {
 			.taxonomy-count {
 				font-size: 0.7rem;
 				color: var(--text-muted);
+				transition: color 0.15s ease;
+			}
+
+			.taxonomy-btn:hover .taxonomy-count,
+			.taxonomy-btn.is-active .taxonomy-count {
+				color: var(--accent-primary);
 			}
 
 			/* Main Entries Stream */
@@ -179,10 +186,16 @@ const categoryCounts = {
 			}
 
 			.entry-figure {
+				display: block;
 				margin: 0;
 				padding: 0.35rem;
 				border: 1px solid var(--border-grid);
 				background-color: var(--bg-surface);
+				transition: border-color 0.15s ease;
+			}
+
+			.entry-figure:hover {
+				border-color: var(--accent-primary);
 			}
 
 			.entry-figure img {

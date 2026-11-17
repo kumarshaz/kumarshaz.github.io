@@ -85,10 +85,11 @@ const today = new Date();
 		text-decoration: none;
 		font-family: var(--font-mono);
 		font-size: 0.74rem;
-		transition: color 0.15s ease, border-color 0.15s ease;
+		transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 	}
 
 	.social-links a:hover {
+		background-color: var(--accent-subtle);
 		color: var(--accent-primary);
 		border-color: var(--accent-primary);
 	}

@@ -8,6 +8,7 @@ tags: ["Architecture", "AI", "SDLC", "Astro", "Governance"]
 readingTime: "9 min read"
 status: "Open Source"
 repoUrl: "https://github.com/kumarshaz/atruss-code-atlas"
+liveUrl: "https://kumarshaz.github.io/atruss-code-atlas/"
 docId: "FNDRY-2026-02"
 ---
 

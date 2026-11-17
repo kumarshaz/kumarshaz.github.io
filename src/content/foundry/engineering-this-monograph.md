@@ -8,6 +8,7 @@ tags: ["Architecture", "Astro", "GitHub Pages", "DevEx", "SDLC"]
 readingTime: "6 min read"
 status: "Production"
 repoUrl: "https://github.com/kumarshaz/kumarshaz.github.io"
+liveUrl: "https://kumarshaz.github.io/"
 docId: "FNDRY-2026-01"
 ---
 

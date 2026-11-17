@@ -79,10 +79,13 @@ const { tag, allTags = [], posts } = Astro.props;
 				font-size: 0.78rem;
 				text-decoration: none;
 				color: var(--accent-primary);
+				transition: color 0.15s ease;
 			}
 
 			.back-link:hover {
+				color: var(--accent-secondary);
 				text-decoration: underline;
+				text-underline-offset: 0.22em;
 			}
 
 			.tag-entries-list {
@@ -151,10 +154,16 @@ const { tag, allTags = [], posts } = Astro.props;
 			}
 
 			.tag-entry-figure {
+				display: block;
 				margin: 0;
 				padding: 0.35rem;
 				border: 1px solid var(--border-grid);
 				background-color: var(--bg-surface);
+				transition: border-color 0.15s ease;
+			}
+
+			.tag-entry-figure:hover {
+				border-color: var(--accent-primary);
 			}
 
 			.tag-entry-figure img {

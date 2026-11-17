@@ -8,6 +8,7 @@
 :root,
 :root.light,
 [data-theme="light"] {
+	color-scheme: light;
 	/* Tier 1: Primitives */
 	--palette-paper-50: #F2F1EC;
 	--palette-paper-100: #E7E5DD;
@@ -54,6 +55,7 @@
 
 [data-theme="dark"],
 :root.dark {
+	color-scheme: dark;
 	/* Tier 2: Semantic Tokens (Dark - Anvil Carbon & Signal Amber) */
 	--bg-canvas: #111214;
 	--bg-surface: #191B1E;

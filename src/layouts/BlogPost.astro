@@ -18,6 +18,7 @@ interface Props extends Partial<BlogData> {
 	category?: string;
 	status?: string;
 	repoUrl?: string;
+	liveUrl?: string;
 	backHref?: string;
 	backLabel?: string;
 }
@@ -33,6 +34,7 @@ const {
 	readingTime,
 	headings = [],
 	repoUrl,
+	liveUrl,
 	backHref = '/blog',
 	backLabel = '← All Articles',
 } = Astro.props;
@@ -119,10 +121,13 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				padding-top: 1.25rem;
 				border-top: 1px solid var(--border-grid);
 				margin-top: 1.5rem;
+				transition: color 0.15s ease;
 			}
 
 			.back-to-index:hover {
 				color: var(--accent-primary);
+				text-decoration: underline;
+				text-underline-offset: 0.22em;
 			}
 		</style>
 	</head>
@@ -175,18 +180,37 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 							</div>
 
 							{
-								repoUrl && (
+								(liveUrl || repoUrl) && (
 									<div class="rail-block">
-										<span class="rail-label">Repository</span>
-										<a
-											href={repoUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="rail-tag"
-											style="display: inline-block; margin-top: 0.2rem;"
-										>
-											View Source on GitHub →
-										</a>
+										<span class="rail-label">
+											{liveUrl && repoUrl
+												? 'Product & Source'
+												: liveUrl
+													? 'Product UI'
+													: 'Repository'}
+										</span>
+										<div class="rail-action-links">
+											{liveUrl && (
+												<a
+													href={liveUrl}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="action-pill live-pill"
+												>
+													Product UI ↗
+												</a>
+											)}
+											{repoUrl && (
+												<a
+													href={repoUrl}
+													target="_blank"
+													rel="noopener noreferrer"
+													class="action-pill repo-pill"
+												>
+													GitHub Repo ↗
+												</a>
+											)}
+										</div>
 									</div>
 								)
 							}
@@ -272,14 +296,341 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 			import elkLayouts from '@mermaid-js/layout-elk';
 			import tidyTreeLayouts from '@mermaid-js/layout-tidy-tree';
 
-			mermaid.registerLayoutLoaders([...elkLayouts, ...tidyTreeLayouts]);
+			interface LayoutNodeLike {
+				id: string;
+				domId?: string;
+				parentId?: string;
+				isGroup?: boolean;
+				shape?: string;
+				width?: number;
+				height?: number;
+				padding?: number;
+				labelPaddingX?: number;
+				look?: string;
+				layoutOptions?: Record<string, unknown>;
+			}
 
-			const configureMermaid = () => {
+			interface LayoutEdgeLike {
+				id?: string;
+				start?: string;
+				end?: string;
+				[key: string]: unknown;
+			}
+
+			type EdgesArrayLike = LayoutEdgeLike[] & {
+				defaultInterpolate?: unknown;
+				defaultStyle?: unknown;
+				[key: string]: unknown;
+			};
+
+			interface LayoutDataLike {
+				nodes: LayoutNodeLike[];
+				edges: EdgesArrayLike;
+				[key: string]: unknown;
+			}
+
+			type ElkRenderFn = (
+				data4Layout: LayoutDataLike,
+				svg: {
+					node?: () => SVGSVGElement | null;
+					select: (selector: string) => { selectAll: (s: string) => { remove: () => void } };
+				},
+				helpers: unknown,
+				options: unknown,
+			) => Promise<void>;
+
+			const cloneEdgesArray = (edges: EdgesArrayLike): EdgesArrayLike => {
+				const cloned: EdgesArrayLike = Array.isArray(edges)
+					? edges.map((edge) => ({ ...edge }))
+					: [];
+				if (edges && typeof edges === 'object') {
+					for (const key of Object.keys(edges)) {
+						if (!/^\d+$/.test(key)) {
+							cloned[key] = edges[key];
+						}
+					}
+				}
+				return cloned;
+			};
+
+			const cloneLayoutData = (src: LayoutDataLike): LayoutDataLike => ({
+				...src,
+				nodes: Array.isArray(src.nodes)
+					? src.nodes.map((node) => ({
+							...node,
+							...(node.layoutOptions ? { layoutOptions: { ...node.layoutOptions } } : {}),
+						}))
+					: [],
+				edges: cloneEdgesArray(src.edges),
+			});
+
+			const cylinderRyOf = (width: number): number =>
+				width > 0 ? width / 2 / (2.5 + width / 50) : 0;
+
+			const isDiamondShape = (shape?: string): boolean =>
+				shape === 'question' ||
+				shape === 'diamond' ||
+				shape === 'decision' ||
+				shape === 'diam';
+
+			const isCylinderShape = (shape?: string): boolean =>
+				shape === 'cylinder' || shape === 'linedCylinder';
+
+			const isSquareRectShape = (shape?: string): boolean =>
+				shape === 'squareRect' || shape === 'rect' || shape === 'datastore';
+
+			const measureRenderedLabelBoxes = (
+				svg: { node?: () => SVGSVGElement | null },
+			): Map<string, { w: number; h: number }> => {
+				const boxes = new Map<string, { w: number; h: number }>();
+				const svgRoot = typeof svg.node === 'function' ? svg.node() : null;
+				if (!svgRoot) return boxes;
+				const nodeGroups = svgRoot.querySelectorAll<SVGGElement>('g.node');
+				for (const ng of nodeGroups) {
+					if (!ng.id) continue;
+					const fo = ng.querySelector<SVGForeignObjectElement>('foreignObject');
+					if (fo) {
+						const w = parseFloat(fo.getAttribute('width') || '0');
+						const h = parseFloat(fo.getAttribute('height') || '0');
+						if (w > 0 || h > 0) {
+							boxes.set(ng.id, { w, h });
+							continue;
+						}
+					}
+					const labelEl = ng.querySelector<SVGGraphicsElement>('g.label text, g.label');
+					if (labelEl) {
+						try {
+							const bb = labelEl.getBBox();
+							if (bb.width > 0 || bb.height > 0) {
+								boxes.set(ng.id, { w: bb.width, h: bb.height });
+							}
+						} catch {
+							// Ignore unrendered SVG nodes
+						}
+					}
+				}
+				return boxes;
+			};
+
+			interface NodeUniformOverride {
+				width?: number;
+				height?: number;
+				padding?: number;
+				labelPaddingX?: number;
+			}
+
+			const createUniformSubgraphRender = (originalRender: ElkRenderFn): ElkRenderFn => {
+				return async (data4Layout, svg, helpers, options) => {
+					const groupChildren = new Map<string, string[]>();
+					for (const node of data4Layout.nodes) {
+						if (node.isGroup) {
+							groupChildren.set(node.id, []);
+						}
+					}
+					for (const node of data4Layout.nodes) {
+						if (!node.isGroup && node.parentId && groupChildren.has(node.parentId)) {
+							groupChildren.get(node.parentId)!.push(node.id);
+						}
+					}
+
+					const multiChildGroups = [...groupChildren.entries()].filter(
+						([, childIds]) => childIds.length >= 2,
+					);
+
+					if (multiChildGroups.length === 0) {
+						await originalRender(data4Layout, svg, helpers, options);
+						return;
+					}
+
+					const origSnapshot = cloneLayoutData(data4Layout);
+					const probeData = cloneLayoutData(origSnapshot);
+
+					// Pass 1: measure natural rendered dimensions & wrapped label boxes without node.width overrides
+					await originalRender(probeData, svg, helpers, options);
+					const probeLabelBoxes = measureRenderedLabelBoxes(svg);
+					svg.select('g').selectAll('*').remove();
+
+					const probeById = new Map(probeData.nodes.map((n) => [n.id, n]));
+					const origById = new Map(origSnapshot.nodes.map((n) => [n.id, n]));
+
+					const lookupLabelBox = (
+						labelBoxes: Map<string, { w: number; h: number }>,
+						node: LayoutNodeLike,
+					) => (node.domId ? labelBoxes.get(node.domId) : undefined) ?? labelBoxes.get(node.id);
+
+					const computeOverrides = (
+						measuredById: Map<string, LayoutNodeLike>,
+						labelBoxes: Map<string, { w: number; h: number }>,
+						prevOverrides?: Map<string, NodeUniformOverride>,
+					): Map<string, NodeUniformOverride> => {
+						const next = new Map<string, NodeUniformOverride>();
+
+						for (const [, childIds] of multiChildGroups) {
+							const measured = childIds
+								.map((id) => measuredById.get(id))
+								.filter((n): n is LayoutNodeLike => Boolean(n));
+
+							const diamonds = measured.filter((n) => isDiamondShape(n.shape));
+							const rectLike = measured.filter((n) => !isDiamondShape(n.shape));
+
+							if (diamonds.length >= 2) {
+								const maxSide = Math.max(...diamonds.map((n) => n.width || 0));
+								for (const d of diamonds) {
+									const curSide = d.width || 0;
+									const lb = lookupLabelBox(labelBoxes, d);
+									const prevPad = prevOverrides?.get(d.id)?.padding;
+									if (lb && (lb.w > 0 || lb.h > 0)) {
+										if (maxSide > curSide + 0.5 || prevPad !== undefined) {
+											next.set(d.id, { padding: Math.max(0, (maxSide - lb.w - lb.h) / 2) });
+										}
+									} else if (maxSide > curSide + 0.5) {
+										const origNode = origById.get(d.id);
+										const basePad =
+											prevPad !== undefined
+												? prevPad
+												: typeof origNode?.padding === 'number' &&
+													  Number.isFinite(origNode.padding)
+													? origNode.padding
+													: 15;
+										next.set(d.id, { padding: basePad + (maxSide - curSide) / 2 });
+									} else if (prevPad !== undefined) {
+										next.set(d.id, { padding: prevPad });
+									}
+								}
+							}
+
+							if (rectLike.length >= 2) {
+								const maxW = Math.max(...rectLike.map((n) => n.width || 0));
+								let maxH = Math.max(...rectLike.map((n) => n.height || 0));
+
+								for (const r of rectLike) {
+									const lb = lookupLabelBox(labelBoxes, r);
+									if (isCylinderShape(r.shape)) {
+										const natW = r.width || 0;
+										const natH = r.height || 0;
+										const deltaRy = Math.max(0, cylinderRyOf(maxW) - cylinderRyOf(natW));
+										if (deltaRy > 0) {
+											maxH = Math.max(maxH, Math.ceil(natH + 3 * deltaRy));
+										}
+									} else if (r.shape === 'roundedRect' && lb && lb.w > 0) {
+										const padXNeeded = Math.max(0, (maxW - lb.w) / 2);
+										maxH = Math.max(maxH, Math.ceil(lb.h + 2 * padXNeeded));
+									}
+								}
+
+								for (const r of rectLike) {
+									const lb = lookupLabelBox(labelBoxes, r);
+									if (isSquareRectShape(r.shape) && lb && lb.w > 0) {
+										next.set(r.id, {
+											labelPaddingX: Math.max(0, (maxW - lb.w) / 2),
+											height: maxH,
+										});
+									} else if (r.shape === 'roundedRect' && lb && lb.w > 0) {
+										next.set(r.id, {
+											padding: Math.max(0, (maxW - lb.w) / 2),
+											height: maxH,
+										});
+									} else {
+										next.set(r.id, { width: maxW, height: maxH });
+									}
+								}
+							}
+						}
+
+						return next;
+					};
+
+					const applyOverrides = (
+						targetNodes: LayoutNodeLike[],
+						overrides: Map<string, NodeUniformOverride>,
+					) => {
+						for (const node of targetNodes) {
+							const ov = overrides.get(node.id);
+							if (!ov) continue;
+							if (ov.width !== undefined) node.width = ov.width;
+							if (ov.height !== undefined) node.height = ov.height;
+							if (ov.padding !== undefined) node.padding = ov.padding;
+							if (ov.labelPaddingX !== undefined) node.labelPaddingX = ov.labelPaddingX;
+						}
+					};
+
+					let currentOverrides = computeOverrides(probeById, probeLabelBoxes);
+					applyOverrides(data4Layout.nodes, currentOverrides);
+
+					// Pass 2: full ELK layout + paint with uniform per-subgraph dimensions
+					await originalRender(data4Layout, svg, helpers, options);
+
+					// Safety convergence passes for any shape that ignores labelPaddingX (e.g. subroutine/stadium)
+					for (let pass = 0; pass < 2; pass++) {
+						const passById = new Map(data4Layout.nodes.map((n) => [n.id, n]));
+						let diverged = false;
+						for (const [, childIds] of multiChildGroups) {
+							const passRects = childIds
+								.map((id) => passById.get(id))
+								.filter((n): n is LayoutNodeLike => Boolean(n && !isDiamondShape(n.shape)));
+							if (passRects.length >= 2) {
+								const ws = passRects.map((n) => n.width || 0);
+								const hs = passRects.map((n) => n.height || 0);
+								if (
+									Math.max(...ws) - Math.min(...ws) > 1.5 ||
+									Math.max(...hs) - Math.min(...hs) > 1.5
+								) {
+									diverged = true;
+									break;
+								}
+							}
+							const passDiamonds = childIds
+								.map((id) => passById.get(id))
+								.filter((n): n is LayoutNodeLike => Boolean(n && isDiamondShape(n.shape)));
+							if (passDiamonds.length >= 2) {
+								const ws = passDiamonds.map((n) => n.width || 0);
+								if (Math.max(...ws) - Math.min(...ws) > 1.5) {
+									diverged = true;
+									break;
+								}
+							}
+						}
+						if (!diverged) break;
+
+						const passLabelBoxes = measureRenderedLabelBoxes(svg);
+						currentOverrides = computeOverrides(passById, passLabelBoxes, currentOverrides);
+						const fresh = cloneLayoutData(origSnapshot);
+						applyOverrides(fresh.nodes, currentOverrides);
+						data4Layout.nodes = fresh.nodes;
+						data4Layout.edges = fresh.edges;
+						svg.select('g').selectAll('*').remove();
+						await originalRender(data4Layout, svg, helpers, options);
+					}
+				};
+			};
+
+			const wrappedElkLayouts = elkLayouts.map((layoutDef) => ({
+				...layoutDef,
+				loader: async () => {
+					const mod = (await layoutDef.loader()) as { render?: ElkRenderFn; [k: string]: unknown };
+					if (typeof mod?.render !== 'function') return mod;
+					return {
+						...mod,
+						render: createUniformSubgraphRender(mod.render),
+					};
+				},
+			}));
+
+			mermaid.registerLayoutLoaders([...wrappedElkLayouts, ...tidyTreeLayouts] as Parameters<
+				typeof mermaid.registerLayoutLoaders
+			>[0]);
+
+			const readThemeTokens = () => {
 				const rootStyle = getComputedStyle(document.documentElement);
 				const readToken = (name: string) => rootStyle.getPropertyValue(name).trim();
 				const isDark =
 					document.documentElement.getAttribute('data-theme') === 'dark' ||
 					document.documentElement.classList.contains('dark');
+				return { readToken, isDark };
+			};
+
+			const configureMermaid = (htmlLabels = true) => {
+				const { readToken, isDark } = readThemeTokens();
 
 				const nodeBg = readToken('--mermaid-node-bg') || (isDark ? '#212428' : '#FAF9F5');
 				const nodeBorder = readToken('--mermaid-node-border') || (isDark ? '#E87A48' : '#C84B20');
@@ -320,6 +671,11 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 
 				mermaid.initialize({
 					startOnLoad: false,
+					htmlLabels,
+					flowchart: {
+						useMaxWidth: true,
+						htmlLabels,
+					},
 					elk: {
 						mergeEdges: false,
 						nodePlacementStrategy: 'NETWORK_SIMPLEX',
@@ -351,17 +707,221 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				});
 			};
 
+			const ensureMindmapTidyTree = (src: string) => {
+				const trimmed = src.trim();
+				if (/^mindmap\b/.test(trimmed) || /^(?:%%[^\n]*\n\s*)+mindmap\b/.test(trimmed)) {
+					return `---\nconfig:\n  layout: tidy-tree\n---\n${trimmed}`;
+				}
+				const fmMatch = trimmed.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+				if (
+					fmMatch &&
+					/^\s*(?:%%[^\n]*\n\s*)*mindmap\b/.test(fmMatch[2]) &&
+					!/\blayout\s*:/.test(fmMatch[1])
+				) {
+					if (/^config\s*:/m.test(fmMatch[1])) {
+						return `---\n${fmMatch[1].replace(/^config\s*:[^\n]*$/m, (m) => `${m}\n  layout: tidy-tree`)}\n---\n${fmMatch[2]}`;
+					}
+					return `---\n${fmMatch[1]}\nconfig:\n  layout: tidy-tree\n---\n${fmMatch[2]}`;
+				}
+				return trimmed;
+			};
+
+			const triggerDownload = (blob: Blob, filename: string) => {
+				const url = URL.createObjectURL(blob);
+				const link = document.createElement('a');
+				link.href = url;
+				link.download = filename;
+				document.body.appendChild(link);
+				link.click();
+				link.remove();
+				window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+			};
+
+			const getSvgDimensions = (svgEl: SVGSVGElement): { width: number; height: number } => {
+				let width = 1200;
+				let height = 800;
+				const vbAttr = (svgEl.getAttribute('viewBox') || '').trim();
+				const vbParts = vbAttr.split(/[\s,]+/).map(Number);
+				if (
+					vbParts.length === 4 &&
+					Number.isFinite(vbParts[2]) &&
+					vbParts[2] > 0 &&
+					Number.isFinite(vbParts[3]) &&
+					vbParts[3] > 0
+				) {
+					width = Math.ceil(vbParts[2]);
+					height = Math.ceil(vbParts[3]);
+				} else {
+					const rect = svgEl.getBoundingClientRect();
+					if (rect.width > 16 && rect.height > 16) {
+						width = Math.ceil(rect.width);
+						height = Math.ceil(rect.height);
+					}
+				}
+				return { width, height };
+			};
+
+			const serializeSvgElement = (svgEl: SVGSVGElement) => {
+				const clone = svgEl.cloneNode(true) as SVGSVGElement;
+				clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+				clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+
+				const { width, height } = getSvgDimensions(svgEl);
+				clone.setAttribute('width', String(width));
+				clone.setAttribute('height', String(height));
+				clone.style.maxWidth = 'none';
+				clone.style.width = '';
+				clone.style.height = '';
+
+				const serializer = new XMLSerializer();
+				return { xml: serializer.serializeToString(clone), width, height };
+			};
+
+			const downloadSvgFromContainer = (containerEl: Element, filenameBase: string): boolean => {
+				const svgEl = containerEl.querySelector<SVGSVGElement>('svg');
+				if (!svgEl) return false;
+				const { xml } = serializeSvgElement(svgEl);
+				const safeName = filenameBase.endsWith('.svg') ? filenameBase : `${filenameBase}.svg`;
+				triggerDownload(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }), safeName);
+				return true;
+			};
+
+			const exportSvgToPng = async (
+				containerEl: Element,
+				filenameBase: string,
+				diagramSource: string,
+				scale = 2,
+			): Promise<boolean> => {
+				const liveSvg = containerEl.querySelector<SVGSVGElement>('svg');
+				if (!liveSvg) return false;
+
+				let targetSvg: SVGSVGElement = liveSvg;
+				let tempHost: HTMLDivElement | null = null;
+
+				if (liveSvg.querySelector('foreignObject') && diagramSource) {
+					try {
+						configureMermaid(false);
+						const renderId = `mermaid-png-export-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+						const { svg: cleanMarkup } = await mermaid.render(
+							renderId,
+							ensureMindmapTidyTree(diagramSource),
+						);
+						tempHost = document.createElement('div');
+						tempHost.style.position = 'fixed';
+						tempHost.style.left = '-99999px';
+						tempHost.style.top = '0';
+						tempHost.innerHTML = cleanMarkup;
+						document.body.appendChild(tempHost);
+						const cleanSvg = tempHost.querySelector<SVGSVGElement>('svg');
+						if (cleanSvg) targetSvg = cleanSvg;
+					} catch (err) {
+						console.warn('Re-render without htmlLabels failed during PNG export:', err);
+					} finally {
+						configureMermaid(true);
+					}
+				}
+
+				try {
+					const { xml, width, height } = serializeSvgElement(targetSvg);
+					const safeName = filenameBase.endsWith('.png') ? filenameBase : `${filenameBase}.png`;
+					const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`;
+
+					const img = new window.Image();
+					await new Promise<void>((resolve, reject) => {
+						img.onload = () => resolve();
+						img.onerror = (ev) => reject(ev);
+						img.src = dataUrl;
+					});
+
+					const canvas = document.createElement('canvas');
+					canvas.width = Math.max(1, Math.min(8192, Math.round(width * scale)));
+					canvas.height = Math.max(1, Math.min(8192, Math.round(height * scale)));
+
+					const ctx = canvas.getContext('2d');
+					if (!ctx) return false;
+
+					const { readToken, isDark } = readThemeTokens();
+					ctx.fillStyle = readToken('--bg-surface') || (isDark ? '#191B1E' : '#E7E5DD');
+					ctx.fillRect(0, 0, canvas.width, canvas.height);
+					ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+					const pngBlob = await new Promise<Blob | null>((resolve) => {
+						try {
+							canvas.toBlob((blob) => resolve(blob), 'image/png');
+						} catch {
+							resolve(null);
+						}
+					});
+
+					if (pngBlob) {
+						triggerDownload(pngBlob, safeName);
+						return true;
+					}
+
+					try {
+						const pngUrl = canvas.toDataURL('image/png');
+						const res = await fetch(pngUrl);
+						triggerDownload(await res.blob(), safeName);
+						return true;
+					} catch {
+						return downloadSvgFromContainer(containerEl, filenameBase);
+					}
+				} catch (err) {
+					console.warn('PNG rasterization failed, falling back to SVG:', err);
+					return downloadSvgFromContainer(containerEl, filenameBase);
+				} finally {
+					if (tempHost) tempHost.remove();
+				}
+			};
+
 			// Wrap Astro Shiki mermaid code blocks in the Blueprint Figure Wrapper (.mermaid-blueprint)
 			const codeBlocks = document.querySelectorAll(
 				'pre[data-language="mermaid"], pre code.language-mermaid',
 			);
 
 			if (codeBlocks.length > 0) {
+				const pageSlug =
+					window.location.pathname
+						.replace(/^\/|\/$/g, '')
+						.split('/')
+						.filter(Boolean)
+						.pop() || 'diagram';
+
+				const backdrop = document.createElement('div');
+				backdrop.className = 'mermaid-lightbox-backdrop';
+				backdrop.hidden = true;
+				backdrop.setAttribute('aria-hidden', 'true');
+				document.body.appendChild(backdrop);
+
+				interface BlueprintController {
+					figure: HTMLElement;
+					collapse: () => void;
+					syncSize: () => void;
+				}
+
+				const controllers: BlueprintController[] = [];
+				let activeExpanded: BlueprintController | null = null;
+
+				const collapseAll = () => {
+					if (activeExpanded) {
+						activeExpanded.collapse();
+					}
+				};
+
+				backdrop.addEventListener('click', collapseAll);
+				document.addEventListener('keydown', (e: KeyboardEvent) => {
+					if (e.key === 'Escape' && activeExpanded) {
+						e.preventDefault();
+						collapseAll();
+					}
+				});
+
 				codeBlocks.forEach((block, index) => {
 					const targetElement =
 						block.tagName.toLowerCase() === 'code' ? block.parentElement : block;
 					if (!targetElement) return;
 					const rawSource = (block.textContent || '').trim();
+					const filenameBase = `${pageSlug}-diagram-${index + 1}`;
 
 					const figure = document.createElement('figure');
 					figure.className = 'mermaid-blueprint';
@@ -371,54 +931,229 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					bar.className = 'mermaid-blueprint-bar';
 
 					const caption = document.createElement('span');
-					caption.textContent = 'Architecture Diagram';
+					caption.className = 'mermaid-blueprint-title';
+					caption.textContent = `Architecture Diagram ${index + 1}`;
 
-					const zoomBtn = document.createElement('button');
-					zoomBtn.type = 'button';
-					zoomBtn.className = 'mermaid-blueprint-zoom';
-					zoomBtn.textContent = 'Expand';
-					zoomBtn.addEventListener('click', () => {
-						const expanded = figure.classList.toggle('is-expanded');
-						zoomBtn.textContent = expanded ? 'Collapse' : 'Expand';
-					});
+					const toolbar = document.createElement('div');
+					toolbar.className = 'mermaid-toolbar';
+					toolbar.setAttribute('role', 'toolbar');
+					toolbar.setAttribute('aria-label', 'Diagram zoom and export controls');
+
+					const makeToolbarBtn = (
+						text: string,
+						title: string,
+						extraClass?: string,
+					): HTMLButtonElement => {
+						const btn = document.createElement('button');
+						btn.type = 'button';
+						btn.className = extraClass
+							? `mermaid-toolbar-btn ${extraClass}`
+							: 'mermaid-toolbar-btn';
+						btn.textContent = text;
+						btn.title = title;
+						btn.setAttribute('aria-label', title);
+						return btn;
+					};
+
+					const makeSep = () => {
+						const sep = document.createElement('span');
+						sep.className = 'mermaid-toolbar-sep';
+						sep.setAttribute('aria-hidden', 'true');
+						return sep;
+					};
+
+					const zoomOutBtn = makeToolbarBtn('−', 'Zoom out diagram');
+					zoomOutBtn.setAttribute('data-zoom-action', 'out');
+
+					const zoomLabel = document.createElement('span');
+					zoomLabel.className = 'mermaid-zoom-label';
+					zoomLabel.setAttribute('data-zoom-label', 'true');
+					zoomLabel.setAttribute('aria-live', 'polite');
+					zoomLabel.textContent = '100%';
+
+					const zoomInBtn = makeToolbarBtn('+', 'Zoom in diagram');
+					zoomInBtn.setAttribute('data-zoom-action', 'in');
+
+					const resetBtn = makeToolbarBtn('Reset', 'Reset zoom to 100%');
+					resetBtn.setAttribute('data-zoom-action', 'reset');
+
+					const svgBtn = makeToolbarBtn('SVG', 'Download SVG diagram');
+					svgBtn.setAttribute('data-export-format', 'svg');
+
+					const pngBtn = makeToolbarBtn('PNG', 'Download high-resolution PNG diagram');
+					pngBtn.setAttribute('data-export-format', 'png');
+
+					const expandBtn = makeToolbarBtn(
+						'Expand',
+						'Open diagram in fullscreen lightbox',
+						'mermaid-blueprint-zoom',
+					);
+					expandBtn.setAttribute('data-expand-toggle', 'true');
+					expandBtn.setAttribute('aria-expanded', 'false');
+
+					toolbar.append(
+						zoomOutBtn,
+						zoomLabel,
+						zoomInBtn,
+						resetBtn,
+						makeSep(),
+						svgBtn,
+						pngBtn,
+						makeSep(),
+						expandBtn,
+					);
 
 					bar.appendChild(caption);
-					bar.appendChild(zoomBtn);
+					bar.appendChild(toolbar);
+
+					const viewport = document.createElement('div');
+					viewport.className = 'mermaid-viewport';
+					viewport.setAttribute('data-zoom-container', 'true');
+
+					const zoomStage = document.createElement('div');
+					zoomStage.className = 'mermaid-zoom-stage';
+					zoomStage.setAttribute('data-zoom-target', 'true');
 
 					const container = document.createElement('div');
 					container.className = 'mermaid';
 					container.setAttribute('data-mermaid-src', rawSource);
-					container.style.display = 'flex';
-					container.style.justifyContent = 'center';
 
+					zoomStage.appendChild(container);
+					viewport.appendChild(zoomStage);
 					figure.appendChild(bar);
-					figure.appendChild(container);
+					figure.appendChild(viewport);
 					targetElement.replaceWith(figure);
+
+					let zoomScale = 1;
+					let refBaseWidth: number | null = null;
+
+					const applySvgZoom = () => {
+						zoomLabel.textContent = `${Math.round(zoomScale * 100)}%`;
+						const svgEl = container.querySelector<SVGSVGElement>('svg');
+						if (!svgEl) return;
+
+						const { width: vbW, height: vbH } = getSvgDimensions(svgEl);
+						const isExpanded = figure.classList.contains('is-expanded');
+
+						if (zoomScale === 1) {
+							refBaseWidth = null;
+							if (isExpanded) {
+								const vw = Math.max(240, viewport.clientWidth - 24);
+								const vh = Math.max(200, viewport.clientHeight - 24);
+								const fitByHeightW = vbH > 0 ? (vh * vbW) / vbH : vw;
+								const expandedW = Math.min(
+									vw,
+									Math.max(Math.min(vbW, vw), Math.min(vbW * 1.45, vw, fitByHeightW)),
+								);
+								svgEl.style.maxWidth = 'none';
+								svgEl.style.width = `${Math.round(expandedW)}px`;
+								svgEl.style.height = 'auto';
+							} else {
+								svgEl.style.width = '100%';
+								svgEl.style.maxWidth = vbW ? `min(100%, ${vbW}px)` : '100%';
+								svgEl.style.height = 'auto';
+							}
+							return;
+						}
+
+						if (!refBaseWidth) {
+							const rect = svgEl.getBoundingClientRect();
+							refBaseWidth = rect.width > 24 ? rect.width : vbW;
+						}
+
+						svgEl.style.maxWidth = 'none';
+						svgEl.style.width = `${Math.max(160, Math.round(refBaseWidth * zoomScale))}px`;
+						svgEl.style.height = 'auto';
+					};
+
+					zoomOutBtn.addEventListener('click', () => {
+						if (zoomScale === 1) {
+							const svgEl = container.querySelector<SVGSVGElement>('svg');
+							if (svgEl) refBaseWidth = svgEl.getBoundingClientRect().width || getSvgDimensions(svgEl).width;
+						}
+						zoomScale = Math.max(0.5, Number((zoomScale - 0.2).toFixed(2)));
+						applySvgZoom();
+					});
+
+					zoomInBtn.addEventListener('click', () => {
+						if (zoomScale === 1) {
+							const svgEl = container.querySelector<SVGSVGElement>('svg');
+							if (svgEl) refBaseWidth = svgEl.getBoundingClientRect().width || getSvgDimensions(svgEl).width;
+						}
+						zoomScale = Math.min(2.6, Number((zoomScale + 0.2).toFixed(2)));
+						applySvgZoom();
+					});
+
+					resetBtn.addEventListener('click', () => {
+						zoomScale = 1;
+						refBaseWidth = null;
+						applySvgZoom();
+					});
+
+					svgBtn.addEventListener('click', () => {
+						downloadSvgFromContainer(container, filenameBase);
+					});
+
+					pngBtn.addEventListener('click', async () => {
+						pngBtn.disabled = true;
+						try {
+							await exportSvgToPng(container, filenameBase, rawSource, 2);
+						} finally {
+							pngBtn.disabled = false;
+						}
+					});
+
+					const controller: BlueprintController = {
+						figure,
+						syncSize: () => {
+							refBaseWidth = null;
+							applySvgZoom();
+						},
+						collapse: () => {
+							if (!figure.classList.contains('is-expanded')) return;
+							figure.classList.remove('is-expanded');
+							expandBtn.textContent = 'Expand';
+							expandBtn.setAttribute('aria-expanded', 'false');
+							expandBtn.title = 'Open diagram in fullscreen lightbox';
+							expandBtn.setAttribute('aria-label', 'Open diagram in fullscreen lightbox');
+							backdrop.hidden = true;
+							document.body.style.overflow = '';
+							if (activeExpanded === controller) activeExpanded = null;
+							zoomScale = 1;
+							refBaseWidth = null;
+							applySvgZoom();
+							expandBtn.focus();
+						},
+					};
+
+					expandBtn.addEventListener('click', () => {
+						if (figure.classList.contains('is-expanded')) {
+							controller.collapse();
+							return;
+						}
+						if (activeExpanded && activeExpanded !== controller) {
+							activeExpanded.collapse();
+						}
+						figure.classList.add('is-expanded');
+						expandBtn.textContent = 'Collapse';
+						expandBtn.setAttribute('aria-expanded', 'true');
+						expandBtn.title = 'Exit fullscreen lightbox (Esc)';
+						expandBtn.setAttribute('aria-label', 'Exit fullscreen lightbox');
+						backdrop.hidden = false;
+						document.body.style.overflow = 'hidden';
+						activeExpanded = controller;
+						zoomScale = 1;
+						refBaseWidth = null;
+						window.requestAnimationFrame(() => applySvgZoom());
+					});
+
+					controllers.push(controller);
 				});
 
 				let renderEpoch = 0;
 
-				const ensureMindmapTidyTree = (src: string) => {
-					const trimmed = src.trim();
-					if (/^mindmap\b/.test(trimmed) || /^(?:%%[^\n]*\n\s*)+mindmap\b/.test(trimmed)) {
-						return `---\nconfig:\n  layout: tidy-tree\n---\n${trimmed}`;
-					}
-					const fmMatch = trimmed.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
-					if (
-						fmMatch &&
-						/^\s*(?:%%[^\n]*\n\s*)*mindmap\b/.test(fmMatch[2]) &&
-						!/\blayout\s*:/.test(fmMatch[1])
-					) {
-						if (/^config\s*:/m.test(fmMatch[1])) {
-							return `---\n${fmMatch[1].replace(/^config\s*:[^\n]*$/m, (m) => `${m}\n  layout: tidy-tree`)}\n---\n${fmMatch[2]}`;
-						}
-						return `---\n${fmMatch[1]}\nconfig:\n  layout: tidy-tree\n---\n${fmMatch[2]}`;
-					}
-					return trimmed;
-				};
-
 				const renderDiagrams = async () => {
-					configureMermaid();
+					configureMermaid(true);
 					renderEpoch += 1;
 					const nodes = document.querySelectorAll<HTMLElement>('.mermaid');
 					for (let i = 0; i < nodes.length; i++) {
@@ -434,6 +1169,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 							node.innerHTML = svg;
 							bindFunctions?.(node);
 							node.removeAttribute('data-mermaid-error');
+							controllers[i]?.syncSize();
 						} catch (err) {
 							const msg =
 								err instanceof Error
@@ -454,7 +1190,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					renderDiagrams();
 				});
 			} else {
-				configureMermaid();
+				configureMermaid(true);
 			}
 		</script>
 	</body>
