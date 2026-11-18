@@ -726,6 +726,9 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				return trimmed;
 			};
 
+			const SVG_NS = 'http://www.w3.org/2000/svg';
+			const COPYRIGHT_WATERMARK_TEXT = `© ${new Date().getFullYear()} Shashi Kumar · kumarshaz.github.io`;
+
 			const triggerDownload = (blob: Blob, filename: string) => {
 				const url = URL.createObjectURL(blob);
 				const link = document.createElement('a');
@@ -761,20 +764,164 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				return { width, height };
 			};
 
+			const parseViewBox = (svgEl: SVGSVGElement): [number, number, number, number] => {
+				const rawVb = (
+					svgEl.getAttribute('data-base-viewbox') ||
+					svgEl.getAttribute('viewBox') ||
+					''
+				).trim();
+				const parts = rawVb.split(/[\s,]+/).map(Number);
+				if (
+					parts.length === 4 &&
+					parts.every((n) => Number.isFinite(n)) &&
+					parts[2] > 0 &&
+					parts[3] > 0
+				) {
+					return [parts[0], parts[1], parts[2], parts[3]];
+				}
+				const dims = getSvgDimensions(svgEl);
+				return [0, 0, dims.width, dims.height];
+			};
+
+			const applyCopyrightWatermarkToSvg = (
+				svgEl: SVGSVGElement,
+				{ includeBackground = false }: { includeBackground?: boolean } = {},
+			) => {
+				if (!svgEl.hasAttribute('data-base-viewbox')) {
+					const initialVb = (svgEl.getAttribute('viewBox') || '').trim();
+					if (initialVb) {
+						svgEl.setAttribute('data-base-viewbox', initialVb);
+					} else {
+						const dims = getSvgDimensions(svgEl);
+						svgEl.setAttribute('data-base-viewbox', `0 0 ${dims.width} ${dims.height}`);
+					}
+				}
+
+				svgEl
+					.querySelectorAll('[data-copyright-watermark], [data-export-bg]')
+					.forEach((el) => el.remove());
+
+				const [vbX, vbY, vbW, vbH] = parseViewBox(svgEl);
+				const { readToken, isDark } = readThemeTokens();
+				const surfaceBg = readToken('--bg-surface') || (isDark ? '#191B1E' : '#E7E5DD');
+				const textMuted = readToken('--text-muted') || (isDark ? '#9A968E' : '#57544E');
+				const borderStrong = readToken('--border-strong') || (isDark ? '#EFECE6' : '#111111');
+				const accentPrimary = readToken('--accent-primary') || (isDark ? '#E87A48' : '#C84B20');
+				const fontMono =
+					readToken('--font-mono') || "'IBM Plex Mono', 'Space Mono', ui-monospace, monospace";
+
+				const fontSize = Number(Math.max(10.5, Math.min(20, vbW * 0.0155)).toFixed(2));
+				const padX = Math.max(12, Math.round(fontSize * 1.15));
+				const accentBarW = Math.max(22, Math.round(fontSize * 2.2));
+				const estTextW = COPYRIGHT_WATERMARK_TEXT.length * fontSize * 0.65;
+				const minRequiredW = Math.ceil(estTextW + padX * 2 + fontSize);
+
+				let outX = vbX;
+				let outW = vbW;
+				if (vbW < minRequiredW) {
+					outX = Number((vbX - (minRequiredW - vbW) / 2).toFixed(2));
+					outW = minRequiredW;
+				}
+
+				const topGap = Math.round(fontSize * 0.55);
+				const stripH = Math.round(fontSize * 2.75);
+				const outY = vbY;
+				const outH = Number((vbH + stripH).toFixed(2));
+
+				svgEl.setAttribute('viewBox', `${outX} ${outY} ${outW} ${outH}`);
+				if (svgEl.hasAttribute('height') && !/%$/.test(svgEl.getAttribute('height') || '')) {
+					svgEl.setAttribute('height', String(Math.ceil(outH)));
+				}
+
+				if (includeBackground) {
+					const bgRect = document.createElementNS(SVG_NS, 'rect');
+					bgRect.setAttribute('data-export-bg', 'true');
+					bgRect.setAttribute('x', String(outX));
+					bgRect.setAttribute('y', String(outY));
+					bgRect.setAttribute('width', String(outW));
+					bgRect.setAttribute('height', String(outH));
+					bgRect.setAttribute('fill', surfaceBg);
+					bgRect.setAttribute('style', `fill: ${surfaceBg};`);
+					svgEl.insertBefore(bgRect, svgEl.firstChild);
+				}
+
+				const wmGroup = document.createElementNS(SVG_NS, 'g');
+				wmGroup.setAttribute('data-copyright-watermark', 'true');
+				wmGroup.setAttribute('class', 'mermaid-watermark');
+
+				const ruleY = Number((vbY + vbH + topGap).toFixed(2));
+				const strokeW = Number(Math.max(1, fontSize * 0.085).toFixed(2));
+
+				const ruleLine = document.createElementNS(SVG_NS, 'line');
+				ruleLine.setAttribute('x1', String(Number((outX + padX).toFixed(2))));
+				ruleLine.setAttribute('y1', String(ruleY));
+				ruleLine.setAttribute('x2', String(Number((outX + outW - padX).toFixed(2))));
+				ruleLine.setAttribute('y2', String(ruleY));
+				ruleLine.setAttribute('stroke', borderStrong);
+				ruleLine.setAttribute('stroke-opacity', '0.22');
+				ruleLine.setAttribute('stroke-width', String(strokeW));
+				ruleLine.setAttribute(
+					'style',
+					`stroke: ${borderStrong}; stroke-opacity: 0.22; stroke-width: ${strokeW}px;`,
+				);
+				wmGroup.appendChild(ruleLine);
+
+				const accentTick = document.createElementNS(SVG_NS, 'line');
+				accentTick.setAttribute('x1', String(Number((outX + padX).toFixed(2))));
+				accentTick.setAttribute('y1', String(ruleY));
+				accentTick.setAttribute(
+					'x2',
+					String(Number(Math.min(outX + outW - padX, outX + padX + accentBarW).toFixed(2))),
+				);
+				accentTick.setAttribute('y2', String(ruleY));
+				accentTick.setAttribute('stroke', accentPrimary);
+				accentTick.setAttribute('stroke-width', String(Number((strokeW * 1.8).toFixed(2))));
+				accentTick.setAttribute(
+					'style',
+					`stroke: ${accentPrimary}; stroke-width: ${(strokeW * 1.8).toFixed(2)}px;`,
+				);
+				wmGroup.appendChild(accentTick);
+
+				const textY = Number((ruleY + (stripH - topGap) * 0.5 + fontSize * 0.34).toFixed(2));
+				const textEl = document.createElementNS(SVG_NS, 'text');
+				textEl.setAttribute('x', String(Number((outX + outW - padX).toFixed(2))));
+				textEl.setAttribute('y', String(textY));
+				textEl.setAttribute('text-anchor', 'end');
+				textEl.setAttribute('fill', textMuted);
+				textEl.setAttribute('fill-opacity', '0.92');
+				textEl.setAttribute('font-family', fontMono);
+				textEl.setAttribute('font-size', String(fontSize));
+				textEl.setAttribute('font-weight', '500');
+				textEl.setAttribute('letter-spacing', '0.03em');
+				textEl.setAttribute(
+					'style',
+					`fill: ${textMuted}; fill-opacity: 0.92; font-family: ${fontMono}; font-size: ${fontSize}px; font-weight: 500; letter-spacing: 0.03em;`,
+				);
+				textEl.textContent = COPYRIGHT_WATERMARK_TEXT;
+				wmGroup.appendChild(textEl);
+
+				svgEl.appendChild(wmGroup);
+				return { width: Math.ceil(outW), height: Math.ceil(outH), surfaceBg };
+			};
+
 			const serializeSvgElement = (svgEl: SVGSVGElement) => {
 				const clone = svgEl.cloneNode(true) as SVGSVGElement;
-				clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+				clone.setAttribute('xmlns', SVG_NS);
 				clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
-				const { width, height } = getSvgDimensions(svgEl);
+				const { width, height, surfaceBg } = applyCopyrightWatermarkToSvg(clone, {
+					includeBackground: true,
+				});
+				clone.removeAttribute('data-base-viewbox');
 				clone.setAttribute('width', String(width));
 				clone.setAttribute('height', String(height));
 				clone.style.maxWidth = 'none';
 				clone.style.width = '';
 				clone.style.height = '';
+				clone.style.backgroundColor = surfaceBg;
 
 				const serializer = new XMLSerializer();
-				return { xml: serializer.serializeToString(clone), width, height };
+				return { xml: serializer.serializeToString(clone), width, height, surfaceBg };
 			};
 
 			const downloadSvgFromContainer = (containerEl: Element, filenameBase: string): boolean => {
@@ -822,7 +969,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				}
 
 				try {
-					const { xml, width, height } = serializeSvgElement(targetSvg);
+					const { xml, width, height, surfaceBg } = serializeSvgElement(targetSvg);
 					const safeName = filenameBase.endsWith('.png') ? filenameBase : `${filenameBase}.png`;
 					const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`;
 
@@ -833,15 +980,19 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 						img.src = dataUrl;
 					});
 
+					const effectiveScale = Math.min(
+						scale,
+						8192 / Math.max(1, width),
+						8192 / Math.max(1, height),
+					);
 					const canvas = document.createElement('canvas');
-					canvas.width = Math.max(1, Math.min(8192, Math.round(width * scale)));
-					canvas.height = Math.max(1, Math.min(8192, Math.round(height * scale)));
+					canvas.width = Math.max(1, Math.round(width * effectiveScale));
+					canvas.height = Math.max(1, Math.round(height * effectiveScale));
 
 					const ctx = canvas.getContext('2d');
 					if (!ctx) return false;
 
-					const { readToken, isDark } = readThemeTokens();
-					ctx.fillStyle = readToken('--bg-surface') || (isDark ? '#191B1E' : '#E7E5DD');
+					ctx.fillStyle = surfaceBg;
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 					ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
@@ -1168,6 +1319,10 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 							);
 							node.innerHTML = svg;
 							bindFunctions?.(node);
+							const renderedSvg = node.querySelector<SVGSVGElement>('svg');
+							if (renderedSvg) {
+								applyCopyrightWatermarkToSvg(renderedSvg, { includeBackground: false });
+							}
 							node.removeAttribute('data-mermaid-error');
 							controllers[i]?.syncSize();
 						} catch (err) {

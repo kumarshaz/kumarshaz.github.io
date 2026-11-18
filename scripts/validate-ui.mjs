@@ -316,6 +316,14 @@ assert(
 	'[src/layouts/BlogPost.astro] Includes uniform subgraph ELK layout wrapper, fullscreen lightbox modal, and SVG/PNG exporter toolbar',
 );
 assert(
+	blogPostLayout.includes('applyCopyrightWatermarkToSvg') &&
+		blogPostLayout.includes('COPYRIGHT_WATERMARK_TEXT') &&
+		blogPostLayout.includes('Shashi Kumar · kumarshaz.github.io') &&
+		blogPostLayout.includes('data-copyright-watermark') &&
+		blogPostLayout.includes('data-export-bg'),
+	'[src/layouts/BlogPost.astro] Injects theme-aware Shashi Kumar copyright watermark into live SVGs and SVG/PNG exports with embedded surface background',
+);
+assert(
 	layoutCss.includes('.mermaid-lightbox-backdrop') &&
 		layoutCss.includes('.mermaid-blueprint.is-expanded') &&
 		layoutCss.includes('position: fixed') &&
