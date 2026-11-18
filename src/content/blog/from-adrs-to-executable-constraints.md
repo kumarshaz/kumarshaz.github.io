@@ -54,6 +54,7 @@ config:
   layout: elk
 ---
 flowchart LR
+    %% title: Advisory Prose Loop vs. Executable Guardrail Pipeline
     subgraph Broken["1. Broken 2025 Loop: Advisory Prose"]
         A1["Autonomous Agent PR"]:::intakeNode
         B1["Markdown Rules\n(AGENTS.md / ADR Wiki)"]:::warnNode

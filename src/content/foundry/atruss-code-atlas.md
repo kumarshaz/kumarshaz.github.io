@@ -39,6 +39,7 @@ config:
   layout: elk
 ---
 flowchart LR
+    %% title: Stakeholder Intelligence & Value Model
     classDef core fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
     classDef role fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
     classDef output fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
@@ -78,6 +79,7 @@ config:
   layout: elk
 ---
 flowchart TB
+    %% title: Atruss Code Atlas Hexagonal Architecture
     classDef policy fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#7F1D1D
     classDef inbound fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
     classDef domain fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F

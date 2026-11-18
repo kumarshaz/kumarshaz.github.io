@@ -266,7 +266,14 @@
 }
 
 .mermaid-blueprint-title {
+	flex: 1 1 200px;
+	min-width: 0;
 	font-weight: 600;
+	font-size: 0.78rem;
+	letter-spacing: 0.01em;
+	line-height: 1.35;
+	text-transform: none;
+	color: var(--text-primary);
 }
 
 .mermaid-toolbar {
@@ -274,6 +281,7 @@
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 0.35rem;
+	flex-shrink: 0;
 }
 
 .mermaid-toolbar-sep {

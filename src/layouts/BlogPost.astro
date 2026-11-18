@@ -1025,6 +1025,128 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 				}
 			};
 
+			const stripDiagramFrontmatter = (src: string) => {
+				const trimmed = src.trim();
+				const fmMatch = trimmed.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+				if (fmMatch) {
+					return { frontmatter: fmMatch[1], body: fmMatch[2].trim() };
+				}
+				return { frontmatter: '', body: trimmed };
+			};
+
+			const resolveDiagramTitle = (
+				rawSource: string,
+				sourceEl: Element,
+				index: number,
+			): string => {
+				// 1. Explicit comment directive: `%% title: ...`
+				const commentMatch = rawSource.match(/^\s*%%\s*title\s*:\s*(.+)$/im);
+				if (commentMatch && commentMatch[1].trim()) {
+					return commentMatch[1].trim();
+				}
+
+				// 2. Explicit Mermaid accessibility title: `accTitle: ...`
+				const accMatch = rawSource.match(/^\s*accTitle\s*:\s*(.+)$/im);
+				if (accMatch && accMatch[1].trim()) {
+					return accMatch[1].trim();
+				}
+
+				const { frontmatter, body } = stripDiagramFrontmatter(rawSource);
+
+				// 3. Explicit YAML frontmatter `title:`
+				if (frontmatter) {
+					const fmTitleMatch = frontmatter.match(/^\s*title\s*:\s*(.+)$/im);
+					if (fmTitleMatch) {
+						const cleanedFmTitle = fmTitleMatch[1]
+							.trim()
+							.replace(/^["']|["']$/g, '')
+							.trim();
+						if (cleanedFmTitle) return cleanedFmTitle;
+					}
+				}
+
+				// Determine non-comment diagram body header line
+				const firstCodeLine =
+					body
+						.split('\n')
+						.map((l) => l.trim())
+						.find((l) => l.length > 0 && !l.startsWith('%%')) || '';
+
+				// 4. Native `title ...` statement in timeline/gantt/pie/journey/xychart
+				if (/^(?:timeline|gantt|pie|journey|xychart-beta)\b/i.test(firstCodeLine)) {
+					const nativeTitleMatch = body.match(/^\s*title\s+(.+)$/im);
+					if (nativeTitleMatch && nativeTitleMatch[1].trim()) {
+						return nativeTitleMatch[1].trim();
+					}
+				}
+
+				// 5. Mindmap root node label (`root(("..."))`)
+				if (/^mindmap\b/i.test(firstCodeLine)) {
+					const rootLineMatch = body.match(/^\s*root\s*(.+)$/im);
+					if (rootLineMatch) {
+						let rootRaw = rootLineMatch[1].trim();
+						for (const [open, close] of [
+							['(((', ')))'],
+							['((', '))'],
+							['([', '])'],
+							['[[', ']]'],
+							['{{', '}}'],
+							['))', '(('],
+							['(', ')'],
+							['[', ']'],
+							['{', '}'],
+						]) {
+							if (
+								rootRaw.startsWith(open) &&
+								rootRaw.endsWith(close) &&
+								rootRaw.length > open.length + close.length
+							) {
+								rootRaw = rootRaw.slice(open.length, -close.length).trim();
+								break;
+							}
+						}
+						const cleanedRoot = rootRaw
+							.replace(/^["']|["']$/g, '')
+							.replace(/<br\s*\/?>|\\n/gi, ' ')
+							.replace(/\s+/g, ' ')
+							.trim();
+						if (cleanedRoot) return cleanedRoot;
+					}
+				}
+
+				// 6. Nearest preceding Markdown heading within article prose
+				const proseRoot = sourceEl.closest('#article-prose, article, main');
+				if (proseRoot) {
+					const headingsBefore = [
+						...proseRoot.querySelectorAll('h1, h2, h3, h4'),
+					].filter((h) =>
+						Boolean(h.compareDocumentPosition(sourceEl) & Node.DOCUMENT_POSITION_FOLLOWING),
+					);
+					const nearest = headingsBefore[headingsBefore.length - 1];
+					if (nearest) {
+						const headingText = (nearest.textContent || '')
+							.replace(/\s+/g, ' ')
+							.trim()
+							.replace(/^(?:\d+(?:\.\d+)*|[A-Z])\.\s+/, '')
+							.trim();
+						if (headingText) return headingText;
+					}
+				}
+
+				// 7. Neutral figure fallback
+				return `Figure ${index + 1}`;
+			};
+
+			const slugifySegment = (value: string): string =>
+				value
+					.toLowerCase()
+					.replace(/→/g, '-to-')
+					.replace(/&/g, ' and ')
+					.replace(/[^a-z0-9]+/g, '-')
+					.replace(/^-+|-+$/g, '')
+					.slice(0, 48)
+					.replace(/-+$/g, '');
+
 			// Wrap Astro Shiki mermaid code blocks in the Blueprint Figure Wrapper (.mermaid-blueprint)
 			const codeBlocks = document.querySelectorAll(
 				'pre[data-language="mermaid"], pre code.language-mermaid',
@@ -1037,6 +1159,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 						.split('/')
 						.filter(Boolean)
 						.pop() || 'diagram';
+				const usedFilenameCounts = new Map<string, number>();
 
 				const backdrop = document.createElement('div');
 				backdrop.className = 'mermaid-lightbox-backdrop';
@@ -1072,23 +1195,32 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 						block.tagName.toLowerCase() === 'code' ? block.parentElement : block;
 					if (!targetElement) return;
 					const rawSource = (block.textContent || '').trim();
-					const filenameBase = `${pageSlug}-diagram-${index + 1}`;
+					const diagramTitle = resolveDiagramTitle(rawSource, targetElement, index);
+					const titleSlug = slugifySegment(diagramTitle);
+					const rawFilenameBase = titleSlug
+						? `${pageSlug}-${titleSlug}`
+						: `${pageSlug}-figure-${index + 1}`;
+					const seenCount = (usedFilenameCounts.get(rawFilenameBase) ?? 0) + 1;
+					usedFilenameCounts.set(rawFilenameBase, seenCount);
+					const filenameBase =
+						seenCount > 1 ? `${rawFilenameBase}-${seenCount}` : rawFilenameBase;
 
 					const figure = document.createElement('figure');
 					figure.className = 'mermaid-blueprint';
 					figure.setAttribute('data-blueprint-fig', String(index + 1));
+					figure.setAttribute('aria-label', diagramTitle);
 
 					const bar = document.createElement('div');
 					bar.className = 'mermaid-blueprint-bar';
 
 					const caption = document.createElement('span');
 					caption.className = 'mermaid-blueprint-title';
-					caption.textContent = `Architecture Diagram ${index + 1}`;
+					caption.textContent = diagramTitle;
 
 					const toolbar = document.createElement('div');
 					toolbar.className = 'mermaid-toolbar';
 					toolbar.setAttribute('role', 'toolbar');
-					toolbar.setAttribute('aria-label', 'Diagram zoom and export controls');
+					toolbar.setAttribute('aria-label', `Controls for ${diagramTitle}`);
 
 					const makeToolbarBtn = (
 						text: string,
@@ -1128,10 +1260,10 @@ const tocHeadings = headings.filter((h) => h.depth >= 1 && h.depth <= 3);
 					const resetBtn = makeToolbarBtn('Reset', 'Reset zoom to 100%');
 					resetBtn.setAttribute('data-zoom-action', 'reset');
 
-					const svgBtn = makeToolbarBtn('SVG', 'Download SVG diagram');
+					const svgBtn = makeToolbarBtn('SVG', `Download SVG: ${diagramTitle}`);
 					svgBtn.setAttribute('data-export-format', 'svg');
 
-					const pngBtn = makeToolbarBtn('PNG', 'Download high-resolution PNG diagram');
+					const pngBtn = makeToolbarBtn('PNG', `Download high-resolution PNG: ${diagramTitle}`);
 					pngBtn.setAttribute('data-export-format', 'png');
 
 					const expandBtn = makeToolbarBtn(

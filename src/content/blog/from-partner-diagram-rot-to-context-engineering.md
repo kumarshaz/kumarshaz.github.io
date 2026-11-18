@@ -88,6 +88,7 @@ config:
   layout: elk
 ---
 flowchart LR
+    %% title: Legacy Context Degradation vs. Standardized Joints
     subgraph OldWay["1. Opaque Legacy Context (Fails Humans + Agents)"]
         S1["180-Slide SI Deck\n(PowerPoint / Visio Blobs)"]:::warnNode
         S2["Vague Jira Clip Notes\n(Make It Fast & Scalable)"]:::warnNode

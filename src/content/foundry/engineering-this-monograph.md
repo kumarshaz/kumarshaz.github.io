@@ -30,6 +30,7 @@ config:
   layout: elk
 ---
 flowchart TB
+    %% title: Monograph Token, Layout & Governance Pipeline
     classDef token fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
     classDef layout fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
     classDef gate fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
@@ -91,7 +92,7 @@ Every typographic role is mapped to open-source fonts licensed under the **SIL O
 Mermaid diagrams often look disconnected from the host site because Mermaid injects isolated default stylesheets. In this platform's [`BlogPost.astro`](https://github.com/kumarshaz/kumarshaz.github.io/blob/main/src/layouts/BlogPost.astro) layout:
 
 1. **Zero-Friction Authoring**: Diagrams are authored as standard ```` ```mermaid ```` fenced blocks inside Markdown.
-2. **Blueprint Figure Framing**: At load time, each Mermaid block is wrapped in a `.mermaid-blueprint` figure container featuring a radial dot-matrix technical background, an `Architecture Diagram` header bar, and an interactive `Expand` / `Collapse` viewport toggle.
+2. **Blueprint Figure Framing**: At load time, each Mermaid block is wrapped in a `.mermaid-blueprint` figure container featuring a radial dot-matrix technical background, a descriptive header bar resolved from diagram metadata, an SVG/PNG exporter + zoom toolbar with copyright watermarking, and an interactive `Expand` / `Collapse` lightbox toggle.
 3. **Live Theme Synchronization & Multi-Engine Layout**: Mermaid v12 is bundled with `@mermaid-js/layout-elk` and `@mermaid-js/layout-tidy-tree`, initialized with `theme: 'base'`, and reads active CSS variables via `getComputedStyle(document.documentElement)`. Flowcharts opt into `layout: elk` and mindmaps opt into `layout: tidy-tree` via diagram frontmatter (with runtime fallback in [`BlogPost.astro`](https://github.com/kumarshaz/kumarshaz.github.io/blob/main/src/layouts/BlogPost.astro)), while sequences and timelines render sequentially with monotonic SVG IDs. Listening to the custom `theme-change` event re-renders diagrams seamlessly whenever the reader switches between Light and Dark mode.
 
 ---
