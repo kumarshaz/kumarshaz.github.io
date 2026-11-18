@@ -79,6 +79,7 @@ config:
   layout: elk
 ---
 flowchart TD
+    %% title: Control-Coupled Design vs. Criticality-Driven Isolation
     subgraph Idealized["1. Fragile Control-Coupled Design (Optimizes Static Correctness)"]
         U1["User / Order Request"]:::intakeNode
         CP1["Sync Dependency on Control Plane\n(IAM Policy Push + Edge Gateway + LLM Gateway)"]:::warnNode

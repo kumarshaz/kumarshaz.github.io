@@ -30,6 +30,7 @@ config:
   layout: elk
 ---
 flowchart TB
+    %% title: Unified Diagram & Document Ingestion Router
     classDef legacy fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#7F1D1D
     classDef router fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
     classDef engine fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A

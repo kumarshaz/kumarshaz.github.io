@@ -58,6 +58,7 @@ config:
   layout: elk
 ---
 flowchart TD
+    %% title: OpenAPI & AsyncAPI Dual Codegen Pipeline
     subgraph SpecLayer["1. Authoritative Specification Source"]
         Spec["Authoritative Contracts\n(openapi.yaml + asyncapi.yaml)"]:::specNode
         Lint["CI Schema Linter & Breaking-Change Diff\n(oasdiff + Schema Registry Compatibility)"]:::gateNode

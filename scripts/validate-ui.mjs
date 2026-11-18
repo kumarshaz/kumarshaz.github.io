@@ -324,6 +324,11 @@ assert(
 	'[src/layouts/BlogPost.astro] Injects theme-aware Shashi Kumar copyright watermark into live SVGs and SVG/PNG exports with embedded surface background',
 );
 assert(
+	blogPostLayout.includes('resolveDiagramTitle') &&
+		!blogPostLayout.includes('Architecture Diagram ${index + 1}'),
+	'[src/layouts/BlogPost.astro] Resolves descriptive diagram titles dynamically instead of hardcoding "Architecture Diagram N"',
+);
+assert(
 	layoutCss.includes('.mermaid-lightbox-backdrop') &&
 		layoutCss.includes('.mermaid-blueprint.is-expanded') &&
 		layoutCss.includes('position: fixed') &&

@@ -54,6 +54,7 @@ config:
   layout: elk
 ---
 flowchart TB
+    %% title: Static RAG Pipeline: Separation of Facts from Prose
     classDef step1 fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
     classDef step2 fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
     classDef step3 fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
@@ -220,6 +221,7 @@ config:
   layout: elk
 ---
 flowchart TB
+    %% title: Generated High-Level Integration Topology
     classDef external fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
     classDef integration fill:#ECFDF5,stroke:#059669,stroke-width:2px,color:#064E3B
     classDef staging fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#4C1D95
@@ -272,6 +274,7 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
+    %% title: Generated Batch Data-Flow Sequence
     autonumber
     participant SRC as Source System
     participant STG as Staging DB
@@ -301,6 +304,7 @@ config:
   layout: elk
 ---
 flowchart TD
+    %% title: 3-Tier Batch Error & Circuit-Breaker Escalation
     classDef errNode fill:#FEF2F2,stroke:#DC2626,stroke-width:2px,color:#7F1D1D
     classDef warnNode fill:#FFFBEB,stroke:#D97706,stroke-width:2px,color:#78350F
     classDef infoNode fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A

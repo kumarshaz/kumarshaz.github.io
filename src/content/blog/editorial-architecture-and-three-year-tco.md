@@ -53,6 +53,7 @@ config:
   layout: elk
 ---
 flowchart TB
+    %% title: 0→1 Problem Framing vs. 1→N Agent Execution
     subgraph Zone01["1. 0 -> 1 Problem Space (Human Editorial Anchor)"]
         A["Ill-Defined Business Need"]:::intakeNode
         B["Discover Competing Constraints\n(Org Politics + Legacy Gravity + FinOps)"]:::gateNode

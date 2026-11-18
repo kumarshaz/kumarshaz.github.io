@@ -60,6 +60,7 @@ config:
   layout: elk
 ---
 flowchart TD
+    %% title: The Four COTS Architectural Stop Rules
     subgraph Intake["1. Requirement Intake"]
         Req["New Enterprise Requirement"]:::intakeNode
     end
@@ -145,6 +146,7 @@ How do you execute that pivot in November 2026 without sacrificing the speed tha
 
 ```mermaid
 sequenceDiagram
+    %% title: Clean-Core Sidecar & Event Mesh Interaction
     autonumber
     box rgba(217, 119, 6, 0.12) Commodity COTS / SaaS Boundary
         participant COTS as "COTS / SaaS Core (SAP / Salesforce / ERP)"
