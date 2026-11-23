@@ -10,7 +10,7 @@ status: "Published"
 docId: "ARCH-2026-11"
 ---
 
-> **Empirical Provenance & Series Context:** This practitioner note is **Part 2 of a 3-part empirical series** on AI pull-request governance. Every number below comes from verified, zero-fabrication repository telemetry (`BH-FDR q < 0.05` across headline claims): **`1,694`** uncensored human-reviewed AIDev pull requests with timestamped arrival order, **`2,953`** second-reviewer displacement comparisons, **`2,138`** stacked-bot PRs, **`312`** formally hydrated `TypeSafe Jev` decision-model PRs, and **`10,410`** commit-attributed merged PRs traced through **`300`** local bare-git SZZ histories.
+> **Empirical Provenance & Open-Science Replication:** This practitioner note is **Part 2 of a 3-part empirical series** grounded in our companion research manuscript ([`paper/draft_v1_ieee_software.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/paper/draft_v1_ieee_software.md)) and standalone replication repository ([**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication) — **`81/81` assertions passing**, `36/36` SHA-256 verified artifacts in [`VERIFICATION_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/VERIFICATION_REPORT.md)). Every number below comes from zero-fabrication telemetry (`BH-FDR q < 0.05` across headline claims): **`1,694`** uncensored human-reviewed AIDev pull requests with timestamped arrival order, **`2,953`** second-reviewer displacement comparisons, **`2,138`** stacked-bot PRs, **`312`** formally hydrated `TypeSafe Jev` decision-model PRs, and **`10,410`** commit-attributed merged PRs traced through **`300`** local bare-git SZZ histories.
 
 Almost every engineering team rolling out AI code review in 2026 wires the exact same GitHub webhook:
 
@@ -28,7 +28,7 @@ Review(Bot, Human)  !=  Review(Human, Bot)
 
 Commercial aviation learned this decades ago under **Crew Resource Management (CRM)**. Captains are explicitly trained to ask the first officer for their assessment *before* voicing their own, because whoever speaks first anchors everyone else in the cockpit. Software teams forgot that lesson the day they wired fluent LLM bots to fire on `pull_request: opened`.
 
-When an automated prose reviewer speaks first on a pull request—keep in mind that on `CodeReviewBench` (`N = 150`), LLM reviewers score `98.67%` "actionable" and `92.00%` "relevant" while being only **`24.00%` factually accurate**, and bot-only reviews on GHArchive approve at a **`97.2%` (`34.2:1`) skew**—it hands the human reviewer an authoritative mental frame and silent permission to stop digging.
+When an automated prose reviewer speaks first on a pull request—keep in mind that on `CodeReviewBench` (`N = 150`; see [`code_review_bench_15tools_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/code_review_bench_15tools_log.csv)), LLM reviewers score `98.67%` "actionable" and `92.00%` "relevant" while being only **`24.00%` factually accurate**, and bot-only reviews on GHArchive approve at a **`97.2%` (`34.2:1`) skew** ([`multi_dataset_triangulation_results.json`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/multi_dataset_triangulation_results.json))—it hands the human reviewer an authoritative mental frame and silent permission to stop digging.
 
 ---
 
@@ -44,7 +44,7 @@ Across `1,694` uncensored human-reviewed coding-agent PRs with verified event ti
 | **`2+ Humans (0 Bots)`** vs. **`1 Human + 1 Bot`** | `2,365` vs `588` | **`24.99%` -> `3.91%`** (`-21.08 pp`) | — | — | Power `100%` (Second-reviewer displacement) |
 | **`1 Human (0 Bots)`** vs. **`1 Human + 2+ Bots`** | `1,956` vs `182` | **`7.92%` -> `2.20%`** (`-5.73 pp`) | `60.28%` -> `67.58%` | — | CR `p = 4.86e-3`, Power `94.11%` |
 
-Even inside a strict paired intra-repository control across **`191` shared repositories (`N = 3,121`)** holding domain, age, and team culture completely constant, adding a Tier-1 prose review bot suppresses human `CHANGES_REQUESTED` vetoes from **`16.11%` down to `10.50%`** (`-5.61 pp`, `p = 2.48e-5`, Power **`99.19%`**).
+Even inside a strict paired intra-repository control across **`191` shared repositories (`N = 3,121`)** holding domain, age, and team culture completely constant, adding a Tier-1 prose review bot suppresses human `CHANGES_REQUESTED` vetoes from **`16.11%` down to `10.50%`** (`-5.61 pp`, `p = 2.48e-5`, Power **`99.19%`**). *(Verify every row directly in [`nq05_review_speed_bimodality_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/nq05_review_speed_bimodality_log.csv), [`multi_scale_sample_persistence_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/multi_scale_sample_persistence_log.csv), and [`SAMPLE_SIZE_EXPANSION_AND_POWER_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/SAMPLE_SIZE_EXPANSION_AND_POWER_REPORT.md).)*
 
 Read those numbers as a systems architect, not a vendor salesperson:
 
@@ -126,13 +126,13 @@ Across `N = 312` formally hydrated Jev pull requests (`getsentry/sentry`, `craft
 However, our telemetry uncovered **two fatal configuration bugs** that ruin Stage 1 in production:
 
 1. **Never Run Stage 1 as Non-Blocking Advisory Comments:** Across `N = 348` pooled coding-agent PRs under advisory Jev comments, **`89.14%` (`156/175`)** of flagged PRs still merged anyway. An autonomous coding agent optimizing for task completion will cheerfully ignore an advisory comment. Stage 1 must run as a **required blocking CI status check** that stops the PR from even entering the human review queue until fixed—extending the executable constraint model from [From ADRs to Executable Constraints](/blog/from-adrs-to-executable-constraints/).
-2. **Never Post Celebratory "All Clear / Clean" Prose:** On merged cold files, Jev shows zero magical downstream bug immunity (`OR_MH = 0.9537`, `p = 0.95`), yet PRs stamped `Jev_Clean` suffer a **`+0.4205`** net 14-day symmetric difference-in-differences defect jump (`N = 88`) versus **`+0.0588`** on `Jev_Flagged` (`N = 102`)—a **`7x` false-negative complacency spike**. Design Stage 1 to follow Unix philosophy: **silent green check on pass; terse, deterministic failure diagnostics on fail.**
+2. **Never Post Celebratory "All Clear / Clean" Prose:** On merged cold files, Jev shows zero magical downstream bug immunity (`OR_MH = 0.9537`, `p = 0.95`), yet PRs stamped `Jev_Clean` suffer a **`+0.4205`** net 14-day symmetric difference-in-differences defect jump (`N = 88`) versus **`+0.0588`** on `Jev_Flagged` (`N = 102`)—a **`7x` false-negative complacency spike**. Design Stage 1 to follow Unix philosophy: **silent green check on pass; terse, deterministic failure diagnostics on fail.** *(Full Jev evidence: [`JEV_JUDGMENT_AND_SZZ_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/JEV_JUDGMENT_AND_SZZ_REPORT.md), [`jev_judgment_and_szz_outcomes.json`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/jev_judgment_and_szz_outcomes.json), and [`jev_szz_within_repo_outcomes_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/jev_szz_within_repo_outcomes_log.csv).)*
 
 ### Stage 2: Cold-File Test Mandate on Coding-Agent PRs (`-5.47 pp` SZZ)
 
 Naive pooled metrics make unit tests look useless—or even harmful (`+9.70 pp` 30d SZZ: `40.01% -> 49.71%`, `p = 5.10e-8`)—purely because high-risk hotspot files attract both tests and subsequent bugfixes (Simpson's Paradox).
 
-Restrict the measurement to **cold files**—production modules with zero bugfix commits over the prior 30 days (`pre_pr_30d_hotspot_fixes == 0`)—and the truth reverses cleanly:
+Restrict the measurement to **cold files**—production modules with zero bugfix commits over the prior 30 days (`pre_pr_30d_hotspot_fixes == 0`)—and the truth reverses cleanly ([`nq06_assertion_theater_szz_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/nq06_assertion_theater_szz_log.csv) · [`szz_defect_traceability_ledger.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/szz_defect_traceability_ledger.csv)):
 
 - **Coding-Agent PRs on cold files without tests (`N = 1,972`):** **`28.09%`** 30-day SZZ bugfix rate.
 - **Coding-Agent PRs on cold files with co-authored tests (`N = 548`):** **`22.63%`** 30-day SZZ bugfix rate (**`-5.47 pp`**, `p = 0.0107`, a **`-19.5%` relative defect reduction**).
@@ -159,7 +159,7 @@ Even the sharpest human-first review is worthless if the author or coding agent 
 | **`Cohort B` (Human-Only)** | `37.49%` (`418/1,115`) | **`53.85%`** (`35/65`) | **`+16.36 pp`** (`+43.6%` rel.) | `p = 0.0084`, `q = 0.0217` |
 | **`ALL_u30` (All Uncensored PRs)** | `42.08%` (`1,610/3,826`) | **`50.00%`** (`106/212`) | **`+7.92 pp`** (`+18.8%` rel.) | `p = 0.0232`, `q = 0.0466` |
 
-In bot-assisted workflows, a post-review force-push pushes 30-day post-merge defect rates past **61%**. Enforce append-only review commits after the first review event, block force-pushes on active PR branches (or at minimum reject stale approvals automatically with `dismiss_stale_reviews: true`), and require re-approval on every post-review diff mutation.
+In bot-assisted workflows, a post-review force-push pushes 30-day post-merge defect rates past **61%** ([`nq04_pingpong_rework_szz_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/nq04_pingpong_rework_szz_log.csv) · [`open_questions_nq01_nq08_results.json`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/open_questions_nq01_nq08_results.json)). Enforce append-only review commits after the first review event, block force-pushes on active PR branches (or at minimum reject stale approvals automatically with `dismiss_stale_reviews: true`), and require re-approval on every post-review diff mutation.
 
 ---
 
@@ -344,4 +344,6 @@ The moment you stop treating AI review bots as harmless pre-filters and recogniz
 
 Keep your deterministic analyzers loud, fast, and fail-closed on the author side. Keep your prose bots quiet until a human engineer has formed an independent judgment. Lock down cold-file test coverage and post-review force-pushes in repository rulesets.
 
-*(In Part 1 of this series, I walked through all five empirically tested AI code-review myths across 130,000+ PRs. In Part 3—The Senior Reviewer Gini Trap—I zoom up to the CTO and VP Engineering layer to replace vanity AI velocity dashboards with four verified board-level KPIs.)*
+> **Verify Every Metric Yourself:** Clone [`kumarshaz/pr-review-replication`](https://github.com/kumarshaz/pr-review-replication) and run `python3 replication/run_replication.py` to independently audit all `36` SHA-256 verified JSON/CSV tables, `10,410` commit-attributed bare-git SZZ pull requests, and the full companion *IEEE Software* manuscript draft ([`paper/draft_v1_ieee_software.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/paper/draft_v1_ieee_software.md)).
+
+*(In Part 1 of this series, I walked through the empirical data pipeline and all five tested AI code-review myths across 130,000+ PRs. In Part 3—The Senior Reviewer Gini Trap—I zoom up to the CTO and VP Engineering layer to replace vanity AI velocity dashboards with four verified board-level KPIs.)*
