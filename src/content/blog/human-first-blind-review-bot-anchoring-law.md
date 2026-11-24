@@ -10,7 +10,7 @@ status: "Published"
 docId: "ARCH-2026-11"
 ---
 
-> **Empirical Provenance & Open-Science Replication:** This practitioner note is **Part 2 of a 3-part empirical series** grounded in our SSRN preprint ([**SSRN Abstract `7742641`**](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7742641) · PDF/Markdown in [`pr-review-replication/paper/`](https://github.com/kumarshaz/pr-review-replication/tree/main/paper)), archived permanently on Zenodo (**Dataset DOI:** [`10.5281/zenodo.24452362`](https://doi.org/10.5281/zenodo.24452362) · [`zenodo.org/records/24452362`](https://zenodo.org/records/24452362)), and backed by our standalone replication repository ([**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication) — **`81/81` assertions passing**, `36/36` SHA-256 verified artifacts in [`VERIFICATION_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/VERIFICATION_REPORT.md)). Every number below comes from zero-fabrication telemetry (`BH-FDR q < 0.05` across headline claims): **`1,694`** uncensored human-reviewed AIDev pull requests with timestamped arrival order, **`2,953`** second-reviewer displacement comparisons, **`2,138`** stacked-bot PRs, **`312`** formally hydrated `TypeSafe Jev` decision-model PRs, and **`10,410`** commit-attributed merged PRs traced through **`300`** local bare-git SZZ histories.
+> **Empirical Provenance & Open-Science Replication:** This practitioner note is **Part 2 of a 3-part empirical series** grounded in my SSRN preprint ([**SSRN Abstract `7742641`**](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7742641) · PDF/Markdown in [`pr-review-replication/paper/`](https://github.com/kumarshaz/pr-review-replication/tree/main/paper)), archived permanently on Zenodo (**Dataset DOI:** [`10.5281/zenodo.24452362`](https://doi.org/10.5281/zenodo.24452362) · [`zenodo.org/records/24452362`](https://zenodo.org/records/24452362)), and backed by my standalone replication repository ([**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication) — **`81/81` assertions passing**, `36/36` SHA-256 verified artifacts in [`VERIFICATION_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/VERIFICATION_REPORT.md)). Every number below comes from zero-fabrication telemetry (`BH-FDR q < 0.05` across headline claims): **`1,694`** uncensored human-reviewed AIDev pull requests with timestamped arrival order, **`2,953`** second-reviewer displacement comparisons, **`2,138`** stacked-bot PRs, **`312`** formally hydrated `TypeSafe Jev` decision-model PRs, and **`10,410`** commit-attributed merged PRs traced through **`300`** local bare-git SZZ histories.
 
 Almost every engineering team rolling out AI code review in 2026 wires the exact same GitHub webhook:
 
@@ -57,7 +57,7 @@ Read those numbers as a systems architect, not a vendor salesperson:
 
 ## 2. Inverting the Architecture: From Bot-First Theater to a 4-Stage Pipeline
 
-Fixing this does not mean turning off automation. It means **separating deterministic pre-flight enforcement from human judgment**, inverting the arrival order, and closing the two post-merge defect leaks our bare-git SZZ telemetry uncovered (`cold-file untested agent PRs` and `post-review force-pushes`).
+Fixing this does not mean turning off automation. It means **separating deterministic pre-flight enforcement from human judgment**, inverting the arrival order, and closing the two post-merge defect leaks my bare-git SZZ telemetry uncovered (`cold-file untested agent PRs` and `post-review force-pushes`).
 
 ```mermaid
 ---
@@ -107,7 +107,7 @@ flowchart TB
     classDef safeNode fill:#ECFDF5,stroke:#059669,stroke-width:2.5px,color:#064E3B
 ```
 
-Let's unpack each of the four stages—and the exact empirical failure mode each stage closes.
+Below, I unpack each of the four stages—and the exact empirical failure mode each stage closes.
 
 ---
 
@@ -123,7 +123,7 @@ Across `N = 312` formally hydrated Jev pull requests (`getsentry/sentry`, `craft
 - Pre-review author self-closure jumped **`5.04x`** (`1.15% -> 5.80%`).
 - Post-flag corrective commits rose **`+11.82 pp`** (`59.20% -> 71.01%`)—hitting **`94.87%`** in the tersest signal quartile (`64–476` characters, `N = 78`).
 
-However, our telemetry uncovered **two fatal configuration bugs** that ruin Stage 1 in production:
+However, my telemetry uncovered **two fatal configuration bugs** that ruin Stage 1 in production:
 
 1. **Never Run Stage 1 as Non-Blocking Advisory Comments:** Across `N = 348` pooled coding-agent PRs under advisory Jev comments, **`89.14%` (`156/175`)** of flagged PRs still merged anyway. An autonomous coding agent optimizing for task completion will cheerfully ignore an advisory comment. Stage 1 must run as a **required blocking CI status check** that stops the PR from even entering the human review queue until fixed—extending the executable constraint model from [From ADRs to Executable Constraints](/blog/from-adrs-to-executable-constraints/).
 2. **Never Post Celebratory "All Clear / Clean" Prose:** On merged cold files, Jev shows zero magical downstream bug immunity (`OR_MH = 0.9537`, `p = 0.95`), yet PRs stamped `Jev_Clean` suffer a **`+0.4205`** net 14-day symmetric difference-in-differences defect jump (`N = 88`) versus **`+0.0588`** on `Jev_Flagged` (`N = 102`)—a **`7x` false-negative complacency spike**. Design Stage 1 to follow Unix philosophy: **silent green check on pass; terse, deterministic failure diagnostics on fail.** *(Full Jev evidence: [`JEV_JUDGMENT_AND_SZZ_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/JEV_JUDGMENT_AND_SZZ_REPORT.md), [`jev_judgment_and_szz_outcomes.json`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/jev_judgment_and_szz_outcomes.json), and [`jev_szz_within_repo_outcomes_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/jev_szz_within_repo_outcomes_log.csv).)*
