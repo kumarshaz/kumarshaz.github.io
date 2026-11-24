@@ -153,6 +153,7 @@ const expectedPages = [
 	'blog/from-adrs-to-executable-constraints/index.html',
 	'blog/from-partner-diagram-rot-to-context-engineering/index.html',
 	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
+	'blog/how-this-site-evolved/index.html',
 	'foundry/index.html',
 	'foundry/engineering-this-monograph/index.html',
 	'foundry/atruss-code-atlas/index.html',
@@ -176,6 +177,8 @@ const expectedPages = [
 	'blog/tag/governance/index.html',
 	'blog/tag/cloud/index.html',
 	'blog/tag/resilience/index.html',
+	'blog/tag/design systems/index.html',
+	'blog/tag/cloudflare/index.html',
 	'rss.xml',
 	'sitemap-index.xml',
 ];
@@ -283,6 +286,22 @@ for (const postPage of sixNewPosts) {
 		`[${postPage}] Renders Hero Banner, ELK layout, colored nodes (classDef), animated edges, and Tidy-Tree Mindmap diagram`,
 	);
 }
+
+const evolvedHtml = fs.readFileSync(
+	path.join(distDir, 'blog/how-this-site-evolved/index.html'),
+	'utf8',
+);
+assert(
+	evolvedHtml.includes('spec-hero-figure') &&
+		evolvedHtml.includes('how-this-site-evolved') &&
+		evolvedHtml.includes('start-from-scratch-ai-era') &&
+		evolvedHtml.includes('layout: elk') &&
+		evolvedHtml.includes('classDef') &&
+		evolvedHtml.includes('animate: true') &&
+		evolvedHtml.includes('mindmap') &&
+		evolvedHtml.includes('layout: tidy-tree'),
+	'[blog/how-this-site-evolved/index.html] Renders generated Hero Banner, inline Start-From-Scratch diagram, ELK layout, colored nodes, animated edges, and Tidy-Tree Mindmap diagram',
+);
 
 // Verify every mindmap fenced block across src/content/{blog,foundry} explicitly sets layout: tidy-tree
 const contentCollections = ['src/content/blog', 'src/content/foundry'];
