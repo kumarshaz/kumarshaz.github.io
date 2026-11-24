@@ -318,7 +318,7 @@ assert(
 assert(
 	blogPostLayout.includes('applyCopyrightWatermarkToSvg') &&
 		blogPostLayout.includes('COPYRIGHT_WATERMARK_TEXT') &&
-		blogPostLayout.includes('Shashi Kumar · kumarshaz.github.io') &&
+		blogPostLayout.includes('Shashi Kumar · shashinkumar.com') &&
 		blogPostLayout.includes('data-copyright-watermark') &&
 		blogPostLayout.includes('data-export-bg'),
 	'[src/layouts/BlogPost.astro] Injects theme-aware Shashi Kumar copyright watermark into live SVGs and SVG/PNG exports with embedded surface background',
@@ -382,7 +382,7 @@ assert(
 		foundryIndexHtml.includes('/foundry/atruss-code-atlas/') &&
 		foundryIndexHtml.includes('/foundry/tdd-analyzer/') &&
 		foundryIndexHtml.includes('/foundry/to-markdown-converter/') &&
-		foundryIndexHtml.includes('https://kumarshaz.github.io/atruss-code-atlas/') &&
+		foundryIndexHtml.includes('https://shashinkumar.com/atruss-code-atlas/') &&
 		foundryIndexHtml.includes('Product UI') &&
 		!/class="taxonomy-count"[^>]*>\s*<\/span>/.test(foundryIndexHtml),
 	'[foundry/index.html] Renders Foundry index with Product UI links (including Atruss Code Atlas live URL), populated taxonomy badge counts, and all 4 Foundry entries',
@@ -393,7 +393,7 @@ const atrussHtml = fs.readFileSync(
 	'utf8',
 );
 assert(
-	atrussHtml.includes('https://kumarshaz.github.io/atruss-code-atlas/') &&
+	atrussHtml.includes('https://shashinkumar.com/atruss-code-atlas/') &&
 		atrussHtml.includes('Product UI'),
 	'[foundry/atruss-code-atlas] Renders Product UI link in left metadata rail beside GitHub Repo',
 );
@@ -450,6 +450,21 @@ assert(
 		!homeHtml.includes('DOM-01') &&
 		!homeHtml.includes('01 //'),
 	'[index.html] Free of unnecessary // labels, section numbers, and serial numbers',
+);
+
+const cnamePath = path.join(distDir, 'CNAME');
+const rssXml = fs.readFileSync(path.join(distDir, 'rss.xml'), 'utf8');
+const sitemapIndexXml = fs.readFileSync(path.join(distDir, 'sitemap-index.xml'), 'utf8');
+assert(
+	fs.existsSync(cnamePath) && fs.readFileSync(cnamePath, 'utf8').trim() === 'shashinkumar.com',
+	'[dist/CNAME] Declares custom domain shashinkumar.com',
+);
+assert(
+	homeHtml.includes('rel="canonical" href="https://shashinkumar.com/"') &&
+		rssXml.includes('https://shashinkumar.com') &&
+		!rssXml.includes('kumarshaz.github.io') &&
+		sitemapIndexXml.includes('https://shashinkumar.com/sitemap-0.xml'),
+	'[Custom Domain] Emits https://shashinkumar.com across canonical metadata, RSS feed, and XML sitemap',
 );
 
 console.log('\n======================================================================');
