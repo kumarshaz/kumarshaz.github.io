@@ -467,6 +467,24 @@ assert(
 	'[Custom Domain] Emits https://shashinkumar.com across canonical metadata, RSS feed, and XML sitemap',
 );
 
+const baseHeadSrc = readFile('src/components/BaseHead.astro');
+const ogDefaultDistPath = path.join(distDir, 'og-default.png');
+assert(
+	fs.existsSync(ogDefaultDistPath) &&
+		fs.statSync(ogDefaultDistPath).size > 10000 &&
+		!baseHeadSrc.includes('blog-placeholder') &&
+		baseHeadSrc.includes('/og-default.png'),
+	'[Social Card] Bundles public/og-default.png in dist/ and removes stock blog-placeholder fallback from BaseHead.astro',
+);
+assert(
+	homeHtml.includes('property="og:image" content="https://shashinkumar.com/og-default.png"') &&
+		homeHtml.includes('property="twitter:image" content="https://shashinkumar.com/og-default.png"') &&
+		blogIndexHtml.includes('property="og:image" content="https://shashinkumar.com/og-default.png"') &&
+		foundryIndexHtml.includes('property="og:image" content="https://shashinkumar.com/og-default.png"') &&
+		!homeHtml.includes('blog-placeholder'),
+	'[Social Card] Emits https://shashinkumar.com/og-default.png for og:image and twitter:image across home, blog, and foundry index pages',
+);
+
 console.log('\n======================================================================');
 console.log(` VALIDATION SUMMARY: ${passed} passed, ${failed} failed`);
 console.log('======================================================================');
