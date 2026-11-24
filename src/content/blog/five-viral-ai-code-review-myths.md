@@ -10,7 +10,7 @@ status: "Published"
 docId: "ARCH-2026-10"
 ---
 
-> **Empirical Provenance & Open-Science Replication:** This essay is **Part 1 of a 3-part empirical series** grounded in our SSRN preprint ([**SSRN Abstract `7742641`**](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7742641) · PDF/Markdown in [`pr-review-replication/paper/`](https://github.com/kumarshaz/pr-review-replication/tree/main/paper)), archived permanently on Zenodo (**Dataset DOI:** [`10.5281/zenodo.24452362`](https://doi.org/10.5281/zenodo.24452362) · [`zenodo.org/records/24452362`](https://zenodo.org/records/24452362)), and backed by our standalone open-science replication package ([**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication) — **`81/81` assertions passing**, `36/36` SHA-256 verified artifacts in [`VERIFICATION_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/VERIFICATION_REPORT.md)). Every statistic below is computed directly from verifiable open-source repository telemetry with zero synthetic data and Benjamini-Hochberg false discovery rate (`BH-FDR`) correction (`q < 0.05` across headline claims): **`99,454`** CodeRabbit OSS pull requests (`457` active tenure repositories), **`33,596`** AIDev autonomous coding-agent PRs paired with **`6,618`** human baselines (`>= 100`-star repos), **`6,004`** formal human reviews across **`2,491`** distinct maintainers, **`553`** reparsed `TypeSafe Jev` decision-model PRs (`N = 312` formally hydrated), and **`10,410`** commit-attributed merged PRs traced through **`300`** local bare-git SZZ histories.
+> **Empirical Provenance & Open-Science Replication:** This essay is **Part 1 of a 3-part empirical series** grounded in my SSRN preprint ([**SSRN Abstract `7742641`**](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7742641) · PDF/Markdown in [`pr-review-replication/paper/`](https://github.com/kumarshaz/pr-review-replication/tree/main/paper)), archived permanently on Zenodo (**Dataset DOI:** [`10.5281/zenodo.24452362`](https://doi.org/10.5281/zenodo.24452362) · [`zenodo.org/records/24452362`](https://zenodo.org/records/24452362)), and backed by my standalone open-science replication package ([**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication) — **`81/81` assertions passing**, `36/36` SHA-256 verified artifacts in [`VERIFICATION_REPORT.md`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/VERIFICATION_REPORT.md)). Every statistic below is computed directly from verifiable open-source repository telemetry with zero synthetic data and Benjamini-Hochberg false discovery rate (`BH-FDR`) correction (`q < 0.05` across headline claims): **`99,454`** CodeRabbit OSS pull requests (`457` active tenure repositories), **`33,596`** AIDev autonomous coding-agent PRs paired with **`6,618`** human baselines (`>= 100`-star repos), **`6,004`** formal human reviews across **`2,491`** distinct maintainers, **`553`** reparsed `TypeSafe Jev` decision-model PRs (`N = 312` formally hydrated), and **`10,410`** commit-attributed merged PRs traced through **`300`** local bare-git SZZ histories.
 
 Open any engineering feed in late 2026 and you will hear the exact same five intuitions repeated as settled law:
 
@@ -24,7 +24,7 @@ Those stories feel intuitive. They also drive six- and seven-figure enterprise r
 
 The problem? When you test all five against **more than 130,000 real production pull requests** and trace what actually breaks inside bare-git commit history 14 and 30 days after merge, **three of the five myths collapse outright, one flips completely upside down, and the fifth hides a subtle trap that makes naïve engineering dashboards lie.**
 
-Before we walk through the five verdicts, keep one diagnostic rule in mind: **raw pooled bug counts lie via Simpson's Paradox.** Risky PRs touch high-churn "hotspot" files that were *already* breaking before the PR opened. Unless you stratify post-merge defect tracking (`SZZ` bugfixes) by **cold files**—files with zero bugfix commits in the prior 30 days (`pre_pr_30d_hotspot_fixes == 0`)—protective controls like unit tests look harmful, and noisy signals look causal. Strip away hotspot confounding, and repository ground truth snaps into focus.
+Before I walk through the five verdicts, keep one diagnostic rule in mind: **raw pooled bug counts lie via Simpson's Paradox.** Risky PRs touch high-churn "hotspot" files that were *already* breaking before the PR opened. Unless you stratify post-merge defect tracking (`SZZ` bugfixes) by **cold files**—files with zero bugfix commits in the prior 30 days (`pre_pr_30d_hotspot_fixes == 0`)—protective controls like unit tests look harmful, and noisy signals look causal. Strip away hotspot confounding, and repository ground truth snaps into focus.
 
 ```mermaid
 ---
@@ -84,9 +84,9 @@ flowchart TB
 
 ---
 
-## How We Built the Data Analysis Pipeline
+## How I Built the Data Analysis Pipeline
 
-Before diving into the five verdicts, here is a brief look under the hood of the empirical pipeline packaged in [**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication)—engineered so any engineer or reviewer can audit every number locally without paid LLM keys or GitHub API tokens:
+Before diving into the five verdicts, here is a brief look under the hood of the empirical pipeline I packaged in [**`kumarshaz/pr-review-replication`**](https://github.com/kumarshaz/pr-review-replication)—engineered so any engineer or reviewer can audit every number locally without paid LLM keys or GitHub API tokens:
 
 | Pipeline Stage | What It Does | Key Script & Verified Output in `pr-review-replication` |
 | :--- | :--- | :--- |
@@ -129,7 +129,7 @@ Engineers routinely conflate two completely different text channels inside a pul
 
 **The Folklore:** Organizations turn on an AI PR review bot, endure two months of nitpicks, and silently mute or uninstall it around Day 60 once novelty wears off.
 
-**The Ground Truth:** We tested this longitudinally across **`99,454` CodeRabbit OSS pull requests** spanning `457` repositories—and verified it with a strict fixed-cohort survivorship sensitivity check (`87,899` PRs across `362` repositories active for at least `61` days) so late-joining repos couldn't skew the curve:
+**The Ground Truth:** I tested this longitudinally across **`99,454` CodeRabbit OSS pull requests** spanning `457` repositories—and verified it with a strict fixed-cohort survivorship sensitivity check (`87,899` PRs across `362` repositories active for at least `61` days) so late-joining repos couldn't skew the curve:
 
 | Bot Tenure Window | PRs (`N`) | Active Repos | Mean Comments / PR | Zero-Comment PRs % | Median Close Latency | Bug-Labeled PRs % |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -139,7 +139,7 @@ Engineers routinely conflate two completely different text channels inside a pul
 | **Days `61–180`** | `21,168` | `362` | **`4.34`** | `0.14%` | `20.0h` | **`5.86%`** |
 | **Days `181+`** | `69,596` | `306` | **`4.20`** | `0.16%` | `22.4h` | `5.19%` |
 
-*(Methodological disclosure: The public Zenodo CodeRabbit dataset marks all `99,454` closed PRs with `state='closed'` without a separate merged boolean, so we deliberately report verified comment density, silence rate, close latency, and bug-label rates rather than extrapolating unobserved merge rates.)*
+*(Methodological disclosure: The public Zenodo CodeRabbit dataset marks all `99,454` closed PRs with `state='closed'` without a separate merged boolean, so I deliberately report verified comment density, silence rate, close latency, and bug-label rates rather than extrapolating unobserved merge rates.)*
 
 There is **no 60-day abandonment cliff.** Mean comment density dips slightly during initial tuning in Days `16–30` (`4.92 -> 4.08`, or `4.84 -> 3.90` in the `87,899`-PR fixed cohort), then **stabilizes flat at `4.20–4.34` comments per PR past Day 181**—with `zero_comment_pct` remaining below **`0.20%`** at every stage. Meanwhile, bug-labeled PRs nearly double from **`3.13%`** (`Days 0–15`) to **`5.86%`** (`Days 61–180`), climbing highest on louder `.coderabbit.yaml` profiles (`default 2.01%`, `chill 7.78%`, **`assertive 8.90%`**). *(Evidence: [`nq08_queue_burst_and_fatigue_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/nq08_queue_burst_and_fatigue_log.csv) · [`coderabbit_policy_outcomes_log.csv`](https://github.com/kumarshaz/pr-review-replication/blob/main/replication/results/pr_review/data_tables/coderabbit_policy_outcomes_log.csv).)*
 
@@ -163,7 +163,7 @@ High-burst reviewers aren't careless rubber-stampers—they are active maintaine
 **So where is the real human review crisis?** Look one layer deeper at **who** carries that load across **`2,491` distinct human reviewers**:
 
 - **Reviewer Workload `Gini = 0.6747`**—a level of inequality closer to oligarchic wealth concentration than healthy shared code ownership.
-- Across `3,615` GitHub-matched tenure reviews, **`91.8%` (`3,317 / 3,615`) fall on `6y+` veterans**, echoing the [Bus-Factor-1 Conway Gatekeeper centralization](/blog/from-partner-diagram-rot-to-context-engineering/) we observed earlier.
+- Across `3,615` GitHub-matched tenure reviews, **`91.8%` (`3,317 / 3,615`) fall on `6y+` veterans**, echoing the [Bus-Factor-1 Conway Gatekeeper centralization](/blog/from-partner-diagram-rot-to-context-engineering/) I observed earlier.
 - Yet look at veto scrutiny by tenure:
   - **`2–6y` mid-tenure reviewers (`N = 220`):** **`13.64%`** `CHANGES_REQUESTED` veto rate—**`2.1x`** sharper scrutiny than veterans.
   - **`6y+` veterans (`N = 3,317`):** **`6.39%`** `CHANGES_REQUESTED` veto rate.
@@ -206,7 +206,7 @@ Commercial aviation learned this lesson in blood decades ago: under Crew Resourc
 
 In my earlier [essay on Editorial Architecture and Three-Year TCO](/blog/editorial-architecture-and-three-year-tco/), I noted that System One decision models like **`TypeSafe Jev`** compress verbose LLM review walls (`4.20x–10.09x` fewer characters at `$0.0262/PR`), while warning that their real-world post-merge impact remained unproven.
 
-Now we have bare-git commit ground truth across `N = 312` formally hydrated Jev PRs (`getsentry/sentry`, `craftmilldev/loopway`, `craftmilldev/sesh`), `N = 348` pooled coding-agent Jev PRs, and `10,410` SZZ-linked merged PRs. The answer splits cleanly into **what works upstream** versus **what fails downstream**:
+Now I have bare-git commit ground truth across `N = 312` formally hydrated Jev PRs (`getsentry/sentry`, `craftmilldev/loopway`, `craftmilldev/sesh`), `N = 348` pooled coding-agent Jev PRs, and `10,410` SZZ-linked merged PRs. The answer splits cleanly into **what works upstream** versus **what fails downstream**:
 
 1. **Where Compact Decision Checkers Genuinely Win — Pre-Merge Author Self-Triage:**
    When a compact Jev signal flags a PR, bad changes get caught *before* they ever land on `main`:
@@ -215,7 +215,7 @@ Now we have bare-git commit ground truth across `N = 312` formally hydrated Jev 
    - Post-Jev pre-merge corrective commits rise **`+11.82 pp`** (**`59.20% -> 71.01%`**)—reaching **`94.87%`** in the tersest quartile (`64–476` chars).
 2. **Where Compact Checkers Fail — Advisory Overrides & False-Negative Complacency:**
    - **Advisory Comments Don't Stop Agents:** When Jev runs in non-blocking advisory mode on coding-agent PRs (`N = 348`), **`89.14%` (`156/175`)** of flagged agent PRs still get merged anyway.
-   - **Zero Downstream Bug Magic on Merged Cold Files:** Once we control for file hotspot selection bias (`pre_pr_30d_hotspot_fixes`, `p = 5.42e-7`) and restrict to cold files, within-repo Mantel-Haenszel 14-day SZZ lands at an exact null (**`OR_MH = 0.9537`, `p = 0.95`**).
+   - **Zero Downstream Bug Magic on Merged Cold Files:** Once I control for file hotspot selection bias (`pre_pr_30d_hotspot_fixes`, `p = 5.42e-7`) and restrict to cold files, within-repo Mantel-Haenszel 14-day SZZ lands at an exact null (**`OR_MH = 0.9537`, `p = 0.95`**).
    - **The "All Clear" Badge Hazard:** Worse, PRs stamped `Jev_Clean` exhibit a **`+0.4205`** net 14-day symmetric difference-in-differences defect jump (`N = 88`) versus **`+0.0588`** on `Jev_Flagged` (`N = 102`)—a **`7x` complacency jump** when teams treat a green heuristic badge as a substitute for verification.
 3. **The Two Concrete Controls That *Do* Move Bare-Git Post-Merge Defects:**
    - **Cold-File Test Mandate:** Naive pooled dashboards suffer textbook Simpson's Paradox, making test-bearing agent PRs look *buggier* (`+9.70 pp`, `40.01% -> 49.71%`, `p = 5.10e-8`) because engineers add tests to turbulent hotspots. Control for cold files (`pre_pr_30d_hotspot_fixes == 0`), and the sign reverses cleanly: co-authored tests **cut coding-agent 30-day SZZ defects by `-5.47 pp`** (**`28.09% -> 22.63%`**, `p = 0.0107`, a `-19.5%` relative drop).
