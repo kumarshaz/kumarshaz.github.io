@@ -154,6 +154,7 @@ const expectedPages = [
 	'blog/from-partner-diagram-rot-to-context-engineering/index.html',
 	'blog/red-stack-blue-mesh-and-control-plane-fragility/index.html',
 	'blog/how-this-site-evolved/index.html',
+	'blog/disposable-software/index.html',
 	'foundry/index.html',
 	'foundry/engineering-this-monograph/index.html',
 	'foundry/atruss-code-atlas/index.html',
@@ -301,6 +302,21 @@ assert(
 		evolvedHtml.includes('mindmap') &&
 		evolvedHtml.includes('layout: tidy-tree'),
 	'[blog/how-this-site-evolved/index.html] Renders generated Hero Banner, inline Start-From-Scratch diagram, ELK layout, colored nodes, animated edges, and Tidy-Tree Mindmap diagram',
+);
+
+const disposableHtml = fs.readFileSync(
+	path.join(distDir, 'blog/disposable-software/index.html'),
+	'utf8',
+);
+assert(
+	disposableHtml.includes('spec-hero-figure') &&
+		disposableHtml.includes('disposable-software') &&
+		disposableHtml.includes('layout: elk') &&
+		disposableHtml.includes('classDef') &&
+		disposableHtml.includes('animate: true') &&
+		disposableHtml.includes('mindmap') &&
+		disposableHtml.includes('layout: tidy-tree'),
+	'[blog/disposable-software/index.html] Renders generated Hero Banner, ELK layout, colored nodes, animated edges, and Tidy-Tree Mindmap diagram',
 );
 
 // Verify every mindmap fenced block across src/content/{blog,foundry} explicitly sets layout: tidy-tree
